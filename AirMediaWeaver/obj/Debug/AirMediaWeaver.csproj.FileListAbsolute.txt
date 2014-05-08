@@ -1,0 +1,13 @@
+c:\users\dzhey\documents\visual studio 2012\Projects\AirMediaWeaver\AirMediaWeaver\bin\Debug\AirMediaWeaver.dll
+c:\users\dzhey\documents\visual studio 2012\Projects\AirMediaWeaver\AirMediaWeaver\bin\Debug\AirMediaWeaver.pdb
+c:\users\dzhey\documents\visual studio 2012\Projects\AirMediaWeaver\AirMediaWeaver\bin\Debug\AirMediaWeaver.dll.mdb
+c:\users\dzhey\documents\visual studio 2012\Projects\AirMediaWeaver\AirMediaWeaver\obj\Debug\AirMediaWeaver.dll
+c:\users\dzhey\documents\visual studio 2012\Projects\AirMediaWeaver\AirMediaWeaver\obj\Debug\AirMediaWeaver.pdb
+c:\users\dzhey\documents\visual studio 2012\Projects\AirMediaWeaver\AirMediaWeaver\obj\Debug\res\layout\main.xml
+c:\users\dzhey\documents\visual studio 2012\Projects\AirMediaWeaver\AirMediaWeaver\obj\Debug\res\values\strings.xml
+c:\users\dzhey\documents\visual studio 2012\Projects\AirMediaWeaver\AirMediaWeaver\obj\Debug\res\drawable\icon.png
+c:\users\dzhey\documents\visual studio 2012\Projects\AirMediaWeaver\AirMediaWeaver\obj\Debug\R.cs.flag
+c:\users\dzhey\documents\visual studio 2012\Projects\AirMediaWeaver\AirMediaWeaver\obj\Debug\uploadflags.txt
+C:\Users\Dzhey\documents\visual studio 2012\Projects\AirMediaWeaver\AirMediaWeaver\bin\Debug\org.eb.airmedia.android.apk
+C:\Users\Dzhey\documents\visual studio 2012\Projects\AirMediaWeaver\AirMediaWeaver\bin\Debug\org.eb.airmedia.android-Signed.apk
+C:\Users\Dzhey\documents\visual studio 2012\Projects\AirMediaWeaver\AirMediaWeaver\obj\Debug\android\bin\org.eb.airmedia.android.apk
