@@ -3,12 +3,13 @@ using System.Threading;
 
 namespace AirMedia.Core.Utils
 {
-    public class Future<T>
+    public class Future<T> : IDisposable
     {
         private readonly ManualResetEvent _resetEvent = new ManualResetEvent(false);
         private T _value;
         private bool _hasValue;
         private Exception _error;
+        private bool _isDisposed;
 
         public void SetValue(T value)
         {
@@ -54,6 +55,24 @@ namespace AirMedia.Core.Utils
                 _resetEvent.WaitOne();
                 return _error;
             }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_isDisposed) return;
+
+            if (disposing)
+            {
+                _resetEvent.Dispose();
+            }
+
+            _isDisposed = true;
         }
     }
 

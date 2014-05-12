@@ -35,7 +35,7 @@ namespace AirMedia.Core.Requests.Controller
                     {
                         if (_instance == null)
                         {
-                            throw new ApplicationException("RequestManager instance is not defined");
+                            throw new InvalidOperationException("RequestManager instance is not defined");
                         }       
                     }
                 }

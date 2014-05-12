@@ -5,7 +5,7 @@ using System.Timers;
 
 namespace AirMedia.Core.Log
 {
-    public abstract class AmwLog
+    public abstract class AmwLog : IDisposable
     {
         protected struct LogEntry
         {
@@ -26,6 +26,16 @@ namespace AirMedia.Core.Log
             }
         }
 
+        private static readonly object Mutex = new object();
+
+        private static AmwLog _instance;
+
+        private readonly ConcurrentQueue<LogEntry> _loggerQueue;
+        private readonly Timer _timer;
+
+        private double _lastInsertMillis;
+        private bool _isDisposed;
+
         protected const int BulkInsertThreshold = 20;
         protected const int BulkInsertDelayMillis = 100;
 
@@ -39,7 +49,7 @@ namespace AirMedia.Core.Log
                     {
                         if (_instance == null)
                         {
-                            throw new ApplicationException(string.Format(
+                            throw new InvalidOperationException(string.Format(
                                 "{0} instance is not created", typeof(AmwLog).Name));
                         }
                     }
@@ -48,15 +58,6 @@ namespace AirMedia.Core.Log
                 return _instance;
             }
         }
-
-        private static readonly object Mutex = new object();
-
-        private static AmwLog _instance;
-
-        private readonly ConcurrentQueue<LogEntry> _loggerQueue;
-        private readonly Timer _timer;
-
-        private double _lastInsertMillis;
 
         public static LogLevel LogLevel { get; set; }
 
@@ -199,6 +200,27 @@ namespace AirMedia.Core.Log
             }
 
             SaveEntries(entries);
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_isDisposed) return;
+
+            if (disposing)
+            {
+                if (_timer != null)
+                {
+                    _timer.Dispose();
+                }
+            }
+
+            _isDisposed = true;
         }
     }
 }

@@ -7,7 +7,7 @@ using AirMedia.Core.Requests.Model;
 
 namespace AirMedia.Core.Log
 {
-    public class AmwLogImpl : AmwLog, IRequestResultListener, IDisposable
+    public class AmwLogImpl : AmwLog, IRequestResultListener
     {
         private const string ActionTagInsertLogEntries = "TmLogImpl_insert_log_entries";
 
@@ -15,6 +15,7 @@ namespace AirMedia.Core.Log
         private static readonly object Mutex = new object();
 
         private volatile bool _isRequestHandlerRegistered;
+        private bool _isDisposed;
 
         protected override void DispatchLogRequest(LogLevel level, string tag, string displayMessage, string details)
         {
@@ -64,9 +65,18 @@ namespace AirMedia.Core.Log
             }
         }
 
-        public void Dispose()
+        protected override void Dispose(bool disposing)
         {
-            RequestManager.Instance.RemoveEventHandler(this);
+            base.Dispose(disposing);
+
+            if (_isDisposed) return;
+
+            if (disposing)
+            {
+                RequestManager.Instance.RemoveEventHandler(this);
+            }
+
+            _isDisposed = true;
         }
     }
 }

@@ -22,7 +22,8 @@ namespace AirMedia.Platform.Logger
 
         private readonly ISet<int> _requestIds;
         private readonly IDictionary<Type, EventHandler<ResultEventArgs>> _resultDelegates; 
-        private readonly IDictionary<Type, EventHandler<UpdateEventArgs>> _updateDelegates; 
+        private readonly IDictionary<Type, EventHandler<UpdateEventArgs>> _updateDelegates;
+        private bool _isDisposed;
 
         public event EventHandler<UpdateEventArgs> UpdateEventHandler;
         public event EventHandler<ResultEventArgs> ResultEventHandler;
@@ -232,17 +233,30 @@ namespace AirMedia.Platform.Logger
 
         public void Dispose()
         {
-            _resultDelegates.Clear();
-            _updateDelegates.Clear();
-            ResultEventHandler = null;
-            UpdateEventHandler = null;
-            App.WorkerRequestManager.RemoveEventHandler((IRequestResultListener) this);
-            App.WorkerRequestManager.RemoveEventHandler((IRequestUpdateListener) this);
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
 
-            lock (_requestIds)
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_isDisposed) return;
+
+            if (disposing)
             {
-                _requestIds.Clear();
+                _resultDelegates.Clear();
+                _updateDelegates.Clear();
+                ResultEventHandler = null;
+                UpdateEventHandler = null;
+                App.WorkerRequestManager.RemoveEventHandler((IRequestResultListener)this);
+                App.WorkerRequestManager.RemoveEventHandler((IRequestUpdateListener)this);
+
+                lock (_requestIds)
+                {
+                    _requestIds.Clear();
+                }
             }
+
+            _isDisposed = true;
         }
 
         public bool IsPending(int? requestId)
