@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="left|center_vertical"
+    android:background="#242424"
+    android:paddingLeft="8dp"
+    android:paddingRight="8dp"
+    android:paddingTop="4dp"
+    android:paddingBottom="6dp">
+    <TextView
+        style="@style/LogText"
+        android:id="@+id/indicatorError"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0" />
+    <TextView
+        style="@style/LogText"
+        android:id="@+id/indicatorErrorTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="2dp"
+        android:text="Err" />
+    <TextView
+        style="@style/LogText"
+        android:id="@+id/indicatorWarning"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="5dp"
+        android:text="0" />
+    <TextView
+        style="@style/LogText"
+        android:id="@+id/indicatorWarningTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="2dp"
+        android:text="Warn" />
+    <TextView
+        style="@style/LogText"
+        android:id="@+id/indicatorInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="5dp"
+        android:text="0" />
+    <TextView
+        style="@style/LogText"
+        android:id="@+id/indicatorInfoTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="2dp"
+        android:text="Info" />
+    <TextView
+        style="@style/LogText"
+        android:id="@+id/indicatorEventTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="6dp"
+        android:text="@android:string/untitled"
+        android:maxLines="1"
+        android:ellipsize="end" />
+</LinearLayout>

@@ -4,18 +4,18 @@ namespace AirMedia.Core.Requests.Model
 {
 	public class LoadRequestResult<TData> : RequestResult
     {
-        public TData ResultData { get; set; }
+        public TData Data { get; set; }
 
         public LoadRequestResult(int resultCode, TData resultData)
             : base(resultCode)
 	    {
-	        ResultData = resultData;
+	        Data = resultData;
 	    }
 
 	    internal LoadRequestResult(int resultCode, TData resultData, Exception risenException) 
             : base(resultCode, risenException)
 	    {
-	        ResultData = resultData;
+	        Data = resultData;
 	    }
     }
 }

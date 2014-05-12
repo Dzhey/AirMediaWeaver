@@ -1,5 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="Hello">Hello World, Click Me!</string>
-    <string name="ApplicationName">AirMediaWeaver</string>
+  <string name="Hello">Hello World, Click Me!</string>
+  <string name="ApplicationName">AirMediaWeaver</string>
+
+  <string name="message_progress">Загрузка&#8230;</string>
+  <string name="title_list_empty">Нет элементов для отображения</string>
+  
+  <!-- Logger strings -->
+  <string name="title_log_level">Уровень</string>
+  <string name="title_log_expand_toggle">Развернуть</string>
+  <string name="title_save_log">Сохранить</string>
+  <string name="title_share_log">Отправить</string>
+  <string name="dialog_log_details_title">Подробности</string>
+  <string name="dialog_log_details_accept_text">OK</string>
+  <string name="error_cant_save_log_file">Не удалось сохранить лог-файл</string>
+  <string name="error_cant_create_log_file">Не удалось создать лог-файл</string>
+  <string name="message_log_file_saved">Лог-файл сохранен в \"{file_path}\".</string>
+  <string name="dialog_save_file_title">Сохранение&#8230;</string>
+  <string name="error_log_dir_not_available">Папка для сохранения недоступна</string>
+  <string name="dialog_title_send_log_via">Отправить лог-файл через&#8230;</string>
 </resources>

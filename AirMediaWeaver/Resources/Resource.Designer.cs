@@ -43,14 +43,60 @@ namespace AirMedia
 			}
 		}
 		
+		public partial class Color
+		{
+			
+			// aapt resource value: 0x7f050003
+			public const int log_color_debug = 2131034115;
+			
+			// aapt resource value: 0x7f050000
+			public const int log_color_error = 2131034112;
+			
+			// aapt resource value: 0x7f050002
+			public const int log_color_info = 2131034114;
+			
+			// aapt resource value: 0x7f050004
+			public const int log_color_verbose = 2131034116;
+			
+			// aapt resource value: 0x7f050001
+			public const int log_color_warning = 2131034113;
+			
+			static Color()
+			{
+				global::Android.Runtime.ResourceIdManager.UpdateIdValues();
+			}
+			
+			private Color()
+			{
+			}
+		}
+		
 		public partial class Drawable
 		{
 			
 			// aapt resource value: 0x7f020000
-			public const int Icon = 2130837504;
+			public const int ic_floppy = 2130837504;
 			
 			// aapt resource value: 0x7f020001
-			public const int monoandroidsplash = 2130837505;
+			public const int ic_list = 2130837505;
+			
+			// aapt resource value: 0x7f020002
+			public const int ic_log_pause = 2130837506;
+			
+			// aapt resource value: 0x7f020003
+			public const int ic_log_start = 2130837507;
+			
+			// aapt resource value: 0x7f020004
+			public const int ic_share = 2130837508;
+			
+			// aapt resource value: 0x7f020005
+			public const int Icon = 2130837509;
+			
+			// aapt resource value: 0x7f020006
+			public const int monoandroidsplash = 2130837510;
+			
+			// aapt resource value: 0x7f020007
+			public const int toggle_log_refresh_selector = 2130837511;
 			
 			static Drawable()
 			{
@@ -65,8 +111,74 @@ namespace AirMedia
 		public partial class Id
 		{
 			
-			// aapt resource value: 0x7f060000
-			public const int MyButton = 2131099648;
+			// aapt resource value: 0x7f070005
+			public const int actionPanel = 2131165189;
+			
+			// aapt resource value: 0x7f070013
+			public const int buttonDetails = 2131165203;
+			
+			// aapt resource value: 0x7f070007
+			public const int buttonSave = 2131165191;
+			
+			// aapt resource value: 0x7f070006
+			public const int buttonShare = 2131165190;
+			
+			// aapt resource value: 0x7f07000a
+			public const int contentView = 2131165194;
+			
+			// aapt resource value: 0x7f07000c
+			public const int indicatorError = 2131165196;
+			
+			// aapt resource value: 0x7f07000d
+			public const int indicatorErrorTitle = 2131165197;
+			
+			// aapt resource value: 0x7f070012
+			public const int indicatorEventTitle = 2131165202;
+			
+			// aapt resource value: 0x7f070010
+			public const int indicatorInfo = 2131165200;
+			
+			// aapt resource value: 0x7f070011
+			public const int indicatorInfoTitle = 2131165201;
+			
+			// aapt resource value: 0x7f070014
+			public const int indicatorLeft = 2131165204;
+			
+			// aapt resource value: 0x7f070015
+			public const int indicatorRight = 2131165205;
+			
+			// aapt resource value: 0x7f07000e
+			public const int indicatorWarning = 2131165198;
+			
+			// aapt resource value: 0x7f07000f
+			public const int indicatorWarningTitle = 2131165199;
+			
+			// aapt resource value: 0x7f070008
+			public const int listDisplaySwitch = 2131165192;
+			
+			// aapt resource value: 0x7f070001
+			public const int logEntryCountIndicator = 2131165185;
+			
+			// aapt resource value: 0x7f070009
+			public const int logLevelSpinner = 2131165193;
+			
+			// aapt resource value: 0x7f07000b
+			public const int logPanelContainer = 2131165195;
+			
+			// aapt resource value: 0x7f070016
+			public const int progressBar = 2131165206;
+			
+			// aapt resource value: 0x7f070004
+			public const int progressPanel = 2131165188;
+			
+			// aapt resource value: 0x7f070003
+			public const int toggleLogRefreshButton = 2131165187;
+			
+			// aapt resource value: 0x7f070000
+			public const int topBar = 2131165184;
+			
+			// aapt resource value: 0x7f070002
+			public const int topBarProgressIndicator = 2131165186;
 			
 			static Id()
 			{
@@ -82,7 +194,19 @@ namespace AirMedia
 		{
 			
 			// aapt resource value: 0x7f030000
-			public const int Main = 2130903040;
+			public const int Fragment_InAppLogging = 2130903040;
+			
+			// aapt resource value: 0x7f030001
+			public const int View_FragmentContainer = 2130903041;
+			
+			// aapt resource value: 0x7f030002
+			public const int View_InAppLogPanel = 2130903042;
+			
+			// aapt resource value: 0x7f030003
+			public const int View_LogEntry = 2130903043;
+			
+			// aapt resource value: 0x7f030004
+			public const int View_Progress_Panel = 2130903044;
 			
 			static Layout()
 			{
@@ -103,6 +227,48 @@ namespace AirMedia
 			// aapt resource value: 0x7f040000
 			public const int Hello = 2130968576;
 			
+			// aapt resource value: 0x7f040009
+			public const int dialog_log_details_accept_text = 2130968585;
+			
+			// aapt resource value: 0x7f040008
+			public const int dialog_log_details_title = 2130968584;
+			
+			// aapt resource value: 0x7f04000d
+			public const int dialog_save_file_title = 2130968589;
+			
+			// aapt resource value: 0x7f04000f
+			public const int dialog_title_send_log_via = 2130968591;
+			
+			// aapt resource value: 0x7f04000b
+			public const int error_cant_create_log_file = 2130968587;
+			
+			// aapt resource value: 0x7f04000a
+			public const int error_cant_save_log_file = 2130968586;
+			
+			// aapt resource value: 0x7f04000e
+			public const int error_log_dir_not_available = 2130968590;
+			
+			// aapt resource value: 0x7f04000c
+			public const int message_log_file_saved = 2130968588;
+			
+			// aapt resource value: 0x7f040002
+			public const int message_progress = 2130968578;
+			
+			// aapt resource value: 0x7f040003
+			public const int title_list_empty = 2130968579;
+			
+			// aapt resource value: 0x7f040005
+			public const int title_log_expand_toggle = 2130968581;
+			
+			// aapt resource value: 0x7f040004
+			public const int title_log_level = 2130968580;
+			
+			// aapt resource value: 0x7f040006
+			public const int title_save_log = 2130968582;
+			
+			// aapt resource value: 0x7f040007
+			public const int title_share_log = 2130968583;
+			
 			static String()
 			{
 				global::Android.Runtime.ResourceIdManager.UpdateIdValues();
@@ -116,8 +282,20 @@ namespace AirMedia
 		public partial class Style
 		{
 			
-			// aapt resource value: 0x7f050000
-			public const int Mono_Android_Theme_Splash = 2131034112;
+			// aapt resource value: 0x7f060003
+			public const int AppBaseTheme = 2131099651;
+			
+			// aapt resource value: 0x7f060004
+			public const int AppTheme = 2131099652;
+			
+			// aapt resource value: 0x7f060000
+			public const int AppTheme_Text = 2131099648;
+			
+			// aapt resource value: 0x7f060001
+			public const int LogText = 2131099649;
+			
+			// aapt resource value: 0x7f060002
+			public const int Mono_Android_Theme_Splash = 2131099650;
 			
 			static Style()
 			{

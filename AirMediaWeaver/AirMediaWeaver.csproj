@@ -33,6 +33,9 @@
     <WarningLevel>4</WarningLevel>
     <AndroidUseSharedRuntime>True</AndroidUseSharedRuntime>
     <AndroidLinkMode>None</AndroidLinkMode>
+    <AndroidLinkSkip />
+    <EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
+    <BundleAssemblies>False</BundleAssemblies>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -56,7 +59,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Activity1.cs" />
+    <Compile Include="Platform\UI\MainView\MainViewActivity.cs" />
     <Compile Include="Core\Consts.cs" />
     <Compile Include="Core\Data\Sql\Dao\BaseDao.cs" />
     <Compile Include="Core\Data\Sql\DatabaseConnection.cs" />
@@ -96,16 +99,35 @@
     <Compile Include="Core\Utils\StringUtils\ITextExpression.cs" />
     <Compile Include="Core\Utils\StringUtils\LiteralFormat.cs" />
     <Compile Include="Core\Data\CoreUserPreferences.cs" />
+    <Compile Include="Platform\App.cs" />
+    <Compile Include="Platform\Controller\WorkerRequestManager.cs" />
+    <Compile Include="Platform\Controller\WorkerService.cs" />
     <Compile Include="Platform\Data\UserPreferences.cs" />
+    <Compile Include="Platform\Logger\AndroidAmwLog.cs" />
+    <Compile Include="Platform\Logger\InAppLoggingActivity.cs" />
+    <Compile Include="Platform\Logger\InAppLoggingFragment.cs" />
+    <Compile Include="Platform\Logger\InAppLoggingPanelFragment.cs" />
+    <Compile Include="Platform\Logger\LogEntryListAdapter.cs" />
+    <Compile Include="Platform\Logger\LogLevelAdapter.cs" />
+    <Compile Include="Platform\Logger\LogUtils.cs" />
+    <Compile Include="Platform\Logger\RequestResultListener.cs" />
+    <Compile Include="Platform\UI\Base\AmwActivity.cs" />
+    <Compile Include="Platform\UI\Base\AmwFragment.cs" />
+    <Compile Include="Platform\UI\Base\BaseDialogFragment.cs" />
+    <Compile Include="Platform\UI\Base\ConfirmDialogFragment.cs" />
+    <Compile Include="Platform\UI\Base\ProgressDialogFragment.cs" />
+    <Compile Include="Platform\UI\Util\Util.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
     <None Include="Assets\AboutAssets.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <AndroidResource Include="Resources\Layout\Main.axml" />
+    <AndroidResource Include="Resources\Layout\View_FragmentContainer.axml" />
+    <AndroidResource Include="Resources\Layout\View_InAppLogPanel.axml" />
+    <AndroidResource Include="Resources\Layout\View_LogEntry.axml" />
+    <AndroidResource Include="Resources\Layout\Fragment_InAppLogging.axml" />
+    <AndroidResource Include="Resources\Layout\View_Progress_Panel.axml" />
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\Values\Strings.xml" />
@@ -115,10 +137,17 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Properties\AndroidManifest.xml" />
+    <AndroidResource Include="Resources\Values\Colors.xml" />
+    <AndroidResource Include="Resources\Values\Styles.xml" />
+    <AndroidResource Include="Resources\Drawable-mdpi\ic_list.png" />
+    <AndroidResource Include="Resources\Values\Themes.xml" />
+    <AndroidResource Include="Resources\Drawable-hdpi\ic_share.png" />
+    <AndroidResource Include="Resources\Drawable-hdpi\ic_floppy.png" />
+    <AndroidResource Include="Resources\Drawable\toggle_log_refresh_selector.xml" />
+    <AndroidResource Include="Resources\Drawable-hdpi\ic_log_start.png" />
+    <AndroidResource Include="Resources\Drawable-hdpi\ic_log_pause.png" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="UI\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
      Other similar extension points exist, see Microsoft.Common.targets.

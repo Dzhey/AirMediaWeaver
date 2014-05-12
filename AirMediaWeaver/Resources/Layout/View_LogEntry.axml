@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="6dp"
+    android:paddingRight="6dp"
+    android:paddingTop="4dp"
+    android:paddingBottom="4dp"
+    android:descendantFocusability="blocksDescendants">
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
+        android:layout_toLeftOf="@+id/buttonDetails"
+        android:paddingRight="4dp"
+        android:orientation="horizontal"
+        android:gravity="top|left">
+        <TextView
+            style="@style/LogText"
+            android:id="@+id/indicatorLeft"
+            android:layout_width="62dp"
+            android:layout_height="match_parent"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:text="@android:string/untitled" />
+        <TextView
+            style="@style/LogText"
+            android:id="@+id/indicatorRight"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="4dp"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:text="@android:string/untitled" />
+    </LinearLayout>
+    <ImageButton
+        android:id="@+id/buttonDetails"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:adjustViewBounds="true"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_list" />
+</RelativeLayout>
