@@ -9,7 +9,7 @@
     <ProjectTypeGuids>{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>AirMediaWeaver</RootNamespace>
+    <RootNamespace>AirMedia</RootNamespace>
     <AssemblyName>AirMediaWeaver</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <AndroidApplication>true</AndroidApplication>
@@ -47,6 +47,9 @@
   <ItemGroup>
     <Reference Include="Mono.Android" />
     <Reference Include="mscorlib" />
+    <Reference Include="SQLite">
+      <HintPath>..\libs\sqlite-net-1.0.1\lib\android\SQLite.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -54,6 +57,46 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Activity1.cs" />
+    <Compile Include="Core\Consts.cs" />
+    <Compile Include="Core\Data\Sql\Dao\BaseDao.cs" />
+    <Compile Include="Core\Data\Sql\DatabaseConnection.cs" />
+    <Compile Include="Core\Data\Sql\DatabaseHelper.cs" />
+    <Compile Include="Core\Data\Sql\Model\DatabaseRecord.cs" />
+    <Compile Include="Core\Data\Sql\SQLiteConnectionEx.cs" />
+    <Compile Include="Core\Log\CountNewLogEntriesRequest.cs" />
+    <Compile Include="Core\Log\InsertLogEntriesRequest.cs" />
+    <Compile Include="Core\Log\LoadLogEntriesRequest.cs" />
+    <Compile Include="Core\Log\LogEntryDao.cs" />
+    <Compile Include="Core\Log\LogEntryRecord.cs" />
+    <Compile Include="Core\Log\LogLevel.cs" />
+    <Compile Include="Core\Log\SaveLogFileRequest.cs" />
+    <Compile Include="Core\Log\AmwLog.cs" />
+    <Compile Include="Core\Log\AmwLogImpl.cs" />
+    <Compile Include="Core\Requests\Controller\RequestManager.cs" />
+    <Compile Include="Core\Requests\Controller\RequestScheduler.cs" />
+    <Compile Include="Core\Requests\Interfaces\IRequestListener.cs" />
+    <Compile Include="Core\Requests\Interfaces\IRequestManager.cs" />
+    <Compile Include="Core\Requests\Abs\AbsRequest.cs" />
+    <Compile Include="Core\Requests\Abs\BaseLoadRequest.cs" />
+    <Compile Include="Core\Requests\Model\LoadRequestResult.cs" />
+    <Compile Include="Core\Requests\Model\RequestResult.cs" />
+    <Compile Include="Core\Requests\Model\ResultEventArgs.cs" />
+    <Compile Include="Core\Requests\Model\RequestStatus.cs" />
+    <Compile Include="Core\Requests\Model\UpdateData.cs" />
+    <Compile Include="Core\Requests\Model\UpdateEventArgs.cs" />
+    <Compile Include="Core\Utils\Future.cs" />
+    <Compile Include="Core\Utils\Range.cs" />
+    <Compile Include="Core\Utils\SQLUtils.cs" />
+    <Compile Include="Core\Utils\StringUtils\DataBinder.cs" />
+    <Compile Include="Core\Utils\StringUtils\EmailFormat.cs" />
+    <Compile Include="Core\Utils\StringUtils\FormatExpression.cs" />
+    <Compile Include="Core\Utils\StringUtils\HaackFormatter.cs" />
+    <Compile Include="Core\Utils\StringUtils\IDataItemContainer.cs" />
+    <Compile Include="Core\Utils\StringUtils\INamingContainer.cs" />
+    <Compile Include="Core\Utils\StringUtils\ITextExpression.cs" />
+    <Compile Include="Core\Utils\StringUtils\LiteralFormat.cs" />
+    <Compile Include="Core\Data\CoreUserPreferences.cs" />
+    <Compile Include="Platform\Data\UserPreferences.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -72,6 +115,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Properties\AndroidManifest.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="UI\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

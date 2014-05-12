@@ -2,7 +2,7 @@
 using Android.Widget;
 using Android.OS;
 
-namespace AirMediaWeaver
+namespace AirMedia
 {
     [Activity(Label = "AirMediaWeaver", MainLauncher = true, Icon = "@drawable/icon")]
     public class Activity1 : Activity
@@ -12,7 +12,7 @@ namespace AirMediaWeaver
         protected override void OnCreate(Bundle bundle)
         {
             base.OnCreate(bundle);
-
+            
             // Set our view from the "main" layout resource
             SetContentView(Resource.Layout.Main);
 
