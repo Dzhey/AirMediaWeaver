@@ -1,8 +1,8 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
   <style name="AppTheme.Text">
-    <item name="android:textSize">?android:attr/textAppearanceMedium</item>
-    <item name="android:textColor">@android:color/white</item>
+    <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+    <item name="android:textColor">@color/light_theme_text_color</item>
   </style>
 
   <style name="LogText">

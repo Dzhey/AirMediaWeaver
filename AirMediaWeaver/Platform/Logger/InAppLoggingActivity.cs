@@ -1,4 +1,3 @@
-using AirMedia.Platform.UI;
 using AirMedia.Platform.UI.Base;
 using Android.App;
 using Android.OS;

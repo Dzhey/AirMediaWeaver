@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using AirMedia.Core.Log;
 using AirMedia.Core.Requests.Model;
 using AirMedia.Core.Utils.StringUtils;
-using AirMedia.Platform.UI;
 using AirMedia.Platform.UI.Base;
 using Android.Content;
 using Android.OS;

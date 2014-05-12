@@ -1,5 +1,6 @@
 using AirMedia.Core.Data.Sql;
 using AirMedia.Core.Log;
+using AirMedia.Core.Requests.Impl;
 using AirMedia.Platform.Controller;
 using AirMedia.Platform.Data;
 using AirMedia.Platform.Logger;
@@ -37,6 +38,9 @@ namespace AirMedia.Platform
             Preferences = new UserPreferences(this);
 		    WorkerRequestManager = new WorkerRequestManager(this);
 		    DatabaseHelper = DatabaseHelper.Instance;
+
+		    var rq = new InitDatabaseRequest();
+		    rq.Execute();
 		}
     }
 }
