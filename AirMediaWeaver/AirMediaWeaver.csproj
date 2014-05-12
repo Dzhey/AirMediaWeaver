@@ -49,6 +49,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Mono.Android" />
+    <Reference Include="Mono.Android.Export" />
+    <Reference Include="Mono.Android.Support.v4" />
     <Reference Include="mscorlib" />
     <Reference Include="SQLite">
       <HintPath>..\libs\sqlite-net-1.0.1\lib\android\SQLite.dll</HintPath>
@@ -146,6 +148,55 @@
     <AndroidResource Include="Resources\Drawable\toggle_log_refresh_selector.xml" />
     <AndroidResource Include="Resources\Drawable-hdpi\ic_log_start.png" />
     <AndroidResource Include="Resources\Drawable-hdpi\ic_log_pause.png" />
+    <AndroidResource Include="Resources\Values\vpi__attrs.xml" />
+    <AndroidResource Include="Resources\Values\vpi__colors.xml" />
+    <AndroidResource Include="Resources\Values\vpi__defaults.xml" />
+    <AndroidResource Include="Resources\Values\vpi__styles.xml" />
+    <AndroidResource Include="Resources\Drawable\vpi__tab_indicator.xml" />
+    <AndroidResource Include="Resources\Drawable-hdpi\custom_tab_indicator_focused.9.png" />
+    <AndroidResource Include="Resources\Drawable-hdpi\custom_tab_indicator_selected.9.png" />
+    <AndroidResource Include="Resources\Drawable-hdpi\custom_tab_indicator_selected_pressed.9.png" />
+    <AndroidResource Include="Resources\Drawable-hdpi\custom_tab_indicator_unselected.9.png" />
+    <AndroidResource Include="Resources\Drawable-hdpi\custom_tab_indicator_unselected_focused.9.png" />
+    <AndroidResource Include="Resources\Drawable-hdpi\custom_tab_indicator_unselected_pressed.9.png" />
+    <AndroidResource Include="Resources\Drawable-hdpi\vpi__tab_selected_focused_holo.9.png" />
+    <AndroidResource Include="Resources\Drawable-hdpi\vpi__tab_selected_holo.9.png" />
+    <AndroidResource Include="Resources\Drawable-hdpi\vpi__tab_selected_pressed_holo.9.png" />
+    <AndroidResource Include="Resources\Drawable-hdpi\vpi__tab_unselected_focused_holo.9.png" />
+    <AndroidResource Include="Resources\Drawable-hdpi\vpi__tab_unselected_holo.9.png" />
+    <AndroidResource Include="Resources\Drawable-hdpi\vpi__tab_unselected_pressed_holo.9.png" />
+    <AndroidResource Include="Resources\Drawable-mdpi\custom_tab_indicator_selected.9.png" />
+    <AndroidResource Include="Resources\Drawable-mdpi\custom_tab_indicator_selected_focused.9.png" />
+    <AndroidResource Include="Resources\Drawable-mdpi\custom_tab_indicator_selected_pressed.9.png" />
+    <AndroidResource Include="Resources\Drawable-mdpi\custom_tab_indicator_unselected.9.png" />
+    <AndroidResource Include="Resources\Drawable-mdpi\custom_tab_indicator_unselected_focused.9.png" />
+    <AndroidResource Include="Resources\Drawable-mdpi\custom_tab_indicator_unselected_pressed.9.png" />
+    <AndroidResource Include="Resources\Drawable-mdpi\vpi__tab_selected_focused_holo.9.png" />
+    <AndroidResource Include="Resources\Drawable-mdpi\vpi__tab_selected_holo.9.png" />
+    <AndroidResource Include="Resources\Drawable-mdpi\vpi__tab_selected_pressed_holo.9.png" />
+    <AndroidResource Include="Resources\Drawable-mdpi\vpi__tab_unselected_focused_holo.9.png" />
+    <AndroidResource Include="Resources\Drawable-mdpi\vpi__tab_unselected_holo.9.png" />
+    <AndroidResource Include="Resources\Drawable-mdpi\vpi__tab_unselected_pressed_holo.9.png" />
+    <AndroidResource Include="Resources\Drawable-xhdpi\custom_tab_indicator_selected.9.png" />
+    <AndroidResource Include="Resources\Drawable-xhdpi\custom_tab_indicator_selected_focused.9.png" />
+    <AndroidResource Include="Resources\Drawable-xhdpi\custom_tab_indicator_selected_pressed.9.png" />
+    <AndroidResource Include="Resources\Drawable-xhdpi\custom_tab_indicator_unselected.9.png" />
+    <AndroidResource Include="Resources\Drawable-xhdpi\custom_tab_indicator_unselected_focused.9.png" />
+    <AndroidResource Include="Resources\Drawable-xhdpi\custom_tab_indicator_unselected_pressed.9.png" />
+    <AndroidResource Include="Resources\Drawable-xhdpi\vpi__tab_selected_focused_holo.9.png" />
+    <AndroidResource Include="Resources\Drawable-xhdpi\vpi__tab_selected_holo.9.png" />
+    <AndroidResource Include="Resources\Drawable-xhdpi\vpi__tab_selected_pressed_holo.9.png" />
+    <AndroidResource Include="Resources\Drawable-xhdpi\vpi__tab_unselected_focused_holo.9.png" />
+    <AndroidResource Include="Resources\Drawable-xhdpi\vpi__tab_unselected_holo.9.png" />
+    <AndroidResource Include="Resources\Drawable-xhdpi\vpi__tab_unselected_pressed_holo.9.png" />
+    <AndroidResource Include="Resources\Color\vpi__dark_theme.xml" />
+    <AndroidResource Include="Resources\Color\vpi__light_theme.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\libs\ViewPagerIndicator\ViewPagerIndicator.csproj">
+      <Project>{10be6857-6a09-448a-a52e-c0ac31cafd9d}</Project>
+      <Name>ViewPagerIndicator</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />

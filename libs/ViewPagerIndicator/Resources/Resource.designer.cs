@@ -9,9 +9,9 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-[assembly: global::Android.Runtime.ResourceDesignerAttribute("AirMedia.Resource", IsApplication=true)]
+[assembly: global::Android.Runtime.ResourceDesignerAttribute("ViewPagerIndicator.Resource", IsApplication=true)]
 
-namespace AirMedia
+namespace ViewPagerIndicator
 {
 	
 	
@@ -26,8 +26,6 @@ namespace AirMedia
 		
 		public static void UpdateIdValues()
 		{
-			global::SQLite.Resource.String.ApplicationName = global::AirMedia.Resource.String.ApplicationName;
-			global::SQLite.Resource.String.Hello = global::AirMedia.Resource.String.Hello;
 		}
 		
 		public partial class Attribute
@@ -143,68 +141,53 @@ namespace AirMedia
 		public partial class Color
 		{
 			
-			// aapt resource value: 0x7f05000d
-			public const int default_circle_indicator_fill_color = 2131034125;
+			// aapt resource value: 0x7f070008
+			public const int default_circle_indicator_fill_color = 2131165192;
 			
-			// aapt resource value: 0x7f05000e
-			public const int default_circle_indicator_page_color = 2131034126;
+			// aapt resource value: 0x7f070009
+			public const int default_circle_indicator_page_color = 2131165193;
 			
-			// aapt resource value: 0x7f05000f
-			public const int default_circle_indicator_stroke_color = 2131034127;
+			// aapt resource value: 0x7f07000a
+			public const int default_circle_indicator_stroke_color = 2131165194;
 			
-			// aapt resource value: 0x7f050010
-			public const int default_title_indicator_footer_color = 2131034128;
+			// aapt resource value: 0x7f07000b
+			public const int default_title_indicator_footer_color = 2131165195;
 			
-			// aapt resource value: 0x7f050011
-			public const int default_title_indicator_selected_color = 2131034129;
+			// aapt resource value: 0x7f07000c
+			public const int default_title_indicator_selected_color = 2131165196;
 			
-			// aapt resource value: 0x7f050012
-			public const int default_title_indicator_text_color = 2131034130;
+			// aapt resource value: 0x7f07000d
+			public const int default_title_indicator_text_color = 2131165197;
 			
-			// aapt resource value: 0x7f050003
-			public const int log_color_debug = 2131034115;
+			// aapt resource value: 0x7f070000
+			public const int vpi__background_holo_dark = 2131165184;
 			
-			// aapt resource value: 0x7f050000
-			public const int log_color_error = 2131034112;
+			// aapt resource value: 0x7f070001
+			public const int vpi__background_holo_light = 2131165185;
 			
-			// aapt resource value: 0x7f050002
-			public const int log_color_info = 2131034114;
+			// aapt resource value: 0x7f070004
+			public const int vpi__bright_foreground_disabled_holo_dark = 2131165188;
 			
-			// aapt resource value: 0x7f050004
-			public const int log_color_verbose = 2131034116;
+			// aapt resource value: 0x7f070005
+			public const int vpi__bright_foreground_disabled_holo_light = 2131165189;
 			
-			// aapt resource value: 0x7f050001
-			public const int log_color_warning = 2131034113;
+			// aapt resource value: 0x7f070002
+			public const int vpi__bright_foreground_holo_dark = 2131165186;
 			
-			// aapt resource value: 0x7f050005
-			public const int vpi__background_holo_dark = 2131034117;
+			// aapt resource value: 0x7f070003
+			public const int vpi__bright_foreground_holo_light = 2131165187;
 			
-			// aapt resource value: 0x7f050006
-			public const int vpi__background_holo_light = 2131034118;
+			// aapt resource value: 0x7f070006
+			public const int vpi__bright_foreground_inverse_holo_dark = 2131165190;
 			
-			// aapt resource value: 0x7f050009
-			public const int vpi__bright_foreground_disabled_holo_dark = 2131034121;
+			// aapt resource value: 0x7f070007
+			public const int vpi__bright_foreground_inverse_holo_light = 2131165191;
 			
-			// aapt resource value: 0x7f05000a
-			public const int vpi__bright_foreground_disabled_holo_light = 2131034122;
+			// aapt resource value: 0x7f07000e
+			public const int vpi__dark_theme = 2131165198;
 			
-			// aapt resource value: 0x7f050007
-			public const int vpi__bright_foreground_holo_dark = 2131034119;
-			
-			// aapt resource value: 0x7f050008
-			public const int vpi__bright_foreground_holo_light = 2131034120;
-			
-			// aapt resource value: 0x7f05000b
-			public const int vpi__bright_foreground_inverse_holo_dark = 2131034123;
-			
-			// aapt resource value: 0x7f05000c
-			public const int vpi__bright_foreground_inverse_holo_light = 2131034124;
-			
-			// aapt resource value: 0x7f050013
-			public const int vpi__dark_theme = 2131034131;
-			
-			// aapt resource value: 0x7f050014
-			public const int vpi__light_theme = 2131034132;
+			// aapt resource value: 0x7f07000f
+			public const int vpi__light_theme = 2131165199;
 			
 			static Color()
 			{
@@ -263,70 +246,55 @@ namespace AirMedia
 		{
 			
 			// aapt resource value: 0x7f020000
-			public const int custom_tab_indicator_focused = 2130837504;
+			public const int custom_tab_indicator = 2130837504;
 			
 			// aapt resource value: 0x7f020001
-			public const int custom_tab_indicator_selected = 2130837505;
+			public const int custom_tab_indicator_focused = 2130837505;
 			
 			// aapt resource value: 0x7f020002
-			public const int custom_tab_indicator_selected_focused = 2130837506;
+			public const int custom_tab_indicator_selected = 2130837506;
 			
 			// aapt resource value: 0x7f020003
-			public const int custom_tab_indicator_selected_pressed = 2130837507;
+			public const int custom_tab_indicator_selected_focused = 2130837507;
 			
 			// aapt resource value: 0x7f020004
-			public const int custom_tab_indicator_unselected = 2130837508;
+			public const int custom_tab_indicator_selected_pressed = 2130837508;
 			
 			// aapt resource value: 0x7f020005
-			public const int custom_tab_indicator_unselected_focused = 2130837509;
+			public const int custom_tab_indicator_unselected = 2130837509;
 			
 			// aapt resource value: 0x7f020006
-			public const int custom_tab_indicator_unselected_pressed = 2130837510;
+			public const int custom_tab_indicator_unselected_focused = 2130837510;
 			
 			// aapt resource value: 0x7f020007
-			public const int ic_floppy = 2130837511;
+			public const int custom_tab_indicator_unselected_pressed = 2130837511;
 			
 			// aapt resource value: 0x7f020008
-			public const int ic_list = 2130837512;
+			public const int icon = 2130837512;
 			
 			// aapt resource value: 0x7f020009
-			public const int ic_log_pause = 2130837513;
+			public const int monoandroidsplash = 2130837513;
 			
 			// aapt resource value: 0x7f02000a
-			public const int ic_log_start = 2130837514;
+			public const int vpi__tab_indicator = 2130837514;
 			
 			// aapt resource value: 0x7f02000b
-			public const int ic_share = 2130837515;
+			public const int vpi__tab_selected_focused_holo = 2130837515;
 			
 			// aapt resource value: 0x7f02000c
-			public const int Icon = 2130837516;
+			public const int vpi__tab_selected_holo = 2130837516;
 			
 			// aapt resource value: 0x7f02000d
-			public const int monoandroidsplash = 2130837517;
+			public const int vpi__tab_selected_pressed_holo = 2130837517;
 			
 			// aapt resource value: 0x7f02000e
-			public const int toggle_log_refresh_selector = 2130837518;
+			public const int vpi__tab_unselected_focused_holo = 2130837518;
 			
 			// aapt resource value: 0x7f02000f
-			public const int vpi__tab_indicator = 2130837519;
+			public const int vpi__tab_unselected_holo = 2130837519;
 			
 			// aapt resource value: 0x7f020010
-			public const int vpi__tab_selected_focused_holo = 2130837520;
-			
-			// aapt resource value: 0x7f020011
-			public const int vpi__tab_selected_holo = 2130837521;
-			
-			// aapt resource value: 0x7f020012
-			public const int vpi__tab_selected_pressed_holo = 2130837522;
-			
-			// aapt resource value: 0x7f020013
-			public const int vpi__tab_unselected_focused_holo = 2130837523;
-			
-			// aapt resource value: 0x7f020014
-			public const int vpi__tab_unselected_holo = 2130837524;
-			
-			// aapt resource value: 0x7f020015
-			public const int vpi__tab_unselected_pressed_holo = 2130837525;
+			public const int vpi__tab_unselected_pressed_holo = 2130837520;
 			
 			static Drawable()
 			{
@@ -341,89 +309,35 @@ namespace AirMedia
 		public partial class Id
 		{
 			
-			// aapt resource value: 0x7f07000a
-			public const int actionPanel = 2131165194;
+			// aapt resource value: 0x7f060008
+			public const int add_page = 2131099656;
 			
-			// aapt resource value: 0x7f070018
-			public const int buttonDetails = 2131165208;
+			// aapt resource value: 0x7f060000
+			public const int horizontal = 2131099648;
 			
-			// aapt resource value: 0x7f07000c
-			public const int buttonSave = 2131165196;
+			// aapt resource value: 0x7f060006
+			public const int indicator = 2131099654;
 			
-			// aapt resource value: 0x7f07000b
-			public const int buttonShare = 2131165195;
+			// aapt resource value: 0x7f060002
+			public const int none = 2131099650;
 			
-			// aapt resource value: 0x7f07000f
-			public const int contentView = 2131165199;
+			// aapt resource value: 0x7f060005
+			public const int pager = 2131099653;
 			
-			// aapt resource value: 0x7f070000
-			public const int horizontal = 2131165184;
+			// aapt resource value: 0x7f060007
+			public const int random = 2131099655;
 			
-			// aapt resource value: 0x7f070011
-			public const int indicatorError = 2131165201;
+			// aapt resource value: 0x7f060009
+			public const int remove_page = 2131099657;
 			
-			// aapt resource value: 0x7f070012
-			public const int indicatorErrorTitle = 2131165202;
+			// aapt resource value: 0x7f060003
+			public const int triangle = 2131099651;
 			
-			// aapt resource value: 0x7f070017
-			public const int indicatorEventTitle = 2131165207;
+			// aapt resource value: 0x7f060004
+			public const int underline = 2131099652;
 			
-			// aapt resource value: 0x7f070015
-			public const int indicatorInfo = 2131165205;
-			
-			// aapt resource value: 0x7f070016
-			public const int indicatorInfoTitle = 2131165206;
-			
-			// aapt resource value: 0x7f070019
-			public const int indicatorLeft = 2131165209;
-			
-			// aapt resource value: 0x7f07001a
-			public const int indicatorRight = 2131165210;
-			
-			// aapt resource value: 0x7f070013
-			public const int indicatorWarning = 2131165203;
-			
-			// aapt resource value: 0x7f070014
-			public const int indicatorWarningTitle = 2131165204;
-			
-			// aapt resource value: 0x7f07000d
-			public const int listDisplaySwitch = 2131165197;
-			
-			// aapt resource value: 0x7f070006
-			public const int logEntryCountIndicator = 2131165190;
-			
-			// aapt resource value: 0x7f07000e
-			public const int logLevelSpinner = 2131165198;
-			
-			// aapt resource value: 0x7f070010
-			public const int logPanelContainer = 2131165200;
-			
-			// aapt resource value: 0x7f070002
-			public const int none = 2131165186;
-			
-			// aapt resource value: 0x7f07001b
-			public const int progressBar = 2131165211;
-			
-			// aapt resource value: 0x7f070009
-			public const int progressPanel = 2131165193;
-			
-			// aapt resource value: 0x7f070008
-			public const int toggleLogRefreshButton = 2131165192;
-			
-			// aapt resource value: 0x7f070005
-			public const int topBar = 2131165189;
-			
-			// aapt resource value: 0x7f070007
-			public const int topBarProgressIndicator = 2131165191;
-			
-			// aapt resource value: 0x7f070003
-			public const int triangle = 2131165187;
-			
-			// aapt resource value: 0x7f070004
-			public const int underline = 2131165188;
-			
-			// aapt resource value: 0x7f070001
-			public const int vertical = 2131165185;
+			// aapt resource value: 0x7f060001
+			public const int vertical = 2131099649;
 			
 			static Id()
 			{
@@ -458,19 +372,25 @@ namespace AirMedia
 		{
 			
 			// aapt resource value: 0x7f030000
-			public const int Fragment_InAppLogging = 2130903040;
+			public const int simple_circles = 2130903040;
 			
 			// aapt resource value: 0x7f030001
-			public const int View_FragmentContainer = 2130903041;
+			public const int simple_circles_vertical = 2130903041;
 			
 			// aapt resource value: 0x7f030002
-			public const int View_InAppLogPanel = 2130903042;
+			public const int simple_tabs = 2130903042;
 			
 			// aapt resource value: 0x7f030003
-			public const int View_LogEntry = 2130903043;
+			public const int simple_titles = 2130903043;
 			
 			// aapt resource value: 0x7f030004
-			public const int View_Progress_Panel = 2130903044;
+			public const int themed_circles = 2130903044;
+			
+			// aapt resource value: 0x7f030005
+			public const int themed_titles = 2130903045;
+			
+			// aapt resource value: 0x7f030006
+			public const int vpi__tab = 2130903046;
 			
 			static Layout()
 			{
@@ -482,56 +402,30 @@ namespace AirMedia
 			}
 		}
 		
+		public partial class Menu
+		{
+			
+			// aapt resource value: 0x7f0b0000
+			public const int menu = 2131427328;
+			
+			static Menu()
+			{
+				global::Android.Runtime.ResourceIdManager.UpdateIdValues();
+			}
+			
+			private Menu()
+			{
+			}
+		}
+		
 		public partial class String
 		{
 			
 			// aapt resource value: 0x7f040001
-			public const int ApplicationName = 2130968577;
+			public const int app_name = 2130968577;
 			
 			// aapt resource value: 0x7f040000
-			public const int Hello = 2130968576;
-			
-			// aapt resource value: 0x7f040009
-			public const int dialog_log_details_accept_text = 2130968585;
-			
-			// aapt resource value: 0x7f040008
-			public const int dialog_log_details_title = 2130968584;
-			
-			// aapt resource value: 0x7f04000d
-			public const int dialog_save_file_title = 2130968589;
-			
-			// aapt resource value: 0x7f04000f
-			public const int dialog_title_send_log_via = 2130968591;
-			
-			// aapt resource value: 0x7f04000b
-			public const int error_cant_create_log_file = 2130968587;
-			
-			// aapt resource value: 0x7f04000a
-			public const int error_cant_save_log_file = 2130968586;
-			
-			// aapt resource value: 0x7f04000e
-			public const int error_log_dir_not_available = 2130968590;
-			
-			// aapt resource value: 0x7f04000c
-			public const int message_log_file_saved = 2130968588;
-			
-			// aapt resource value: 0x7f040002
-			public const int message_progress = 2130968578;
-			
-			// aapt resource value: 0x7f040003
-			public const int title_list_empty = 2130968579;
-			
-			// aapt resource value: 0x7f040005
-			public const int title_log_expand_toggle = 2130968581;
-			
-			// aapt resource value: 0x7f040004
-			public const int title_log_level = 2130968580;
-			
-			// aapt resource value: 0x7f040006
-			public const int title_save_log = 2130968582;
-			
-			// aapt resource value: 0x7f040007
-			public const int title_share_log = 2130968583;
+			public const int hello = 2130968576;
 			
 			static String()
 			{
@@ -546,56 +440,44 @@ namespace AirMedia
 		public partial class Style
 		{
 			
-			// aapt resource value: 0x7f060008
-			public const int AppBaseTheme = 2131099656;
+			// aapt resource value: 0x7f050002
+			public const int CustomCirclePageIndicator = 2131034114;
 			
-			// aapt resource value: 0x7f060009
-			public const int AppTheme = 2131099657;
+			// aapt resource value: 0x7f050003
+			public const int CustomTabPageIndicator = 2131034115;
 			
-			// aapt resource value: 0x7f060000
-			public const int AppTheme_Text = 2131099648;
+			// aapt resource value: 0x7f050004
+			public const int CustomTabPageIndicator_Text = 2131034116;
 			
-			// aapt resource value: 0x7f060004
-			public const int CustomCirclePageIndicator = 2131099652;
+			// aapt resource value: 0x7f050001
+			public const int CustomTitlePageIndicator = 2131034113;
 			
-			// aapt resource value: 0x7f060005
-			public const int CustomTabPageIndicator = 2131099653;
+			// aapt resource value: 0x7f050005
+			public const int Mono_Android_Theme_Splash = 2131034117;
 			
-			// aapt resource value: 0x7f060006
-			public const int CustomTabPageIndicator_Text = 2131099654;
+			// aapt resource value: 0x7f050000
+			public const int StyledIndicators = 2131034112;
 			
-			// aapt resource value: 0x7f060003
-			public const int CustomTitlePageIndicator = 2131099651;
+			// aapt resource value: 0x7f05000c
+			public const int TextAppearance_TabPageIndicator = 2131034124;
 			
-			// aapt resource value: 0x7f060001
-			public const int LogText = 2131099649;
+			// aapt resource value: 0x7f050006
+			public const int Theme_PageIndicatorDefaults = 2131034118;
 			
-			// aapt resource value: 0x7f060007
-			public const int Mono_Android_Theme_Splash = 2131099655;
+			// aapt resource value: 0x7f050007
+			public const int Widget = 2131034119;
 			
-			// aapt resource value: 0x7f060002
-			public const int StyledIndicators = 2131099650;
+			// aapt resource value: 0x7f050008
+			public const int Widget_CirclePageIndicator = 2131034120;
 			
-			// aapt resource value: 0x7f060010
-			public const int TextAppearance_TabPageIndicator = 2131099664;
+			// aapt resource value: 0x7f05000a
+			public const int Widget_TabPageIndicator = 2131034122;
 			
-			// aapt resource value: 0x7f06000a
-			public const int Theme_PageIndicatorDefaults = 2131099658;
+			// aapt resource value: 0x7f05000b
+			public const int Widget_TabPageIndicator_Text = 2131034123;
 			
-			// aapt resource value: 0x7f06000b
-			public const int Widget = 2131099659;
-			
-			// aapt resource value: 0x7f06000c
-			public const int Widget_CirclePageIndicator = 2131099660;
-			
-			// aapt resource value: 0x7f06000e
-			public const int Widget_TabPageIndicator = 2131099662;
-			
-			// aapt resource value: 0x7f06000f
-			public const int Widget_TabPageIndicator_Text = 2131099663;
-			
-			// aapt resource value: 0x7f06000d
-			public const int Widget_TitlePageIndicator = 2131099661;
+			// aapt resource value: 0x7f050009
+			public const int Widget_TitlePageIndicator = 2131034121;
 			
 			static Style()
 			{
