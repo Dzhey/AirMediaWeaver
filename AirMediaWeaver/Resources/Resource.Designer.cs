@@ -353,6 +353,9 @@ namespace AirMedia
 			// aapt resource value: 0x7f07000d
 			public const int actionPanel = 2131165197;
 			
+			// aapt resource value: 0x7f07001d
+			public const int artist = 2131165213;
+			
 			// aapt resource value: 0x7f070019
 			public const int buttonDetails = 2131165209;
 			
@@ -473,19 +476,25 @@ namespace AirMedia
 			public const int Activity_MainView = 2130903040;
 			
 			// aapt resource value: 0x7f030001
-			public const int Fragment_InAppLogging = 2130903041;
+			public const int Fragment_AudioLibrary = 2130903041;
 			
 			// aapt resource value: 0x7f030002
-			public const int View_FragmentContainer = 2130903042;
+			public const int Fragment_InAppLogging = 2130903042;
 			
 			// aapt resource value: 0x7f030003
-			public const int View_InAppLogPanel = 2130903043;
+			public const int View_FragmentContainer = 2130903043;
 			
 			// aapt resource value: 0x7f030004
-			public const int View_LogEntry = 2130903044;
+			public const int View_InAppLogPanel = 2130903044;
 			
 			// aapt resource value: 0x7f030005
-			public const int View_Progress_Panel = 2130903045;
+			public const int View_LogEntry = 2130903045;
+			
+			// aapt resource value: 0x7f030006
+			public const int View_Progress_Panel = 2130903046;
+			
+			// aapt resource value: 0x7f030007
+			public const int View_TrackItem = 2130903047;
 			
 			static Layout()
 			{
@@ -506,29 +515,32 @@ namespace AirMedia
 			// aapt resource value: 0x7f040000
 			public const int Hello = 2130968576;
 			
-			// aapt resource value: 0x7f040009
-			public const int dialog_log_details_accept_text = 2130968585;
-			
-			// aapt resource value: 0x7f040008
-			public const int dialog_log_details_title = 2130968584;
-			
-			// aapt resource value: 0x7f04000d
-			public const int dialog_save_file_title = 2130968589;
-			
-			// aapt resource value: 0x7f04000f
-			public const int dialog_title_send_log_via = 2130968591;
+			// aapt resource value: 0x7f04000c
+			public const int dialog_log_details_accept_text = 2130968588;
 			
 			// aapt resource value: 0x7f04000b
-			public const int error_cant_create_log_file = 2130968587;
+			public const int dialog_log_details_title = 2130968587;
 			
-			// aapt resource value: 0x7f04000a
-			public const int error_cant_save_log_file = 2130968586;
+			// aapt resource value: 0x7f040010
+			public const int dialog_save_file_title = 2130968592;
+			
+			// aapt resource value: 0x7f040012
+			public const int dialog_title_send_log_via = 2130968594;
 			
 			// aapt resource value: 0x7f04000e
-			public const int error_log_dir_not_available = 2130968590;
+			public const int error_cant_create_log_file = 2130968590;
 			
-			// aapt resource value: 0x7f04000c
-			public const int message_log_file_saved = 2130968588;
+			// aapt resource value: 0x7f04000d
+			public const int error_cant_save_log_file = 2130968589;
+			
+			// aapt resource value: 0x7f040011
+			public const int error_log_dir_not_available = 2130968593;
+			
+			// aapt resource value: 0x7f040006
+			public const int message_audio_library_empty = 2130968582;
+			
+			// aapt resource value: 0x7f04000f
+			public const int message_log_file_saved = 2130968591;
 			
 			// aapt resource value: 0x7f040002
 			public const int message_progress = 2130968578;
@@ -536,17 +548,23 @@ namespace AirMedia
 			// aapt resource value: 0x7f040003
 			public const int title_list_empty = 2130968579;
 			
-			// aapt resource value: 0x7f040005
-			public const int title_log_expand_toggle = 2130968581;
-			
-			// aapt resource value: 0x7f040004
-			public const int title_log_level = 2130968580;
-			
-			// aapt resource value: 0x7f040006
-			public const int title_save_log = 2130968582;
+			// aapt resource value: 0x7f040008
+			public const int title_log_expand_toggle = 2130968584;
 			
 			// aapt resource value: 0x7f040007
-			public const int title_share_log = 2130968583;
+			public const int title_log_level = 2130968583;
+			
+			// aapt resource value: 0x7f040009
+			public const int title_save_log = 2130968585;
+			
+			// aapt resource value: 0x7f04000a
+			public const int title_share_log = 2130968586;
+			
+			// aapt resource value: 0x7f040004
+			public const int title_unknown_artist = 2130968580;
+			
+			// aapt resource value: 0x7f040005
+			public const int title_unknown_track = 2130968581;
 			
 			static String()
 			{
@@ -561,56 +579,59 @@ namespace AirMedia
 		public partial class Style
 		{
 			
-			// aapt resource value: 0x7f060008
-			public const int AppBaseTheme = 2131099656;
-			
 			// aapt resource value: 0x7f060009
-			public const int AppTheme = 2131099657;
+			public const int AppBaseTheme = 2131099657;
+			
+			// aapt resource value: 0x7f06000a
+			public const int AppTheme = 2131099658;
 			
 			// aapt resource value: 0x7f060000
 			public const int AppTheme_Text = 2131099648;
 			
-			// aapt resource value: 0x7f060004
-			public const int CustomCirclePageIndicator = 2131099652;
+			// aapt resource value: 0x7f060001
+			public const int AppTheme_Text_Small = 2131099649;
 			
 			// aapt resource value: 0x7f060005
-			public const int CustomTabPageIndicator = 2131099653;
+			public const int CustomCirclePageIndicator = 2131099653;
 			
 			// aapt resource value: 0x7f060006
-			public const int CustomTabPageIndicator_Text = 2131099654;
-			
-			// aapt resource value: 0x7f060003
-			public const int CustomTitlePageIndicator = 2131099651;
-			
-			// aapt resource value: 0x7f060001
-			public const int LogText = 2131099649;
+			public const int CustomTabPageIndicator = 2131099654;
 			
 			// aapt resource value: 0x7f060007
-			public const int Mono_Android_Theme_Splash = 2131099655;
+			public const int CustomTabPageIndicator_Text = 2131099655;
+			
+			// aapt resource value: 0x7f060004
+			public const int CustomTitlePageIndicator = 2131099652;
 			
 			// aapt resource value: 0x7f060002
-			public const int StyledIndicators = 2131099650;
+			public const int LogText = 2131099650;
 			
-			// aapt resource value: 0x7f060010
-			public const int TextAppearance_TabPageIndicator = 2131099664;
+			// aapt resource value: 0x7f060008
+			public const int Mono_Android_Theme_Splash = 2131099656;
 			
-			// aapt resource value: 0x7f06000a
-			public const int Theme_PageIndicatorDefaults = 2131099658;
+			// aapt resource value: 0x7f060003
+			public const int StyledIndicators = 2131099651;
+			
+			// aapt resource value: 0x7f060011
+			public const int TextAppearance_TabPageIndicator = 2131099665;
 			
 			// aapt resource value: 0x7f06000b
-			public const int Widget = 2131099659;
+			public const int Theme_PageIndicatorDefaults = 2131099659;
 			
 			// aapt resource value: 0x7f06000c
-			public const int Widget_CirclePageIndicator = 2131099660;
-			
-			// aapt resource value: 0x7f06000e
-			public const int Widget_TabPageIndicator = 2131099662;
-			
-			// aapt resource value: 0x7f06000f
-			public const int Widget_TabPageIndicator_Text = 2131099663;
+			public const int Widget = 2131099660;
 			
 			// aapt resource value: 0x7f06000d
-			public const int Widget_TitlePageIndicator = 2131099661;
+			public const int Widget_CirclePageIndicator = 2131099661;
+			
+			// aapt resource value: 0x7f06000f
+			public const int Widget_TabPageIndicator = 2131099663;
+			
+			// aapt resource value: 0x7f060010
+			public const int Widget_TabPageIndicator_Text = 2131099664;
+			
+			// aapt resource value: 0x7f06000e
+			public const int Widget_TitlePageIndicator = 2131099662;
 			
 			static Style()
 			{

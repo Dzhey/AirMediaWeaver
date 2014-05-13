@@ -4,6 +4,10 @@
     <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
     <item name="android:textColor">@color/light_theme_text_color</item>
   </style>
+  
+  <style name="AppTheme.Text.Small" parent="AppTheme.Text">
+    <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
+  </style>
 
   <style name="LogText">
     <item name="android:textSize">14sp</item>
