@@ -62,7 +62,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core\Requests\Impl\InitDatabaseRequest.cs" />
+    <Compile Include="Platform\Controller\Requests\ResolveMetadataRequest.cs" />
+    <Compile Include="Platform\Data\TrackMetadata.cs" />
+    <Compile Include="Platform\Player\IMediaPlayerCallbacks.cs" />
+    <Compile Include="Platform\Player\MediaPlayerBinder.cs" />
     <Compile Include="Platform\Player\MediaPlayerService.cs" />
+    <Compile Include="Platform\Player\MetadataResolver.cs" />
+    <Compile Include="Platform\Player\PlaybackStatus.cs" />
     <Compile Include="Platform\Player\PlayerControl.cs" />
     <Compile Include="Platform\UI\Library\AudioLibraryFragment.cs" />
     <Compile Include="Platform\UI\Library\TrackListAdapter.cs" />
@@ -124,6 +130,8 @@
     <Compile Include="Platform\UI\Base\BaseDialogFragment.cs" />
     <Compile Include="Platform\UI\Base\ConfirmDialogFragment.cs" />
     <Compile Include="Platform\UI\Base\ProgressDialogFragment.cs" />
+    <Compile Include="Platform\UI\Player\MediaServiceConnection.cs" />
+    <Compile Include="Platform\UI\Player\PlayerFacadeFragment.cs" />
     <Compile Include="Platform\UI\Util\Util.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -147,6 +155,9 @@
       <SubType>AndroidResource</SubType>
     </AndroidResource>
     <AndroidResource Include="Resources\Layout\View_TrackItem.axml" />
+    <AndroidResource Include="Resources\Layout\Fragment_PlayerFacade.axml">
+      <SubType>AndroidResource</SubType>
+    </AndroidResource>
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\Values\Strings.xml" />
@@ -212,6 +223,17 @@
     <AndroidResource Include="Resources\Color\vpi__light_theme.xml" />
     <AndroidResource Include="Resources\Drawable\toggle_log_button_start.xml" />
     <AndroidResource Include="Resources\Drawable\toggle_log_button_pause.xml" />
+    <AndroidResource Include="Resources\Drawable-hdpi\ic_player_ff.png" />
+    <AndroidResource Include="Resources\Drawable-hdpi\ic_player_rew.png" />
+    <AndroidResource Include="Resources\Drawable-hdpi\ic_player_pause.png" />
+    <AndroidResource Include="Resources\Drawable-hdpi\ic_player_play.png" />
+    <AndroidResource Include="Resources\Drawable\button_player_play_selector.xml" />
+    <AndroidResource Include="Resources\Drawable-hdpi\ic_player_rew_colored.png" />
+    <AndroidResource Include="Resources\Drawable-hdpi\ic_player_ff_colored.png" />
+    <AndroidResource Include="Resources\Drawable-hdpi\ic_player_pause_colored.png" />
+    <AndroidResource Include="Resources\Drawable-hdpi\ic_player_play_colored.png" />
+    <AndroidResource Include="Resources\Drawable\button_player_ff_selector.xml" />
+    <AndroidResource Include="Resources\Drawable\button_player_rew_selector.xml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\libs\ViewPagerIndicator\ViewPagerIndicator.csproj">

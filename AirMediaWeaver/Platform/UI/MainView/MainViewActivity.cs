@@ -2,6 +2,7 @@
 using AirMedia.Core.Log;
 using AirMedia.Platform.UI.Base;
 using AirMedia.Platform.UI.Library;
+using AirMedia.Platform.UI.Player;
 using Android.App;
 using Android.OS;
 
@@ -12,6 +13,7 @@ namespace AirMedia.Platform.UI.MainView
     {
         private const string ExtraFragmentStateBundle = "fragment_state_bundle";
         private const string ContentFragmentTag = "content_fragment_tag";
+        private const string PlayerFacadeFragmentTag = "player_facade_fragment_tag";
 
         private Bundle _fragmentStateBundle;
 
@@ -27,6 +29,11 @@ namespace AirMedia.Platform.UI.MainView
             SetContentView(Resource.Layout.Activity_MainView);
 
             SetContentFragment(typeof(AudioLibraryFragment));
+
+            var playerFacadeFragment = new PlayerFacadeFragment();
+            FragmentManager.BeginTransaction()
+                           .Add(Resource.Id.playerView, playerFacadeFragment, PlayerFacadeFragmentTag)
+                           .Commit();
         }
 
         protected override void OnSaveInstanceState(Bundle outState)

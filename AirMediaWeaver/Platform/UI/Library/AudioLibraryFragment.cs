@@ -91,20 +91,9 @@ namespace AirMedia.Platform.UI.Library
         {
             long trackId = _adapter.GetTrackId(args.View);
 
-            var trackUri = ContentUris.WithAppendedId(MediaStore.Audio.Media.ExternalContentUri, trackId);
-            var projection = new[] { MediaStore.Audio.Media.InterfaceConsts.Data };
-            
-            using (var cursor = Activity.ContentResolver.Query(trackUri, projection, null, null, null))
+            if (!PlayerControl.Play(trackId))
             {
-                if (cursor.MoveToFirst())
-                {
-                    var resourceUri = Uri.Parse(cursor.GetString(0));
-                    PlayerControl.Play(resourceUri);
-                }
-                else
-                {
-                    ShowMessage(Resource.String.error_unable_to_retrieve_track);
-                }
+                ShowMessage(Resource.String.error_unable_to_retrieve_track);
             }
         }
 

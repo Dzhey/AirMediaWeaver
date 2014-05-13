@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="6dp"
+    android:paddingRight="6dp"
+    android:paddingTop="6dp"
+    android:paddingBottom="10dp">
+    <SeekBar
+        android:id="@+id/seekBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="4dp"
+        android:max="100" />
+    <LinearLayout
+        android:id="@+id/playerControlsPanel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/seekBar"
+        android:layout_marginTop="4dp"
+        android:orientation="horizontal"
+        android:gravity="center">
+        <ToggleButton
+            android:id="@+id/buttonPlayerRewind"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:textOn=""
+            android:textOff=""
+            android:background="@null" />
+        <ToggleButton
+            android:id="@+id/buttonPlayerPlay"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:textOn=""
+            android:textOff=""
+            android:background="@null" />
+        <ToggleButton
+            android:id="@+id/buttonPlayerFF"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:textOn=""
+            android:textOff=""
+            android:background="@null" />
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/trackInfoPanel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/playerControlsPanel"
+        android:orientation="vertical"
+        android:gravity="left|top">
+        <TextView
+            android:id="@+id/trackTitle"
+            style="@style/AppTheme.Text.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:text="@android:string/untitled" />
+        <TextView
+            android:id="@+id/trackArtist"
+            style="@style/AppTheme.Text.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:text="@android:string/untitled" />
+    </LinearLayout>
+</RelativeLayout>

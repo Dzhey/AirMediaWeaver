@@ -266,76 +266,109 @@ namespace AirMedia
 		{
 			
 			// aapt resource value: 0x7f020000
-			public const int custom_tab_indicator_focused = 2130837504;
+			public const int button_player_ff_selector = 2130837504;
 			
 			// aapt resource value: 0x7f020001
-			public const int custom_tab_indicator_selected = 2130837505;
+			public const int button_player_play_selector = 2130837505;
 			
 			// aapt resource value: 0x7f020002
-			public const int custom_tab_indicator_selected_focused = 2130837506;
+			public const int button_player_rew_selector = 2130837506;
 			
 			// aapt resource value: 0x7f020003
-			public const int custom_tab_indicator_selected_pressed = 2130837507;
+			public const int custom_tab_indicator_focused = 2130837507;
 			
 			// aapt resource value: 0x7f020004
-			public const int custom_tab_indicator_unselected = 2130837508;
+			public const int custom_tab_indicator_selected = 2130837508;
 			
 			// aapt resource value: 0x7f020005
-			public const int custom_tab_indicator_unselected_focused = 2130837509;
+			public const int custom_tab_indicator_selected_focused = 2130837509;
 			
 			// aapt resource value: 0x7f020006
-			public const int custom_tab_indicator_unselected_pressed = 2130837510;
+			public const int custom_tab_indicator_selected_pressed = 2130837510;
 			
 			// aapt resource value: 0x7f020007
-			public const int ic_floppy = 2130837511;
+			public const int custom_tab_indicator_unselected = 2130837511;
 			
 			// aapt resource value: 0x7f020008
-			public const int ic_list = 2130837512;
+			public const int custom_tab_indicator_unselected_focused = 2130837512;
 			
 			// aapt resource value: 0x7f020009
-			public const int ic_log_pause = 2130837513;
+			public const int custom_tab_indicator_unselected_pressed = 2130837513;
 			
 			// aapt resource value: 0x7f02000a
-			public const int ic_log_start = 2130837514;
+			public const int ic_floppy = 2130837514;
 			
 			// aapt resource value: 0x7f02000b
-			public const int ic_share = 2130837515;
+			public const int ic_list = 2130837515;
 			
 			// aapt resource value: 0x7f02000c
-			public const int Icon = 2130837516;
+			public const int ic_log_pause = 2130837516;
 			
 			// aapt resource value: 0x7f02000d
-			public const int monoandroidsplash = 2130837517;
+			public const int ic_log_start = 2130837517;
 			
 			// aapt resource value: 0x7f02000e
-			public const int toggle_log_button_pause = 2130837518;
+			public const int ic_player_ff = 2130837518;
 			
 			// aapt resource value: 0x7f02000f
-			public const int toggle_log_button_start = 2130837519;
+			public const int ic_player_ff_colored = 2130837519;
 			
 			// aapt resource value: 0x7f020010
-			public const int toggle_log_refresh_selector = 2130837520;
+			public const int ic_player_pause = 2130837520;
 			
 			// aapt resource value: 0x7f020011
-			public const int vpi__tab_indicator = 2130837521;
+			public const int ic_player_pause_colored = 2130837521;
 			
 			// aapt resource value: 0x7f020012
-			public const int vpi__tab_selected_focused_holo = 2130837522;
+			public const int ic_player_play = 2130837522;
 			
 			// aapt resource value: 0x7f020013
-			public const int vpi__tab_selected_holo = 2130837523;
+			public const int ic_player_play_colored = 2130837523;
 			
 			// aapt resource value: 0x7f020014
-			public const int vpi__tab_selected_pressed_holo = 2130837524;
+			public const int ic_player_rew = 2130837524;
 			
 			// aapt resource value: 0x7f020015
-			public const int vpi__tab_unselected_focused_holo = 2130837525;
+			public const int ic_player_rew_colored = 2130837525;
 			
 			// aapt resource value: 0x7f020016
-			public const int vpi__tab_unselected_holo = 2130837526;
+			public const int ic_share = 2130837526;
 			
 			// aapt resource value: 0x7f020017
-			public const int vpi__tab_unselected_pressed_holo = 2130837527;
+			public const int Icon = 2130837527;
+			
+			// aapt resource value: 0x7f020018
+			public const int monoandroidsplash = 2130837528;
+			
+			// aapt resource value: 0x7f020019
+			public const int toggle_log_button_pause = 2130837529;
+			
+			// aapt resource value: 0x7f02001a
+			public const int toggle_log_button_start = 2130837530;
+			
+			// aapt resource value: 0x7f02001b
+			public const int toggle_log_refresh_selector = 2130837531;
+			
+			// aapt resource value: 0x7f02001c
+			public const int vpi__tab_indicator = 2130837532;
+			
+			// aapt resource value: 0x7f02001d
+			public const int vpi__tab_selected_focused_holo = 2130837533;
+			
+			// aapt resource value: 0x7f02001e
+			public const int vpi__tab_selected_holo = 2130837534;
+			
+			// aapt resource value: 0x7f02001f
+			public const int vpi__tab_selected_pressed_holo = 2130837535;
+			
+			// aapt resource value: 0x7f020020
+			public const int vpi__tab_unselected_focused_holo = 2130837536;
+			
+			// aapt resource value: 0x7f020021
+			public const int vpi__tab_unselected_holo = 2130837537;
+			
+			// aapt resource value: 0x7f020022
+			public const int vpi__tab_unselected_pressed_holo = 2130837538;
 			
 			static Drawable()
 			{
@@ -353,11 +386,20 @@ namespace AirMedia
 			// aapt resource value: 0x7f07000d
 			public const int actionPanel = 2131165197;
 			
-			// aapt resource value: 0x7f07001d
-			public const int artist = 2131165213;
+			// aapt resource value: 0x7f070025
+			public const int artist = 2131165221;
 			
-			// aapt resource value: 0x7f070019
-			public const int buttonDetails = 2131165209;
+			// aapt resource value: 0x7f070021
+			public const int buttonDetails = 2131165217;
+			
+			// aapt resource value: 0x7f070016
+			public const int buttonPlayerFF = 2131165206;
+			
+			// aapt resource value: 0x7f070015
+			public const int buttonPlayerPlay = 2131165205;
+			
+			// aapt resource value: 0x7f070014
+			public const int buttonPlayerRewind = 2131165204;
 			
 			// aapt resource value: 0x7f07000f
 			public const int buttonSave = 2131165199;
@@ -371,32 +413,32 @@ namespace AirMedia
 			// aapt resource value: 0x7f070000
 			public const int horizontal = 2131165184;
 			
-			// aapt resource value: 0x7f070012
-			public const int indicatorError = 2131165202;
-			
-			// aapt resource value: 0x7f070013
-			public const int indicatorErrorTitle = 2131165203;
-			
-			// aapt resource value: 0x7f070018
-			public const int indicatorEventTitle = 2131165208;
-			
-			// aapt resource value: 0x7f070016
-			public const int indicatorInfo = 2131165206;
-			
-			// aapt resource value: 0x7f070017
-			public const int indicatorInfoTitle = 2131165207;
-			
 			// aapt resource value: 0x7f07001a
-			public const int indicatorLeft = 2131165210;
+			public const int indicatorError = 2131165210;
 			
 			// aapt resource value: 0x7f07001b
-			public const int indicatorRight = 2131165211;
+			public const int indicatorErrorTitle = 2131165211;
 			
-			// aapt resource value: 0x7f070014
-			public const int indicatorWarning = 2131165204;
+			// aapt resource value: 0x7f070020
+			public const int indicatorEventTitle = 2131165216;
 			
-			// aapt resource value: 0x7f070015
-			public const int indicatorWarningTitle = 2131165205;
+			// aapt resource value: 0x7f07001e
+			public const int indicatorInfo = 2131165214;
+			
+			// aapt resource value: 0x7f07001f
+			public const int indicatorInfoTitle = 2131165215;
+			
+			// aapt resource value: 0x7f070022
+			public const int indicatorLeft = 2131165218;
+			
+			// aapt resource value: 0x7f070023
+			public const int indicatorRight = 2131165219;
+			
+			// aapt resource value: 0x7f07001c
+			public const int indicatorWarning = 2131165212;
+			
+			// aapt resource value: 0x7f07001d
+			public const int indicatorWarningTitle = 2131165213;
 			
 			// aapt resource value: 0x7f070010
 			public const int listDisplaySwitch = 2131165200;
@@ -413,14 +455,20 @@ namespace AirMedia
 			// aapt resource value: 0x7f070002
 			public const int none = 2131165186;
 			
+			// aapt resource value: 0x7f070013
+			public const int playerControlsPanel = 2131165203;
+			
 			// aapt resource value: 0x7f070006
 			public const int playerView = 2131165190;
 			
-			// aapt resource value: 0x7f07001c
-			public const int progressBar = 2131165212;
+			// aapt resource value: 0x7f070024
+			public const int progressBar = 2131165220;
 			
 			// aapt resource value: 0x7f07000c
 			public const int progressPanel = 2131165196;
+			
+			// aapt resource value: 0x7f070012
+			public const int seekBar = 2131165202;
 			
 			// aapt resource value: 0x7f07000b
 			public const int toggleLogRefreshButton = 2131165195;
@@ -430,6 +478,15 @@ namespace AirMedia
 			
 			// aapt resource value: 0x7f07000a
 			public const int topBarProgressIndicator = 2131165194;
+			
+			// aapt resource value: 0x7f070019
+			public const int trackArtist = 2131165209;
+			
+			// aapt resource value: 0x7f070017
+			public const int trackInfoPanel = 2131165207;
+			
+			// aapt resource value: 0x7f070018
+			public const int trackTitle = 2131165208;
 			
 			// aapt resource value: 0x7f070003
 			public const int triangle = 2131165187;
@@ -482,19 +539,22 @@ namespace AirMedia
 			public const int Fragment_InAppLogging = 2130903042;
 			
 			// aapt resource value: 0x7f030003
-			public const int View_FragmentContainer = 2130903043;
+			public const int Fragment_PlayerFacade = 2130903043;
 			
 			// aapt resource value: 0x7f030004
-			public const int View_InAppLogPanel = 2130903044;
+			public const int View_FragmentContainer = 2130903044;
 			
 			// aapt resource value: 0x7f030005
-			public const int View_LogEntry = 2130903045;
+			public const int View_InAppLogPanel = 2130903045;
 			
 			// aapt resource value: 0x7f030006
-			public const int View_Progress_Panel = 2130903046;
+			public const int View_LogEntry = 2130903046;
 			
 			// aapt resource value: 0x7f030007
-			public const int View_TrackItem = 2130903047;
+			public const int View_Progress_Panel = 2130903047;
+			
+			// aapt resource value: 0x7f030008
+			public const int View_TrackItem = 2130903048;
 			
 			static Layout()
 			{

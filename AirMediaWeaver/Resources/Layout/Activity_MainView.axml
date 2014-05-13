@@ -11,8 +11,7 @@
     <FrameLayout
         android:id="@+id/playerView"
         android:layout_width="match_parent"
-        android:layout_height="96dp"
-        android:background="#888888"
+        android:layout_height="wrap_content"
         android:layout_above="@+id/logPanelContainer" />
     <FrameLayout
         android:id="@+id/logPanelContainer"
