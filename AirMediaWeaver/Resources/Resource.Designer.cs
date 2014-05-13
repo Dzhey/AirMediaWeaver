@@ -515,32 +515,35 @@ namespace AirMedia
 			// aapt resource value: 0x7f040000
 			public const int Hello = 2130968576;
 			
-			// aapt resource value: 0x7f04000c
-			public const int dialog_log_details_accept_text = 2130968588;
-			
-			// aapt resource value: 0x7f04000b
-			public const int dialog_log_details_title = 2130968587;
-			
-			// aapt resource value: 0x7f040010
-			public const int dialog_save_file_title = 2130968592;
-			
-			// aapt resource value: 0x7f040012
-			public const int dialog_title_send_log_via = 2130968594;
-			
-			// aapt resource value: 0x7f04000e
-			public const int error_cant_create_log_file = 2130968590;
-			
 			// aapt resource value: 0x7f04000d
-			public const int error_cant_save_log_file = 2130968589;
+			public const int dialog_log_details_accept_text = 2130968589;
+			
+			// aapt resource value: 0x7f04000c
+			public const int dialog_log_details_title = 2130968588;
 			
 			// aapt resource value: 0x7f040011
-			public const int error_log_dir_not_available = 2130968593;
+			public const int dialog_save_file_title = 2130968593;
+			
+			// aapt resource value: 0x7f040013
+			public const int dialog_title_send_log_via = 2130968595;
+			
+			// aapt resource value: 0x7f04000f
+			public const int error_cant_create_log_file = 2130968591;
+			
+			// aapt resource value: 0x7f04000e
+			public const int error_cant_save_log_file = 2130968590;
+			
+			// aapt resource value: 0x7f040012
+			public const int error_log_dir_not_available = 2130968594;
+			
+			// aapt resource value: 0x7f040007
+			public const int error_unable_to_retrieve_track = 2130968583;
 			
 			// aapt resource value: 0x7f040006
 			public const int message_audio_library_empty = 2130968582;
 			
-			// aapt resource value: 0x7f04000f
-			public const int message_log_file_saved = 2130968591;
+			// aapt resource value: 0x7f040010
+			public const int message_log_file_saved = 2130968592;
 			
 			// aapt resource value: 0x7f040002
 			public const int message_progress = 2130968578;
@@ -548,17 +551,17 @@ namespace AirMedia
 			// aapt resource value: 0x7f040003
 			public const int title_list_empty = 2130968579;
 			
-			// aapt resource value: 0x7f040008
-			public const int title_log_expand_toggle = 2130968584;
-			
-			// aapt resource value: 0x7f040007
-			public const int title_log_level = 2130968583;
-			
 			// aapt resource value: 0x7f040009
-			public const int title_save_log = 2130968585;
+			public const int title_log_expand_toggle = 2130968585;
+			
+			// aapt resource value: 0x7f040008
+			public const int title_log_level = 2130968584;
 			
 			// aapt resource value: 0x7f04000a
-			public const int title_share_log = 2130968586;
+			public const int title_save_log = 2130968586;
+			
+			// aapt resource value: 0x7f04000b
+			public const int title_share_log = 2130968587;
 			
 			// aapt resource value: 0x7f040004
 			public const int title_unknown_artist = 2130968580;

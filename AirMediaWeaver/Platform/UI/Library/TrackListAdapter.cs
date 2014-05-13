@@ -10,6 +10,7 @@ namespace AirMedia.Platform.UI.Library
     {
         private class ViewHolder : Java.Lang.Object
         {
+            public long TrackId { get; set; }
             public TextView TitleView { get; set; }
             public TextView ArtistView { get; set; }
         }
@@ -19,9 +20,27 @@ namespace AirMedia.Platform.UI.Library
         {
         }
 
+        public long GetTrackId(View view)
+        {
+            var holder = (ViewHolder) view.Tag;
+
+            return holder.TrackId;
+        }
+
         public override void BindView(View view, Context context, ICursor cursor)
         {
             var holder = (ViewHolder) view.Tag;
+
+            int idColumn = cursor.GetColumnIndex(MediaStore.Audio.Media.InterfaceConsts.Id);
+            if (idColumn != -1)
+            {
+                holder.TrackId = cursor.GetLong(idColumn);
+            }
+            else
+            {
+                holder.TrackId = -1;
+            }
+
             int titleColumn = cursor.GetColumnIndex(MediaStore.Audio.Media.InterfaceConsts.Title);
             if (titleColumn != -1)
             {

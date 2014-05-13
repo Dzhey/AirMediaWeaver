@@ -62,6 +62,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core\Requests\Impl\InitDatabaseRequest.cs" />
+    <Compile Include="Platform\Player\MediaPlayerService.cs" />
+    <Compile Include="Platform\Player\PlayerControl.cs" />
     <Compile Include="Platform\UI\Library\AudioLibraryFragment.cs" />
     <Compile Include="Platform\UI\Library\TrackListAdapter.cs" />
     <Compile Include="Platform\UI\Library\TrackListLoader.cs" />

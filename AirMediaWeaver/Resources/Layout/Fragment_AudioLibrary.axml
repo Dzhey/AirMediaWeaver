@@ -6,7 +6,8 @@
         android:id="@android:id/list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentTop="true" />
+        android:layout_alignParentTop="true"
+        android:fastScrollEnabled="true" />
     <include
         android:id="@android:id/progress"
         layout="@layout/View_Progress_Panel"

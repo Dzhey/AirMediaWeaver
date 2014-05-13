@@ -49,7 +49,7 @@ namespace AirMedia.Platform.Controller
             _executingRequestIds = new Dictionary<string, ISet<int>>();
             _requestManager = App.WorkerRequestManager;
 
-            AmwLog.Verbose(LogTag, "TimeMasterService created");
+            AmwLog.Verbose(LogTag, "WorkerService created");
         }
 
         public override StartCommandResult OnStartCommand(Intent intent, StartCommandFlags flags, int startId)

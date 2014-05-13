@@ -1,9 +1,12 @@
 using AirMedia.Core.Log;
+using AirMedia.Platform.Player;
 using AirMedia.Platform.UI.Base;
 using Android.App;
 using Android.Content;
 using Android.Database;
+using Android.Net;
 using Android.OS;
+using Android.Provider;
 using Android.Views;
 using Android.Widget;
 using Java.Lang;
@@ -39,6 +42,20 @@ namespace AirMedia.Platform.UI.Library
             return view;
         }
 
+        public override void OnResume()
+        {
+            base.OnResume();
+
+            _listView.ItemClick += OnTrackItemClicked;
+        }
+
+        public override void OnPause()
+        {
+            _listView.ItemClick -= OnTrackItemClicked;
+
+            base.OnPause();
+        }
+
         public Loader OnCreateLoader(int id, Bundle args)
         {
             switch (id)
@@ -68,6 +85,27 @@ namespace AirMedia.Platform.UI.Library
             }
 
             UpdateProgressIndicators(false);
+        }
+
+        private void OnTrackItemClicked(object sender, AdapterView.ItemClickEventArgs args)
+        {
+            long trackId = _adapter.GetTrackId(args.View);
+
+            var trackUri = ContentUris.WithAppendedId(MediaStore.Audio.Media.ExternalContentUri, trackId);
+            var projection = new[] { MediaStore.Audio.Media.InterfaceConsts.Data };
+            
+            using (var cursor = Activity.ContentResolver.Query(trackUri, projection, null, null, null))
+            {
+                if (cursor.MoveToFirst())
+                {
+                    var resourceUri = Uri.Parse(cursor.GetString(0));
+                    PlayerControl.Play(resourceUri);
+                }
+                else
+                {
+                    ShowMessage(Resource.String.error_unable_to_retrieve_track);
+                }
+            }
         }
 
         private void UpdateProgressIndicators(bool isInProgress)
