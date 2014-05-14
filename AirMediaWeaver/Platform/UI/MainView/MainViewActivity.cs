@@ -3,8 +3,11 @@ using AirMedia.Core.Log;
 using AirMedia.Platform.UI.Base;
 using AirMedia.Platform.UI.Library;
 using AirMedia.Platform.UI.Player;
+using AirMedia.Platform.UI.Playlists;
 using Android.App;
 using Android.OS;
+using Android.Support.V4.Widget;
+using Android.Widget;
 
 namespace AirMedia.Platform.UI.MainView
 {
@@ -12,23 +15,59 @@ namespace AirMedia.Platform.UI.MainView
     public class MainViewActivity : AmwActivity
     {
         private const string ExtraFragmentStateBundle = "fragment_state_bundle";
+        private const string ExtraDisplayFragment = "display_fragment";
         private const string ContentFragmentTag = "content_fragment_tag";
         private const string PlayerFacadeFragmentTag = "player_facade_fragment_tag";
 
+        private static readonly DrawerNavigationItem[] NavigationItems;
+
         private Bundle _fragmentStateBundle;
+        private DrawerListAdapter _drawerListAdapter;
+        private DrawerLayout _drawerLayout;
+        private ListView _drawerList;
+
+        static MainViewActivity()
+        {
+            NavigationItems = new[]
+                {
+                    new DrawerNavigationItem
+                        {
+                            StringResourceId = Resource.String.title_navigation_item_media_library
+                        },
+                    new DrawerNavigationItem
+                        {
+                            StringResourceId = Resource.String.title_navigation_item_playlists
+                        }
+                };
+        }
 
         protected override void OnCreate(Bundle bundle)
         {
             base.OnCreate(bundle);
-
-            if (bundle != null && bundle.ContainsKey(ExtraFragmentStateBundle))
-            {
-                _fragmentStateBundle = bundle.GetBundle(ExtraFragmentStateBundle);
-            }
             
             SetContentView(Resource.Layout.Activity_MainView);
 
-            SetContentFragment(typeof(AudioLibraryFragment));
+            _drawerListAdapter = new DrawerListAdapter();
+            _drawerListAdapter.SetItems(NavigationItems);
+            _drawerLayout = FindViewById<DrawerLayout>(Resource.Id.drawerLayout);
+            _drawerList = FindViewById<ListView>(Resource.Id.leftDrawer);
+            _drawerList.Adapter = _drawerListAdapter;
+
+            Type displayFragmentType = typeof(AudioLibraryFragment);
+            if (bundle != null)
+            {
+                if (bundle.ContainsKey(ExtraFragmentStateBundle))
+                {
+                    _fragmentStateBundle = bundle.GetBundle(ExtraFragmentStateBundle);
+                }
+
+                if (bundle.ContainsKey(ExtraDisplayFragment))
+                {
+                    displayFragmentType = Type.GetType(bundle.GetString(ExtraDisplayFragment));
+                }
+            }
+
+            SetContentFragment(displayFragmentType);
 
             var playerFacadeFragment = (PlayerFacadeFragment) FragmentManager.FindFragmentByTag(PlayerFacadeFragmentTag);
 
@@ -41,11 +80,59 @@ namespace AirMedia.Platform.UI.MainView
             }
         }
 
+        protected override void OnResume()
+        {
+            base.OnResume();
+
+            _drawerList.ItemClick += OnNavigationItemClicked;
+        }
+
+        protected override void OnPause()
+        {
+            _drawerList.ItemClick -= OnNavigationItemClicked;
+
+            base.OnPause();
+        }
+
         protected override void OnSaveInstanceState(Bundle outState)
         {
             base.OnSaveInstanceState(outState);
 
             outState.PutBundle(ExtraFragmentStateBundle, _fragmentStateBundle);
+
+            var displayFragment = GetCurrentContentFragment();
+            if (displayFragment != null)
+            {
+                string typeName = displayFragment.GetType().FullName;
+                outState.PutString(ExtraDisplayFragment, typeName);
+            }
+        }
+
+        private void OnNavigationItemClicked(object sender, AdapterView.ItemClickEventArgs args)
+        {
+            _drawerLayout.CloseDrawer(_drawerList);
+
+            Type contentFragment = null;
+            var item = _drawerListAdapter[args.Position];
+            switch (item.StringResourceId)
+            {
+                case Resource.String.title_navigation_item_media_library:
+                    contentFragment = typeof (AudioLibraryFragment);
+                    break;
+
+                case Resource.String.title_navigation_item_playlists:
+                    contentFragment = typeof(PlaylistsViewFragment);
+                    break;
+
+                default:
+                    AmwLog.Error(LogTag, "undefined navigation item clicked");
+                    break;
+            }
+
+            if (contentFragment != null)
+            {
+                SetContentFragment(contentFragment);
+            }
         }
 
         private void SetContentFragment(Type fragmentType)
@@ -91,9 +178,14 @@ namespace AirMedia.Platform.UI.MainView
             {
                 return stateTyped;
             }
-            
+
+            string details = savedState == null
+                                 ? "returned saved state is null"
+                                 : string.Format("saved state: \"{0}\"; type: \"{1}\"", savedState,
+                                                 savedState.GetType().FullName);
             AmwLog.Error(LogTag, string.Format(
-                "Error retrieving fragment's state for fragment \"{0}\"", fragmentType.Name));
+                "Error retrieving fragment's state for fragment \"{0}\"", fragmentType.Name), 
+                details);
 
             return null;
         }

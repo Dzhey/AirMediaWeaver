@@ -64,6 +64,7 @@
     <Compile Include="Core\Data\PlaylistModel.cs" />
     <Compile Include="Core\Requests\Impl\InitDatabaseRequest.cs" />
     <Compile Include="Platform\Controller\PlaylistManager.cs" />
+    <Compile Include="Platform\Controller\Requests\LoadPlaylistsRequest.cs" />
     <Compile Include="Platform\Controller\Requests\ResolveMetadataRequest.cs" />
     <Compile Include="Platform\Data\TrackMetadata.cs" />
     <Compile Include="Platform\Player\IMediaPlayerCallbacks.cs" />
@@ -73,9 +74,12 @@
     <Compile Include="Platform\Player\MetadataResolver.cs" />
     <Compile Include="Platform\Player\PlaybackStatus.cs" />
     <Compile Include="Platform\Player\PlayerControl.cs" />
+    <Compile Include="Platform\UI\Base\FragmentContentActivity.cs" />
     <Compile Include="Platform\UI\Library\AudioLibraryFragment.cs" />
     <Compile Include="Platform\UI\Library\TrackListAdapter.cs" />
     <Compile Include="Platform\UI\Library\TrackListLoader.cs" />
+    <Compile Include="Platform\UI\MainView\DrawerNavigationItem.cs" />
+    <Compile Include="Platform\UI\MainView\DrawerListAdapter.cs" />
     <Compile Include="Platform\UI\MainView\MainViewActivity.cs" />
     <Compile Include="Core\Consts.cs" />
     <Compile Include="Core\Data\Sql\Dao\BaseDao.cs" />
@@ -135,6 +139,9 @@
     <Compile Include="Platform\UI\Base\ProgressDialogFragment.cs" />
     <Compile Include="Platform\UI\Player\MediaServiceConnection.cs" />
     <Compile Include="Platform\UI\Player\PlayerFacadeFragment.cs" />
+    <Compile Include="Platform\UI\Playlists\PlaylistDetailsFragment.cs" />
+    <Compile Include="Platform\UI\Playlists\PlaylistListAdapter.cs" />
+    <Compile Include="Platform\UI\Playlists\PlaylistsViewFragment.cs" />
     <Compile Include="Platform\UI\Util\Util.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -152,7 +159,7 @@
       <SubType>Designer</SubType>
     </AndroidResource>
     <AndroidResource Include="Resources\Layout\Activity_MainView.axml">
-      <SubType>AndroidResource</SubType>
+      <SubType>Designer</SubType>
     </AndroidResource>
     <AndroidResource Include="Resources\Layout\Fragment_AudioLibrary.axml">
       <SubType>AndroidResource</SubType>
@@ -161,9 +168,16 @@
     <AndroidResource Include="Resources\Layout\Fragment_PlayerFacade.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
+    <AndroidResource Include="Resources\Layout\Fragment_PlaylistsView.axml">
+      <SubType>AndroidResource</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\Layout\View_DrawerNavigationItem.axml" />
+    <AndroidResource Include="Resources\Layout\View_PlaylistItem.axml" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\Values\Strings.xml" />
+    <AndroidResource Include="Resources\Values\Strings.xml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\Drawable\Icon.png" />
@@ -237,6 +251,7 @@
     <AndroidResource Include="Resources\Drawable-hdpi\ic_player_play_colored.png" />
     <AndroidResource Include="Resources\Drawable\button_player_ff_selector.xml" />
     <AndroidResource Include="Resources\Drawable\button_player_rew_selector.xml" />
+    <AndroidResource Include="Resources\Drawable-hdpi\ic_audio_file.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\libs\ViewPagerIndicator\ViewPagerIndicator.csproj">

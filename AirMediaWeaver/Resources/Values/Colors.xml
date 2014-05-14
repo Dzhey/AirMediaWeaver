@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <resources>
-  <color name="light_theme_text_color">#424242</color>
+  <color name="light_theme_text_color">#242424</color>
   <!-- Logging colors -->
   <color name="log_color_error">#DD0202</color>
   <color name="log_color_warning">#FFAA00</color>

@@ -9,6 +9,10 @@
     <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
   </style>
 
+  <style name="AppTheme.Text.Large" parent="AppTheme.Text">
+    <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
+  </style>
+
   <style name="LogText">
     <item name="android:textSize">14sp</item>
     <item name="android:textColor">#424242</item>

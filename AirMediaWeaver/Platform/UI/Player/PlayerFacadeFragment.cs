@@ -1,5 +1,4 @@
 using System;
-using AirMedia.Platform.Controller;
 using AirMedia.Platform.Data;
 using AirMedia.Platform.Player;
 using AirMedia.Platform.UI.Base;
