@@ -11,7 +11,7 @@ using Java.Lang;
 
 namespace AirMedia.Platform.UI.Library
 {
-    public class AudioLibraryFragment : AmwFragment, LoaderManager.ILoaderCallbacks
+    public class AudioLibraryFragment : MainViewFragment, LoaderManager.ILoaderCallbacks
     {
         private const int TrackListLoaderId = 1;
 
@@ -45,6 +45,11 @@ namespace AirMedia.Platform.UI.Library
             base.OnResume();
 
             _listView.ItemClick += OnTrackItemClicked;
+        }
+
+        public override string GetTitle()
+        {
+            return GetString(Resource.String.title_audio_library);
         }
 
         public override void OnPause()

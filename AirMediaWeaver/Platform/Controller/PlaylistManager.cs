@@ -27,7 +27,30 @@ namespace AirMedia.Platform.Controller
                 MediaStore.Audio.Playlists.Members.InterfaceConsts.Data
             };
 
-        public static List<TrackMetadata> GetPlaylistMetadata(long playlistId)
+        public static PlaylistModel GetPlaylist(long playlistId)
+        {
+            var resolver = App.Instance.ContentResolver;
+
+            var uri = ContentUris.WithAppendedId(MediaStore.Audio.Playlists.ExternalContentUri, playlistId);
+
+            var cursor = resolver.Query(uri, PlaylistsQueryProjection, null, null, null);
+
+            using (cursor)
+            {
+                if (cursor.MoveToFirst() == false) return null;
+
+                return new PlaylistModel
+                {
+                    Id = cursor.GetLong(0),
+                    Data = cursor.GetString(1),
+                    Name = cursor.GetString(2),
+                    DateAdded = cursor.GetLong(3),
+                    DateModified = cursor.GetLong(4)
+                };
+            }
+        }
+
+        public static List<TrackMetadata> GetPlaylistTracks(long playlistId)
         {
             const string orderBy = MediaStore.Audio.Playlists.Members.PlayOrder;
 

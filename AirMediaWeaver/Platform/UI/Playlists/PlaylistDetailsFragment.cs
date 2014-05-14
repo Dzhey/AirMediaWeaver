@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using AirMedia.Core.Log;
 using AirMedia.Core.Requests.Model;
+using AirMedia.Platform.Controller;
 using AirMedia.Platform.Controller.Requests;
 using AirMedia.Platform.Data;
 using AirMedia.Platform.UI.Base;
@@ -18,12 +19,33 @@ namespace AirMedia.Platform.UI.Playlists
         private ListView _listView;
         private View _progressPanel;
         private View _emptyIndicatorView;
+        private long? _playlistId;
 
         public override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
 
+            Activity.ActionBar.SetTitle(Resource.String.title_playlist_details);
+
             _adapter = new PlaylistItemsAdapter();
+
+            Activity.ActionBar.SetDisplayShowHomeEnabled(true);
+            Activity.ActionBar.SetDisplayHomeAsUpEnabled(true);
+
+            if (Arguments != null && Arguments.ContainsKey(ExtraPlaylistId))
+            {
+                _playlistId = Arguments.GetLong(ExtraPlaylistId);
+
+                var playlist = PlaylistManager.GetPlaylist((long)_playlistId);
+                if (playlist != null)
+                {
+                    Activity.ActionBar.Title = playlist.Name;
+                }
+            }
+            else
+            {
+                AmwLog.Error(LogTag, "playlist id is not specified to display content");
+            }
         }
 
         public override View OnCreateView(LayoutInflater inflater, 
@@ -44,17 +66,23 @@ namespace AirMedia.Platform.UI.Playlists
         {
             base.OnActivityCreated(savedInstanceState);
 
-            if (Arguments != null && Arguments.ContainsKey(ExtraPlaylistId))
+            if (_playlistId != null)
             {
-                long playlistId = Arguments.GetLong(ExtraPlaylistId);
-
                 UpdateProgressIndicators(true);
-                SubmitParallelRequest(new LoadPlaylistItemsRequest(playlistId));
+                SubmitParallelRequest(new LoadPlaylistItemsRequest((long) _playlistId));
             }
-            else
+        }
+
+        public override bool OnOptionsItemSelected(IMenuItem item)
+        {
+            if (item.ItemId == Android.Resource.Id.Home)
             {
-                AmwLog.Error(LogTag, "playlist id is not specified to display content");
+                Activity.Finish();
+
+                return true;
             }
+
+            return base.OnOptionsItemSelected(item);
         }
 
         public override void OnResume()

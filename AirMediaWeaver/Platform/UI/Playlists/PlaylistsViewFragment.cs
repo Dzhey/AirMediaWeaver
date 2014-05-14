@@ -10,7 +10,7 @@ using Android.Widget;
 
 namespace AirMedia.Platform.UI.Playlists
 {
-    public class PlaylistsViewFragment : AmwFragment
+    public class PlaylistsViewFragment : MainViewFragment
     {
         private ListView _listView;
         private View _progressPanel;
@@ -47,6 +47,11 @@ namespace AirMedia.Platform.UI.Playlists
 
             _listView.ItemClick += OnPlaylistClicked;
             RegisterRequestResultHandler(typeof(LoadPlaylistsRequest), OnPlaylistsLoaded);
+        }
+
+        public override string GetTitle()
+        {
+            return GetString(Resource.String.title_playlists_view);
         }
 
         public override void OnPause()

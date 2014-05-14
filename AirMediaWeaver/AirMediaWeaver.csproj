@@ -76,11 +76,13 @@
     <Compile Include="Platform\Player\PlaybackStatus.cs" />
     <Compile Include="Platform\Player\PlayerControl.cs" />
     <Compile Include="Platform\UI\Base\FragmentContentActivity.cs" />
+    <Compile Include="Platform\UI\Base\MainViewFragment.cs" />
     <Compile Include="Platform\UI\Library\AudioLibraryFragment.cs" />
     <Compile Include="Platform\UI\Library\TrackListAdapter.cs" />
     <Compile Include="Platform\UI\Library\TrackListLoader.cs" />
     <Compile Include="Platform\UI\MainView\DrawerNavigationItem.cs" />
     <Compile Include="Platform\UI\MainView\DrawerListAdapter.cs" />
+    <Compile Include="Platform\UI\MainView\MainViewDrawerToggle.cs" />
     <Compile Include="Platform\UI\MainView\MainViewActivity.cs" />
     <Compile Include="Core\Consts.cs" />
     <Compile Include="Core\Data\Sql\Dao\BaseDao.cs" />
@@ -257,6 +259,14 @@
     <AndroidResource Include="Resources\Drawable\button_player_ff_selector.xml" />
     <AndroidResource Include="Resources\Drawable\button_player_rew_selector.xml" />
     <AndroidResource Include="Resources\Drawable-hdpi\ic_audio_file.png" />
+    <AndroidResource Include="Resources\Drawable-hdpi\ic_drawer.png" />
+    <AndroidResource Include="Resources\Drawable-mdpi\ic_drawer.png" />
+    <AndroidResource Include="Resources\Drawable-xhdpi\ic_drawer.png" />
+    <AndroidResource Include="Resources\Drawable-xxhdpi\ic_drawer.png" />
+    <AndroidResource Include="Resources\Anim\slide_in_right_to_left.xml" />
+    <AndroidResource Include="Resources\Anim\slide_out_left_to_right.xml" />
+    <AndroidResource Include="Resources\Anim\slide_in_left_to_right.xml" />
+    <AndroidResource Include="Resources\Anim\slide_out_right_to_left.xml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\libs\ViewPagerIndicator\ViewPagerIndicator.csproj">

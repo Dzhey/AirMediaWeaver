@@ -4,6 +4,7 @@ using AirMedia.Core.Log;
 using Android.App;
 using Android.Content;
 using Android.OS;
+using Android.Views;
 using Java.Security;
 
 namespace AirMedia.Platform.UI.Base
@@ -71,6 +72,9 @@ namespace AirMedia.Platform.UI.Base
                 displayFragment.Arguments = Intent.GetBundleExtra(ExtraFragmentArguments);
             }
 
+            OverridePendingTransition(Resource.Animation.slide_in_right_to_left, 
+                Resource.Animation.slide_out_right_to_left);
+
             FragmentManager.BeginTransaction()
                            .Add(Resource.Id.contentView, displayFragment, TagContentFragment)
                            .Commit();
@@ -79,6 +83,26 @@ namespace AirMedia.Platform.UI.Base
         public AmwFragment GetContentFragment()
         {
             return (AmwFragment) FragmentManager.FindFragmentByTag(TagContentFragment);
+        }
+
+        public override bool OnOptionsItemSelected(IMenuItem item)
+        {
+            var fragment = GetContentFragment();
+
+            if (fragment != null && fragment.OnOptionsItemSelected(item))
+            {
+                return true;
+            }
+
+            return base.OnOptionsItemSelected(item);
+        }
+
+        public override void Finish()
+        {
+            base.Finish();
+
+            OverridePendingTransition(Resource.Animation.slide_in_left_to_right,
+                Resource.Animation.slide_out_left_to_right);
         }
     }
 }

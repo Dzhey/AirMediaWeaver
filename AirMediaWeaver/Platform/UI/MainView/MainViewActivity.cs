@@ -5,9 +5,13 @@ using AirMedia.Platform.UI.Library;
 using AirMedia.Platform.UI.Player;
 using AirMedia.Platform.UI.Playlists;
 using Android.App;
+using Android.Content.Res;
 using Android.OS;
+using Android.Support.V4.App;
 using Android.Support.V4.Widget;
+using Android.Views;
 using Android.Widget;
+using Fragment = Android.App.Fragment;
 
 namespace AirMedia.Platform.UI.MainView
 {
@@ -25,6 +29,7 @@ namespace AirMedia.Platform.UI.MainView
         private DrawerListAdapter _drawerListAdapter;
         private DrawerLayout _drawerLayout;
         private ListView _drawerList;
+        private MainViewDrawerToggle _drawerToggle;
 
         static MainViewActivity()
         {
@@ -52,6 +57,15 @@ namespace AirMedia.Platform.UI.MainView
             _drawerLayout = FindViewById<DrawerLayout>(Resource.Id.drawerLayout);
             _drawerList = FindViewById<ListView>(Resource.Id.leftDrawer);
             _drawerList.Adapter = _drawerListAdapter;
+
+            _drawerToggle = new MainViewDrawerToggle(this, _drawerLayout, Resource.Drawable.ic_drawer,
+                                                     Resource.String.hint_open_main_drawer,
+                                                     Resource.String.hint_close_main_drawer);
+            
+            _drawerLayout.SetDrawerListener(_drawerToggle);
+
+            ActionBar.SetHomeButtonEnabled(true);
+            ActionBar.SetDisplayHomeAsUpEnabled(true);
 
             Type displayFragmentType = typeof(AudioLibraryFragment);
             if (bundle != null)
@@ -84,14 +98,33 @@ namespace AirMedia.Platform.UI.MainView
         {
             base.OnResume();
 
+            _drawerToggle.DrawerOpened += OnDrawerOpened;
+            _drawerToggle.DrawerClosed += OnDrawerClosed;
             _drawerList.ItemClick += OnNavigationItemClicked;
         }
 
         protected override void OnPause()
         {
+            _drawerToggle.DrawerOpened -= OnDrawerOpened;
+            _drawerToggle.DrawerClosed -= OnDrawerClosed;
             _drawerList.ItemClick -= OnNavigationItemClicked;
 
             base.OnPause();
+        }
+
+        private void OnDrawerOpened(object sender, EventArgs args)
+        {
+            ActionBar.SetTitle(Resource.String.title_main_view);
+        }
+
+        private void OnDrawerClosed(object sender, EventArgs args)
+        {
+            var contentFragment = GetCurrentContentFragment();
+
+            if (contentFragment != null)
+            {
+                ActionBar.Title = contentFragment.GetTitle();
+            }
         }
 
         protected override void OnSaveInstanceState(Bundle outState)
@@ -106,6 +139,46 @@ namespace AirMedia.Platform.UI.MainView
                 string typeName = displayFragment.GetType().FullName;
                 outState.PutString(ExtraDisplayFragment, typeName);
             }
+        }
+
+        protected override void OnPostCreate(Bundle savedInstanceState)
+        {
+            base.OnPostCreate(savedInstanceState);
+
+            _drawerToggle.SyncState();
+        }
+
+        public override void OnConfigurationChanged(Configuration newConfig)
+        {
+            base.OnConfigurationChanged(newConfig);
+
+            _drawerToggle.OnConfigurationChanged(newConfig);
+        }
+
+        public override bool OnOptionsItemSelected(IMenuItem item)
+        {
+            if (_drawerToggle.OnOptionsItemSelected(item)) return true;
+
+            return base.OnOptionsItemSelected(item);
+        }
+
+        public override bool OnKeyDown(Keycode keyCode, KeyEvent e)
+        {
+            if (keyCode == Keycode.Menu)
+            {
+                if (_drawerLayout.IsDrawerOpen(_drawerList))
+                {
+                    _drawerLayout.OpenDrawer(_drawerList);
+                }
+                else
+                {
+                    _drawerLayout.CloseDrawer(_drawerList);
+                }
+
+                return true;
+            }
+
+            return base.OnKeyDown(keyCode, e);
         }
 
         private void OnNavigationItemClicked(object sender, AdapterView.ItemClickEventArgs args)
@@ -131,13 +204,13 @@ namespace AirMedia.Platform.UI.MainView
 
             if (contentFragment != null)
             {
-                SetContentFragment(contentFragment);
+                App.MainHandler.PostDelayed(() => SetContentFragment(contentFragment), 200);
             }
         }
 
         private void SetContentFragment(Type fragmentType)
         {
-            if (typeof (AmwFragment).IsAssignableFrom(fragmentType) == false)
+            if (typeof (MainViewFragment).IsAssignableFrom(fragmentType) == false)
             {
                 throw new ApplicationException(string.Format(
                     "requested invalid fragment type \"{0}\"", fragmentType.Name));
@@ -150,7 +223,7 @@ namespace AirMedia.Platform.UI.MainView
             if (currentFragment != null) SaveFragmentState(currentFragment);
 
             string javaFragmentType = Java.Lang.Class.FromType(fragmentType).Name;
-            currentFragment = (AmwFragment) Fragment.Instantiate(this, javaFragmentType);
+            currentFragment = (MainViewFragment)Fragment.Instantiate(this, javaFragmentType);
 
             var savedState = GetSavedState(fragmentType);
             if (savedState != null)
@@ -163,9 +236,9 @@ namespace AirMedia.Platform.UI.MainView
                            .CommitAllowingStateLoss();
         }
 
-        private AmwFragment GetCurrentContentFragment()
+        private MainViewFragment GetCurrentContentFragment()
         {
-            return FragmentManager.FindFragmentByTag(ContentFragmentTag) as AmwFragment;
+            return FragmentManager.FindFragmentByTag(ContentFragmentTag) as MainViewFragment;
         }
 
         private Fragment.SavedState GetSavedState(Type fragmentType)
@@ -192,7 +265,7 @@ namespace AirMedia.Platform.UI.MainView
             return null;
         }
 
-        private void SaveFragmentState(Fragment fragment)
+        private void SaveFragmentState(MainViewFragment fragment)
         {
             if (_fragmentStateBundle == null) _fragmentStateBundle = new Bundle();
 
