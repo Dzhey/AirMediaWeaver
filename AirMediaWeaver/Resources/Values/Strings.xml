@@ -20,6 +20,7 @@
   <string name="title_playlist_details">Треки</string>
   <string name="title_main_view">Media Weaver</string>
   <string name="hint_create_playlist">Создать плейлист</string>
+  <string name="hint_remove_playlist">Удалить плейлист</string>
   <string name="dialog_create_playlist_title">Введите название</string>
   <string name="dialog_create_playlist_confirm">ОК</string>
   <string name="error_empty_playlist_name">Пожалуйста, введите название плейлиста</string>

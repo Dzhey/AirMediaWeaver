@@ -12,7 +12,7 @@ using Android.Widget;
 
 namespace AirMedia.Platform.UI.Playlists
 {
-    public class PlaylistsViewFragment : MainViewFragment
+    public class PlaylistsViewFragment : MainViewFragment, ActionMode.ICallback
     {
         private const string TagCreatePlaylistDialog = "dialog_create_playlist";
         private const int RequestCodeEditPlaylist = 10;
@@ -21,6 +21,7 @@ namespace AirMedia.Platform.UI.Playlists
         private View _progressPanel;
         private View _emptyIndicatorView;
         private PlaylistListAdapter _adapter;
+        private ActionMode _actionMode;
 
         public override void OnCreate(Bundle savedInstanceState)
         {
@@ -38,6 +39,7 @@ namespace AirMedia.Platform.UI.Playlists
 
             _listView = view.FindViewById<ListView>(Android.Resource.Id.List);
             _listView.Adapter = _adapter;
+            _listView.ChoiceMode = ChoiceMode.None;
 
             _progressPanel = view.FindViewById(Android.Resource.Id.Progress);
             _emptyIndicatorView = view.FindViewById(Android.Resource.Id.Empty);
@@ -94,6 +96,8 @@ namespace AirMedia.Platform.UI.Playlists
             base.OnResume();
 
             _listView.ItemClick += OnPlaylistClicked;
+            _listView.ItemLongClick += OnPlaylistLongClicked;
+
             RegisterRequestResultHandler(typeof(LoadPlaylistsRequest), OnPlaylistsLoaded);
 
             var createPlaylistDialog = (InputTextDialogFragment) FragmentManager
@@ -108,6 +112,9 @@ namespace AirMedia.Platform.UI.Playlists
         public override void OnPause()
         {
             _listView.ItemClick -= OnPlaylistClicked;
+            _listView.ItemLongClick -= OnPlaylistLongClicked;
+            _listView.SetMultiChoiceModeListener(null);
+
             RemoveRequestResultHandler(typeof(LoadPlaylistsRequest));
 
             var createPlaylistDialog = (InputTextDialogFragment)FragmentManager
@@ -156,11 +163,30 @@ namespace AirMedia.Platform.UI.Playlists
             }
         }
 
+        private void OnPlaylistLongClicked(object sender, AdapterView.ItemLongClickEventArgs args)
+        {
+            if (_actionMode != null) return;
+
+            _listView.ChoiceMode = ChoiceMode.Multiple;
+            _listView.SetItemChecked(args.Position, true);
+            _adapter.ToggleItemCheck(args.Id);
+
+            _actionMode = Activity.StartActionMode(this);
+        }
+
         private void OnPlaylistClicked(object sender, AdapterView.ItemClickEventArgs args)
         {
-            long playlistId = _adapter[args.Position].Id;
+            if (_actionMode != null)
+            {
+                _adapter.ToggleItemCheck(args.Id);
+                _actionMode.Invalidate();   
+            }
+            else
+            {
+                long playlistId = _adapter[args.Position].Id;
 
-            OpenPlaylistDetails(playlistId);
+                OpenPlaylistDetails(playlistId);
+            }
         }
 
         private void OpenPlaylistDetails(long playlistId)
@@ -219,6 +245,50 @@ namespace AirMedia.Platform.UI.Playlists
                 _progressPanel.Visibility = ViewStates.Gone;
                 _emptyIndicatorView.Visibility = ViewStates.Gone;
             }
+        }
+
+        public bool OnActionItemClicked(ActionMode mode, IMenuItem item)
+        {
+            int count = _listView.CheckedItemCount;
+
+            switch (item.ItemId)
+            {
+                case Resource.Id.ActionRemove:
+                    ShowMessage(string.Format("todo: remove selected item(s) - {0}", count));
+                    mode.Finish();
+                    return true;
+
+                default:
+                    return false;
+            }
+        }
+
+        public bool OnCreateActionMode(ActionMode mode, IMenu menu)
+        {
+            mode.MenuInflater.Inflate(Resource.Menu.context_menu_playlists_view, menu);
+
+            return true;
+        }
+
+        public void OnDestroyActionMode(ActionMode mode)
+        {
+            _listView.ClearChoices();
+            _listView.ChoiceMode = ChoiceMode.None;
+            _adapter.ResetCheckedItems();
+            _actionMode = null;
+        }
+
+        public bool OnPrepareActionMode(ActionMode mode, IMenu menu)
+        {
+            int count = _listView.CheckedItemCount;
+
+            if (count == 0)
+            {
+                mode.Finish();
+                return true;
+            }
+
+            return false;
         }
     }
 }

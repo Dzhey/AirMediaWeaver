@@ -274,6 +274,12 @@
     <AndroidResource Include="Resources\Drawable-mdpi\ic_action_new.png" />
     <AndroidResource Include="Resources\Drawable-xhdpi\ic_action_new.png" />
     <AndroidResource Include="Resources\Drawable-xxhdpi\ic_action_new.png" />
+    <AndroidResource Include="Resources\Menu\context_menu_playlists_view.xml" />
+    <AndroidResource Include="Resources\Drawable-hdpi\ic_action_remove.png" />
+    <AndroidResource Include="Resources\Drawable-mdpi\ic_action_remove.png" />
+    <AndroidResource Include="Resources\Drawable-xhdpi\ic_action_remove.png" />
+    <AndroidResource Include="Resources\Drawable-xxhdpi\ic_action_remove.png" />
+    <AndroidResource Include="Resources\Drawable\list_item_color_selector.xml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\libs\ViewPagerIndicator\ViewPagerIndicator.csproj">

@@ -8,6 +8,7 @@ namespace AirMedia.Platform.UI.Playlists
     public class PlaylistListAdapter : BaseAdapter<PlaylistModel>
     {
         private readonly List<PlaylistModel> _items;
+        private readonly ISet<long> _checkedItems;
 
         public override int Count
         {
@@ -27,12 +28,43 @@ namespace AirMedia.Platform.UI.Playlists
         public PlaylistListAdapter()
         {
             _items = new List<PlaylistModel>();
+            _checkedItems = new HashSet<long>();
         }
 
         public void SetItems(IEnumerable<PlaylistModel> items)
         {
             _items.Clear();
             _items.AddRange(items);
+            NotifyDataSetChanged();
+        }
+
+        public void ToggleItemCheck(long itemId)
+        {
+            bool isChecked = IsItemChecked(itemId);
+            SetItemChecked(itemId, !isChecked);
+        }
+
+        public void SetItemChecked(long itemId, bool isChecked)
+        {
+            if (isChecked)
+            {
+                _checkedItems.Add(itemId);
+            }
+            else
+            {
+                _checkedItems.Remove(itemId);
+            }
+            NotifyDataSetChanged();
+        }
+
+        public bool IsItemChecked(long itemId)
+        {
+            return _checkedItems.Contains(itemId);
+        }
+
+        public void ResetCheckedItems()
+        {
+            _checkedItems.Clear();
             NotifyDataSetChanged();
         }
 
@@ -44,6 +76,15 @@ namespace AirMedia.Platform.UI.Playlists
             {
                 convertView = LayoutInflater.From(parent.Context)
                                             .Inflate(Resource.Layout.View_PlaylistItem, parent, false);
+            }
+
+            if (IsItemChecked(item.Id))
+            {
+                convertView.SetBackgroundResource(Resource.Color.holo_blue_light_translucent);
+            }
+            else
+            {
+                convertView.SetBackgroundResource(Android.Resource.Color.Transparent);
             }
 
             var titleView = convertView.FindViewById<TextView>(Android.Resource.Id.Title);

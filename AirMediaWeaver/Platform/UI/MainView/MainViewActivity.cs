@@ -179,7 +179,7 @@ namespace AirMedia.Platform.UI.MainView
         {
             if (keyCode == Keycode.Menu)
             {
-                if (_drawerLayout.IsDrawerOpen(_drawerList))
+                if (!_drawerLayout.IsDrawerOpen(_drawerList))
                 {
                     _drawerLayout.OpenDrawer(_drawerList);
                 }
