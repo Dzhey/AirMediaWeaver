@@ -173,16 +173,18 @@ namespace AirMedia.Platform.UI.MainView
             if (_fragmentStateBundle == null) return null;
 
             var savedState = _fragmentStateBundle.GetParcelable(fragmentType.Name);
+
+            if (savedState == null) return null;
+
             var stateTyped = savedState as Fragment.SavedState;
             if (stateTyped != null)
             {
                 return stateTyped;
             }
 
-            string details = savedState == null
-                                 ? "returned saved state is null"
-                                 : string.Format("saved state: \"{0}\"; type: \"{1}\"", savedState,
-                                                 savedState.GetType().FullName);
+            string details = string.Format("saved state: \"{0}\"; type: \"{1}\"", 
+                savedState, savedState.GetType().FullName);
+
             AmwLog.Error(LogTag, string.Format(
                 "Error retrieving fragment's state for fragment \"{0}\"", fragmentType.Name), 
                 details);

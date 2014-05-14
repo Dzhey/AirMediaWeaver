@@ -30,8 +30,6 @@ namespace AirMedia.Platform.UI.Playlists
             _progressPanel = view.FindViewById(Android.Resource.Id.Progress);
             _emptyIndicatorView = view.FindViewById(Android.Resource.Id.Empty);
 
-            UpdateProgressIndicators(true);
-
             return view;
         }
 
@@ -39,6 +37,7 @@ namespace AirMedia.Platform.UI.Playlists
         {
             base.OnActivityCreated(savedInstanceState);
 
+            UpdateProgressIndicators(true);
             SubmitParallelRequest(new LoadPlaylistsRequest());
         }
 
@@ -46,20 +45,34 @@ namespace AirMedia.Platform.UI.Playlists
         {
             base.OnResume();
 
+            _listView.ItemClick += OnPlaylistClicked;
             RegisterRequestResultHandler(typeof(LoadPlaylistsRequest), OnPlaylistsLoaded);
         }
 
         public override void OnPause()
         {
+            _listView.ItemClick -= OnPlaylistClicked;
             RemoveRequestResultHandler(typeof(LoadPlaylistsRequest));
 
             base.OnPause();
+        }
+
+        private void OnPlaylistClicked(object sender, AdapterView.ItemClickEventArgs args)
+        {
+            long playlistId = _adapter[args.Position].Id;
+
+            var fragmentArgs = new Bundle();
+            fragmentArgs.PutLong(PlaylistDetailsFragment.ExtraPlaylistId, playlistId);
+
+            FragmentContentActivity.StartAcitvity(Activity, 
+                typeof(PlaylistDetailsFragment), fragmentArgs);
         }
 
         private void OnPlaylistsLoaded(object sender, ResultEventArgs args)
         {
             if (args.Request.Status != RequestStatus.Ok)
             {
+                UpdateProgressIndicators(false);
                 AmwLog.Error(LogTag, "error loading playlists");
                 return;
             }

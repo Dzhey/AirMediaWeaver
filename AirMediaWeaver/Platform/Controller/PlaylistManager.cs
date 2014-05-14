@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using AirMedia.Core.Data;
+using AirMedia.Platform.Data;
+using Android.Content;
 using Android.Provider;
 
 namespace AirMedia.Platform.Controller
@@ -15,10 +17,51 @@ namespace AirMedia.Platform.Controller
                 MediaStore.Audio.Playlists.InterfaceConsts.DateModified
             };
 
+        private static readonly string[] PlaylistTracksQueryProjection = new[]
+            {
+                MediaStore.Audio.Playlists.Members.AudioId,
+                MediaStore.Audio.Playlists.Members.InterfaceConsts.Title,
+                MediaStore.Audio.Playlists.Members.InterfaceConsts.Artist,
+                MediaStore.Audio.Playlists.Members.InterfaceConsts.Album,
+                MediaStore.Audio.Playlists.Members.InterfaceConsts.Duration,
+                MediaStore.Audio.Playlists.Members.InterfaceConsts.Data
+            };
+
+        public static List<TrackMetadata> GetPlaylistMetadata(long playlistId)
+        {
+            const string orderBy = MediaStore.Audio.Playlists.Members.PlayOrder;
+
+            var resolver = App.Instance.ContentResolver;
+
+            var uri = MediaStore.Audio.Playlists.Members.GetContentUri("external", playlistId);
+            var cursor = resolver.Query(uri, PlaylistTracksQueryProjection, null, null, orderBy);
+
+            var metadata = new List<TrackMetadata>(cursor.Count);
+
+            using (cursor)
+            {
+                while (cursor.MoveToNext())
+                {
+                    metadata.Add(new TrackMetadata
+                        {
+                            TrackId = cursor.GetLong(0),
+                            TrackTitle = cursor.GetString(1),
+                            ArtistName = cursor.GetString(2),
+                            Album = cursor.GetString(3),
+                            Duration = cursor.GetInt(4),
+                            Data = cursor.GetString(5)
+                        });
+                }
+            }
+
+            return metadata;
+        }
+
         public static List<PlaylistModel> GetSystemPlaylists()
         {
-            var resolver = App.Instance.ContentResolver;
             const string orderBy = MediaStore.Audio.Playlists.InterfaceConsts.Name;
+
+            var resolver = App.Instance.ContentResolver;
             var cursor = resolver.Query(MediaStore.Audio.Playlists.ExternalContentUri,
                 PlaylistsQueryProjection, null, null, orderBy);
 

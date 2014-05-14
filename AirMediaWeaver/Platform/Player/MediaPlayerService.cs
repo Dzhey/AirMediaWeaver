@@ -50,12 +50,12 @@ namespace AirMedia.Platform.Player
             string listenerTag = string.Format("{0}_{1}", typeof (MediaPlayerService).Name, random);
             _requestResultListener = new RequestResultListener(listenerTag);
             _requestResultListener.RegisterResultHandler(
-                typeof(ResolveMetadataRequest), OnResolveMetadataRequestResult);
+                typeof(LoadTrackMetadataRequest), OnResolveMetadataRequestResult);
         }
 
         public override void OnDestroy()
         {
-            _requestResultListener.RemoveResultHandler(typeof(ResolveMetadataRequest));
+            _requestResultListener.RemoveResultHandler(typeof(LoadTrackMetadataRequest));
 
             ReleasePlayer();
             _binder = null;
@@ -178,7 +178,7 @@ namespace AirMedia.Platform.Player
 
             SetPlaybackStatus(PlaybackStatus.Preparing);
 
-             _requestResultListener.SubmitRequest(new ResolveMetadataRequest(trackId));
+             _requestResultListener.SubmitRequest(new LoadTrackMetadataRequest(trackId));
 
             _player.SetDataSource(this, uri);
             _player.PrepareAsync();

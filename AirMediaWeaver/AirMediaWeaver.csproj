@@ -64,8 +64,9 @@
     <Compile Include="Core\Data\PlaylistModel.cs" />
     <Compile Include="Core\Requests\Impl\InitDatabaseRequest.cs" />
     <Compile Include="Platform\Controller\PlaylistManager.cs" />
+    <Compile Include="Platform\Controller\Requests\LoadPlaylistItemsRequest.cs" />
     <Compile Include="Platform\Controller\Requests\LoadPlaylistsRequest.cs" />
-    <Compile Include="Platform\Controller\Requests\ResolveMetadataRequest.cs" />
+    <Compile Include="Platform\Controller\Requests\LoadTrackMetadataRequest.cs" />
     <Compile Include="Platform\Data\TrackMetadata.cs" />
     <Compile Include="Platform\Player\IMediaPlayerCallbacks.cs" />
     <Compile Include="Platform\Player\IPlaybackProgressListener.cs" />
@@ -140,6 +141,7 @@
     <Compile Include="Platform\UI\Player\MediaServiceConnection.cs" />
     <Compile Include="Platform\UI\Player\PlayerFacadeFragment.cs" />
     <Compile Include="Platform\UI\Playlists\PlaylistDetailsFragment.cs" />
+    <Compile Include="Platform\UI\Playlists\PlaylistItemsAdapter.cs" />
     <Compile Include="Platform\UI\Playlists\PlaylistListAdapter.cs" />
     <Compile Include="Platform\UI\Playlists\PlaylistsViewFragment.cs" />
     <Compile Include="Platform\UI\Util\Util.cs" />
@@ -173,6 +175,9 @@
     </AndroidResource>
     <AndroidResource Include="Resources\Layout\View_DrawerNavigationItem.axml" />
     <AndroidResource Include="Resources\Layout\View_PlaylistItem.axml" />
+    <AndroidResource Include="Resources\Layout\Fragment_PlaylistDetails.axml">
+      <SubType>AndroidResource</SubType>
+    </AndroidResource>
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\Values\Strings.xml">
