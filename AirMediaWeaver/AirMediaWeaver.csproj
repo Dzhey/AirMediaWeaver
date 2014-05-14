@@ -76,6 +76,7 @@
     <Compile Include="Platform\Player\PlaybackStatus.cs" />
     <Compile Include="Platform\Player\PlayerControl.cs" />
     <Compile Include="Platform\UI\Base\FragmentContentActivity.cs" />
+    <Compile Include="Platform\UI\Base\InputTextDialog.cs" />
     <Compile Include="Platform\UI\Base\MainViewFragment.cs" />
     <Compile Include="Platform\UI\Library\AudioLibraryFragment.cs" />
     <Compile Include="Platform\UI\Library\TrackListAdapter.cs" />
@@ -180,6 +181,7 @@
     <AndroidResource Include="Resources\Layout\Fragment_PlaylistDetails.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
+    <AndroidResource Include="Resources\Layout\View_InputField.axml" />
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\Values\Strings.xml">
@@ -267,6 +269,11 @@
     <AndroidResource Include="Resources\Anim\slide_out_left_to_right.xml" />
     <AndroidResource Include="Resources\Anim\slide_in_left_to_right.xml" />
     <AndroidResource Include="Resources\Anim\slide_out_right_to_left.xml" />
+    <AndroidResource Include="Resources\Menu\menu_playlists_view.xml" />
+    <AndroidResource Include="Resources\Drawable-hdpi\ic_action_new.png" />
+    <AndroidResource Include="Resources\Drawable-mdpi\ic_action_new.png" />
+    <AndroidResource Include="Resources\Drawable-xhdpi\ic_action_new.png" />
+    <AndroidResource Include="Resources\Drawable-xxhdpi\ic_action_new.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\libs\ViewPagerIndicator\ViewPagerIndicator.csproj">

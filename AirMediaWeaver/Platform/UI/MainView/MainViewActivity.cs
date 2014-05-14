@@ -5,9 +5,9 @@ using AirMedia.Platform.UI.Library;
 using AirMedia.Platform.UI.Player;
 using AirMedia.Platform.UI.Playlists;
 using Android.App;
+using Android.Content;
 using Android.Content.Res;
 using Android.OS;
-using Android.Support.V4.App;
 using Android.Support.V4.Widget;
 using Android.Views;
 using Android.Widget;
@@ -119,7 +119,7 @@ namespace AirMedia.Platform.UI.MainView
 
         private void OnDrawerClosed(object sender, EventArgs args)
         {
-            var contentFragment = GetCurrentContentFragment();
+            var contentFragment = GetContentFragment();
 
             if (contentFragment != null)
             {
@@ -133,7 +133,7 @@ namespace AirMedia.Platform.UI.MainView
 
             outState.PutBundle(ExtraFragmentStateBundle, _fragmentStateBundle);
 
-            var displayFragment = GetCurrentContentFragment();
+            var displayFragment = GetContentFragment();
             if (displayFragment != null)
             {
                 string typeName = displayFragment.GetType().FullName;
@@ -146,6 +146,19 @@ namespace AirMedia.Platform.UI.MainView
             base.OnPostCreate(savedInstanceState);
 
             _drawerToggle.SyncState();
+        }
+
+        protected override void OnActivityResult(int requestCode, Result resultCode, Intent data)
+        {
+            var fragment = GetContentFragment();
+            if (fragment != null)
+            {
+                fragment.OnActivityResult(requestCode, resultCode, data);
+
+                return;
+            }
+
+            base.OnActivityResult(requestCode, resultCode, data);
         }
 
         public override void OnConfigurationChanged(Configuration newConfig)
@@ -216,7 +229,7 @@ namespace AirMedia.Platform.UI.MainView
                     "requested invalid fragment type \"{0}\"", fragmentType.Name));
             }
 
-            var currentFragment = GetCurrentContentFragment();
+            var currentFragment = GetContentFragment();
 
             if (currentFragment != null && currentFragment.GetType() == fragmentType) return;
 
@@ -236,7 +249,7 @@ namespace AirMedia.Platform.UI.MainView
                            .CommitAllowingStateLoss();
         }
 
-        private MainViewFragment GetCurrentContentFragment()
+        private MainViewFragment GetContentFragment()
         {
             return FragmentManager.FindFragmentByTag(ContentFragmentTag) as MainViewFragment;
         }

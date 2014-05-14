@@ -2,7 +2,9 @@ using System.Collections.Generic;
 using AirMedia.Core.Data;
 using AirMedia.Platform.Data;
 using Android.Content;
+using Android.Database;
 using Android.Provider;
+using Java.Lang;
 
 namespace AirMedia.Platform.Controller
 {
@@ -27,6 +29,32 @@ namespace AirMedia.Platform.Controller
                 MediaStore.Audio.Playlists.Members.InterfaceConsts.Data
             };
 
+        public static PlaylistModel CreateNewPlaylist(string playlistName)
+        {
+            var resolver = App.Instance.ContentResolver;
+
+            var insertValues = new ContentValues();
+
+            long date = JavaSystem.CurrentTimeMillis();
+            insertValues.Put(MediaStore.Audio.Playlists.InterfaceConsts.Name, playlistName);
+            insertValues.Put(MediaStore.Audio.Playlists.InterfaceConsts.DateAdded, date);
+            insertValues.Put(MediaStore.Audio.Playlists.InterfaceConsts.DateModified, date);
+
+            var uri = resolver.Insert(MediaStore.Audio.Playlists.ExternalContentUri, insertValues);
+
+            if (uri == null) return null;
+
+            using (var cursor = resolver.Query(uri, PlaylistsQueryProjection, null, null, null))
+            {
+                if (cursor.MoveToFirst())
+                {
+                    return CreateFromCursor(cursor);
+                }
+            }
+
+            return null;
+        }
+
         public static PlaylistModel GetPlaylist(long playlistId)
         {
             var resolver = App.Instance.ContentResolver;
@@ -39,14 +67,7 @@ namespace AirMedia.Platform.Controller
             {
                 if (cursor.MoveToFirst() == false) return null;
 
-                return new PlaylistModel
-                {
-                    Id = cursor.GetLong(0),
-                    Data = cursor.GetString(1),
-                    Name = cursor.GetString(2),
-                    DateAdded = cursor.GetLong(3),
-                    DateModified = cursor.GetLong(4)
-                };
+                return CreateFromCursor(cursor);
             }
         }
 
@@ -106,6 +127,18 @@ namespace AirMedia.Platform.Controller
             }
 
             return playlists;
+        }
+
+        private static PlaylistModel CreateFromCursor(ICursor cursor)
+        {
+            return new PlaylistModel
+            {
+                Id = cursor.GetLong(0),
+                Data = cursor.GetString(1),
+                Name = cursor.GetString(2),
+                DateAdded = cursor.GetLong(3),
+                DateModified = cursor.GetLong(4)
+            };
         }
     }
 }

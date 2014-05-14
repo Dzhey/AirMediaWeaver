@@ -44,13 +44,14 @@ namespace AirMedia.Platform.UI.Base
         public static ConfirmDialogFragment NewInstance(
             Context context,
             string title, 
-            string message, 
+            string message = null, 
             Bundle payload = null, 
             string acceptText = null,
             string declineText = null, 
             string neutralButtonText = null, 
             int? iconId = null, 
-            bool displayCancelButton = true)
+            bool displayCancelButton = true,
+            Type dialogType = null)
 		{
 			var args = new Bundle();
 			args.PutString(ExtraTitle, title);
@@ -66,30 +67,56 @@ namespace AirMedia.Platform.UI.Base
                 args.PutInt(ExtraIconId, (int)iconId);
             }
 
-            var fname = Java.Lang.Class.FromType(typeof(ConfirmDialogFragment)).Name;
+            if (dialogType != null)
+            {
+                if (typeof (ConfirmDialogFragment).IsAssignableFrom(dialogType) == false)
+                {
+                    throw new ArgumentException(string.Format(
+                        "Invalid dialog fragment type specified \"{0}\"", dialogType));
+                }
+            }
+            else
+            {
+                dialogType = typeof(ConfirmDialogFragment);
+            }
+
+            var fname = Java.Lang.Class.FromType(dialogType).Name;
 
             return (ConfirmDialogFragment)Instantiate(context, fname, args);
 		}
 
 		public override Dialog OnCreateDialog(Bundle savedInstanceState)
 		{
-			var builder = new AlertDialog.Builder(Activity);
-		    string title = Arguments.GetString(ExtraTitle);
+            var builder = new AlertDialog.Builder(Activity);
+
+            BuildDialog(builder);
+
+            return builder.Create();
+		}
+
+        protected virtual void BuildDialog(AlertDialog.Builder builder)
+        {
+            string title = Arguments.GetString(ExtraTitle);
             string message = Arguments.GetString(ExtraMessage);
-		    string acceptTitle = Arguments.GetString(ExtraAcceptTitle) ?? Activity.GetString(global::Android.Resource.String.Yes);
-		    string declineTitle = Arguments.GetString(ExtraDeclineTitle) ?? Activity.GetString(global::Android.Resource.String.Cancel);
-		    string neutralButtonTitle = Arguments.GetString(ExtraNeutralTitle);
+            string acceptTitle = Arguments.GetString(ExtraAcceptTitle) ?? Activity.GetString(Android.Resource.String.Yes);
+            string declineTitle = Arguments.GetString(ExtraDeclineTitle) ?? Activity.GetString(Android.Resource.String.Cancel);
+            string neutralButtonTitle = Arguments.GetString(ExtraNeutralTitle);
 
             if (Arguments.ContainsKey(ExtraIconId))
             {
                 builder.SetIcon(Arguments.GetInt(ExtraIconId));
             }
 
-			builder.SetTitle(title);
-		    builder.SetMessage(message);
+            builder.SetTitle(title);
+
+            if (message != null)
+            {
+                builder.SetMessage(message);
+            }
+
             builder.SetPositiveButton(acceptTitle, OnDialogButtonClicked);
 
-		    bool displayCancel = Arguments.GetBoolean(ExtraDisplayCancel);
+            bool displayCancel = Arguments.GetBoolean(ExtraDisplayCancel);
             if (displayCancel)
             {
                 builder.SetNegativeButton(declineTitle, OnDialogButtonClicked);
@@ -101,14 +128,17 @@ namespace AirMedia.Platform.UI.Base
             }
 
             builder.SetCancelable(true);
-
-			return builder.Create();
-		}
+        }
 
 		protected override bool IsAppThemeApplied()
 		{
 			return true;
 		}
+
+        protected void PerformAccept()
+        {
+            if (AcceptClick != null) AcceptClick(this, Payload);
+        }
 
         private void OnDialogButtonClicked(object sender, DialogClickEventArgs args)
         {

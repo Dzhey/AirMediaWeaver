@@ -17,7 +17,7 @@ namespace AirMedia.Platform.UI.Base
 
         private const string TagContentFragment = "content_fragment";
 
-        public static void StartAcitvity(Context launchContext, 
+        public static Intent CreateStartIntent(Context context, 
             Type displayFragmentType, Bundle fragmentArgs = null)
         {
             if (typeof (AmwFragment).IsAssignableFrom(displayFragmentType) == false)
@@ -26,7 +26,7 @@ namespace AirMedia.Platform.UI.Base
                     "specified type \"{0}\" is not type of \"{1}\"", displayFragmentType, typeof(AmwFragment)));
             }
 
-            var intent = new Intent(launchContext, typeof(FragmentContentActivity));
+            var intent = new Intent(context, typeof(FragmentContentActivity));
             intent.PutExtra(ExtraDisplayFragmentType, displayFragmentType.FullName);
 
             if (fragmentArgs != null)
@@ -34,7 +34,7 @@ namespace AirMedia.Platform.UI.Base
                 intent.PutExtra(ExtraFragmentArguments, fragmentArgs);
             }
 
-            launchContext.StartActivity(intent);
+            return intent;
         }
 
         protected override void OnCreate(Bundle savedInstanceState)
