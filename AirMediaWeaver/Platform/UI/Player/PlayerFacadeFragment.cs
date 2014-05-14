@@ -1,32 +1,36 @@
 using System;
+using AirMedia.Platform.Controller;
 using AirMedia.Platform.Data;
 using AirMedia.Platform.Player;
 using AirMedia.Platform.UI.Base;
 using Android.Content;
 using Android.OS;
-using Android.Text;
-using Android.Text.Style;
 using Android.Views;
 using Android.Widget;
 
 namespace AirMedia.Platform.UI.Player
 {
-    public class PlayerFacadeFragment : AmwFragment, IMediaPlayerCallbacks
+    public class PlayerFacadeFragment : AmwFragment, 
+        IMediaPlayerCallbacks, 
+        SeekBar.IOnSeekBarChangeListener, 
+        MediaServiceConnection.IConnectionListener
     {
+        private static readonly string UtfDash = Char.ConvertFromUtf32(8211);
+        
         private MediaServiceConnection _mediaServiceConnection;
         private ViewGroup _trackInfoPanel;
-        private TextView _trackTitleView;
-        private TextView _trackArtistView;
+        private TextView _trackInfoView;
         private SeekBar _seekBar;
         private ToggleButton _buttonRewind;
         private ToggleButton _buttonTogglePlayback;
         private ToggleButton _buttonFastForward;
+        private bool _isTouchingSeekBar;
 
         public override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
 
-            _mediaServiceConnection = new MediaServiceConnection(this);
+            _mediaServiceConnection = new MediaServiceConnection(this, this);
 
             var intent = new Intent(Activity, typeof(MediaPlayerService));
             Activity.BindService(intent, _mediaServiceConnection, Bind.AutoCreate | Bind.Important);
@@ -65,23 +69,12 @@ namespace AirMedia.Platform.UI.Player
             _seekBar = view.FindViewById<SeekBar>(Resource.Id.seekBar);
 
             _trackInfoPanel = view.FindViewById<ViewGroup>(Resource.Id.trackInfoPanel);
-            _trackTitleView = _trackInfoPanel.FindViewById<TextView>(Resource.Id.trackTitle);
-            _trackArtistView = _trackInfoPanel.FindViewById<TextView>(Resource.Id.trackArtist);
+            _trackInfoView = _trackInfoPanel.FindViewById<TextView>(Resource.Id.trackInfo);
+            _trackInfoView.Text = "";
 
             _buttonRewind = view.FindViewById<ToggleButton>(Resource.Id.buttonPlayerRewind);
             _buttonTogglePlayback = view.FindViewById<ToggleButton>(Resource.Id.buttonPlayerPlay);
             _buttonFastForward = view.FindViewById<ToggleButton>(Resource.Id.buttonPlayerFF);
-
-            SetupPlayerButton(_buttonRewind, Resource.Drawable.button_player_rew_selector);
-            SetupPlayerButton(_buttonTogglePlayback, Resource.Drawable.button_player_play_selector);
-            SetupPlayerButton(_buttonFastForward, Resource.Drawable.button_player_ff_selector);
-
-            bool isStopped = true;
-            if (_mediaServiceConnection.IsBound)
-            {
-                isStopped = !_mediaServiceConnection.Binder.Service.IsPlaying();
-            }
-            UpdatePanelIndicators(isStopped);
 
             return view;
         }
@@ -90,6 +83,7 @@ namespace AirMedia.Platform.UI.Player
         {
             base.OnResume();
 
+            _seekBar.SetOnSeekBarChangeListener(this);
             _buttonTogglePlayback.Click += OnPlayToggleClicked;
             _buttonRewind.Click += OnRewindClicked;
             _buttonFastForward.Click += OnFastForwardClicked;
@@ -97,6 +91,7 @@ namespace AirMedia.Platform.UI.Player
 
         public override void OnPause()
         {
+            _seekBar.SetOnSeekBarChangeListener(null);
             _buttonTogglePlayback.Click -= OnPlayToggleClicked;
             _buttonRewind.Click -= OnRewindClicked;
             _buttonFastForward.Click -= OnFastForwardClicked;
@@ -106,7 +101,21 @@ namespace AirMedia.Platform.UI.Player
 
         private void OnPlayToggleClicked(object sender, EventArgs args)
         {
-            _buttonTogglePlayback.Checked = !_buttonTogglePlayback.Checked;
+            var service = _mediaServiceConnection.Binder.Service;
+            if (!_buttonTogglePlayback.Checked)
+            {
+                if (service.Pause() == false)
+                {
+                    _buttonTogglePlayback.Checked = true;
+                }
+            }
+            else
+            {
+                if (service.Unpause() == false)
+                {
+                    _buttonTogglePlayback.Checked = false;
+                }
+            }
         }
 
         private void OnRewindClicked(object sender, EventArgs args)
@@ -115,16 +124,6 @@ namespace AirMedia.Platform.UI.Player
 
         private void OnFastForwardClicked(object sender, EventArgs args)
         {
-        }
-
-        private void SetupPlayerButton(ToggleButton button, int drawableResourceId)
-        {
-            var span = new ImageSpan(Activity, drawableResourceId);
-            var content = new SpannableString("X");
-            content.SetSpan(span, 0, 1, SpanTypes.ExclusiveExclusive);
-            button.TextFormatted = content;
-            button.TextOnFormatted = content;
-            button.TextOffFormatted = content;
         }
 
         public void OnPlaybackStarted()
@@ -141,8 +140,56 @@ namespace AirMedia.Platform.UI.Player
 
         public void OnTrackMetadataResolved(TrackMetadata metadata)
         {
-            _trackTitleView.Text = metadata.TrackTitle;
-            _trackArtistView.Text = metadata.ArtistName;
+            DisplayTrackMetadata(metadata);
+        }
+
+        public void OnPlaybackProgressUpdate(int current, int duration)
+        {
+            if (_seekBar == null || _isTouchingSeekBar) return;
+
+            _seekBar.Max = duration;
+            _seekBar.Progress = current;
+        }
+
+        public void OnProgressChanged(SeekBar seekBar, int progress, bool fromUser)
+        {
+        }
+
+        public void OnStartTrackingTouch(SeekBar seekBar)
+        {
+            _isTouchingSeekBar = true;
+        }
+
+        public void OnStopTrackingTouch(SeekBar seekBar)
+        {
+            if (_mediaServiceConnection.IsBound)
+            {
+                _mediaServiceConnection.Binder.SeekTo(seekBar.Progress);
+            }
+            _isTouchingSeekBar = false;
+        }
+
+        public void OnServiceConnected(MediaPlayerBinder binder)
+        {
+            bool isPlaying = binder.Service.IsPlaying();
+            _buttonTogglePlayback.Checked = isPlaying;
+            UpdatePanelIndicators(!isPlaying);
+
+            var metadata = binder.Service.GetTrackMetadata();
+            if (metadata != null)
+            {
+                DisplayTrackMetadata((TrackMetadata) metadata);
+            }
+        }
+
+        public void OnServiceDisconnected()
+        {
+        }
+
+        private void DisplayTrackMetadata(TrackMetadata metadata)
+        {
+            _trackInfoView.Text = string.Format("{0} {1} {2}", metadata.TrackTitle,
+                UtfDash, metadata.ArtistName);
         }
     }
 }

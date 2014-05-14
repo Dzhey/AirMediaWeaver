@@ -19,12 +19,16 @@ namespace AirMedia.Platform.Player
         MediaPlayer.IOnPreparedListener, 
         MediaPlayer.IOnErrorListener, 
         MediaPlayer.IOnCompletionListener,
-        MediaPlayer.IOnInfoListener
+        MediaPlayer.IOnInfoListener,
+        MediaPlayer.IOnSeekCompleteListener
     {
         public const string ExtraTrackId = "track_id";
         public const string ActionPlay = "org.eb.airmedia.android.intent.action.PLAY";
         public const string ActionStop = "org.eb.airmedia.android.intent.action.STOP";
         public const string ActionPause = "org.eb.airmedia.android.intent.action.PAUSE";
+        public const string ActionUnpause = "org.eb.airmedia.android.intent.action.UNPAUSE";
+
+        private const int MediaPlayerErrorUnknown = 38;
 
         private static readonly string LogTag = typeof (MediaPlayerService).Name;
 
@@ -77,6 +81,14 @@ namespace AirMedia.Platform.Player
                     StopSelf();
                     break;
 
+                case ActionPause:
+                    Pause();
+                    break;
+
+                case ActionUnpause:
+                    Unpause();
+                    break;
+
                 default:
                     AmwLog.Error(LogTag, string.Format(
                         "Unhandled intent received \"{0}\"", intent.Action));
@@ -84,6 +96,42 @@ namespace AirMedia.Platform.Player
             }
 
             return StartCommandResult.Sticky;
+        }
+
+        public bool Pause()
+        {
+            if (IsPlaying() == false) return false;
+            _player.Pause();
+            SetPlaybackStatus(PlaybackStatus.Paused);
+
+            return true;
+        }
+
+        public bool Unpause()
+        {
+            if (_player != null && _player.IsPlaying == false)
+            {
+                _player.Start();
+                SetPlaybackStatus(PlaybackStatus.Playing);
+
+                return true;
+            }
+
+            return false;
+        }
+
+        public bool SeekTo(int location)
+        {
+            if (_player != null 
+                && (_playbackStatus == PlaybackStatus.Playing
+                    || _playbackStatus == PlaybackStatus.Paused))
+            {
+                _player.SeekTo(location);
+
+                return true;
+            }
+
+            return false;
         }
 
         public bool IsPlaying()
@@ -119,7 +167,7 @@ namespace AirMedia.Platform.Player
 
         private void StartPlayback(Uri uri, long trackId)
         {
-            InitPlayer();
+            InitPlayer(false);
 
             if (uri == null)
             {
@@ -154,9 +202,21 @@ namespace AirMedia.Platform.Player
         {
             AmwLog.Error(LogTag, string.Format("received MediaPlayer error:" +
                                                " \"{0}\"; extra: \"{1}\"", what, extra));
+
+            if (MediaPlayerErrorUnknown == (int) what)
+            {
+                // TODO: retry
+                AmwLog.Debug(LogTag, "retrying to play");
+            }
+
             ReleasePlayer();
 
             return true;
+        }
+
+        public void OnSeekComplete(MediaPlayer mp)
+        {
+            _binder.NotifySeekCompleted();
         }
 
         public void OnCompletion(MediaPlayer mp)
@@ -166,7 +226,7 @@ namespace AirMedia.Platform.Player
             StopSelf();
         }
 
-        private void InitPlayer()
+        private void InitPlayer(bool publishStatusUpdate)
         {
             if (_player == null)
             {
@@ -181,8 +241,9 @@ namespace AirMedia.Platform.Player
             _player.SetOnCompletionListener(this);
             _player.SetOnErrorListener(this);
             _player.SetOnPreparedListener(this);
+            _player.SetOnSeekCompleteListener(this);
 
-            SetPlaybackStatus(PlaybackStatus.Stopped);
+            SetPlaybackStatus(PlaybackStatus.Stopped, publishStatusUpdate);
         }
 
         private void ReleasePlayer()
@@ -195,7 +256,7 @@ namespace AirMedia.Platform.Player
             _player = null;
         }
 
-        private void SetPlaybackStatus(PlaybackStatus status)
+        private void SetPlaybackStatus(PlaybackStatus status, bool publishUpdate = true)
         {
             if (status == _playbackStatus) return;
 
@@ -204,11 +265,11 @@ namespace AirMedia.Platform.Player
             switch (_playbackStatus)
             {
                 case PlaybackStatus.Stopped:
-                    _binder.NotifyPlaybackStopped();
+                    if (publishUpdate) _binder.NotifyPlaybackStopped();
                     break;
 
                 case PlaybackStatus.Playing:
-                    _binder.NotifyPlaybackStarted();
+                    if (publishUpdate) _binder.NotifyPlaybackStarted();
                     break;
 
                 case PlaybackStatus.Preparing:

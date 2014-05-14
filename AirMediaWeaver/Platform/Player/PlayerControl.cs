@@ -27,5 +27,19 @@ namespace AirMedia.Platform.Player
             intent.SetClass(App.Instance, typeof(MediaPlayerService));
             App.Instance.StartService(intent);
         }
+
+        public static void Pause()
+        {
+            var intent = new Intent(MediaPlayerService.ActionPause);
+            intent.SetClass(App.Instance, typeof(MediaPlayerService));
+            App.Instance.StartService(intent);
+        }
+
+        public static void Unpause()
+        {
+            var intent = new Intent(MediaPlayerService.ActionUnpause);
+            intent.SetClass(App.Instance, typeof(MediaPlayerService));
+            App.Instance.StartService(intent);
+        }
     }
 }

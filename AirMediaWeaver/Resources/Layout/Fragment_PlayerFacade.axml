@@ -14,11 +14,25 @@
         android:layout_marginTop="4dp"
         android:max="100" />
     <LinearLayout
-        android:id="@+id/playerControlsPanel"
+        android:id="@+id/trackInfoPanel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/seekBar"
-        android:layout_marginTop="4dp"
+        android:orientation="horizontal"
+        android:gravity="left|top">
+        <TextView
+            android:id="@+id/trackInfo"
+            style="@style/AppTheme.Text.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:text="@android:string/untitled" />
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/playerControlsPanel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/trackInfoPanel"
         android:orientation="horizontal"
         android:gravity="center">
         <ToggleButton
@@ -27,42 +41,26 @@
             android:layout_height="48dp"
             android:textOn=""
             android:textOff=""
-            android:background="@null" />
+            android:background="@null"
+            android:button="@drawable/button_player_rew_selector" />
         <ToggleButton
             android:id="@+id/buttonPlayerPlay"
             android:layout_width="48dp"
             android:layout_height="48dp"
+            android:layout_marginLeft="14dp"
+            android:layout_marginRight="14dp"
             android:textOn=""
             android:textOff=""
-            android:background="@null" />
+            android:textSize="0sp"
+            android:background="@null"
+            android:button="@drawable/button_player_play_selector" />
         <ToggleButton
             android:id="@+id/buttonPlayerFF"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:textOn=""
             android:textOff=""
-            android:background="@null" />
-    </LinearLayout>
-    <LinearLayout
-        android:id="@+id/trackInfoPanel"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/playerControlsPanel"
-        android:orientation="vertical"
-        android:gravity="left|top">
-        <TextView
-            android:id="@+id/trackTitle"
-            style="@style/AppTheme.Text.Small"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:text="@android:string/untitled" />
-        <TextView
-            android:id="@+id/trackArtist"
-            style="@style/AppTheme.Text.Small"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:text="@android:string/untitled" />
+            android:background="@null"
+            android:button="@drawable/button_player_ff_selector" />
     </LinearLayout>
 </RelativeLayout>

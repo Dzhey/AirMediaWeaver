@@ -82,6 +82,7 @@ namespace AirMedia.Platform.UI.Library
             if (_listView != null)
             {
                 _listView.Adapter = _adapter;
+                _listView.Post(() => _adapter.NotifyDataSetChanged());
             }
 
             UpdateProgressIndicators(false);

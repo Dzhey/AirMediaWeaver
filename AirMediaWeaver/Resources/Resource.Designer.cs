@@ -386,20 +386,20 @@ namespace AirMedia
 			// aapt resource value: 0x7f07000d
 			public const int actionPanel = 2131165197;
 			
-			// aapt resource value: 0x7f070025
-			public const int artist = 2131165221;
+			// aapt resource value: 0x7f070024
+			public const int artist = 2131165220;
 			
-			// aapt resource value: 0x7f070021
-			public const int buttonDetails = 2131165217;
+			// aapt resource value: 0x7f070020
+			public const int buttonDetails = 2131165216;
+			
+			// aapt resource value: 0x7f070018
+			public const int buttonPlayerFF = 2131165208;
+			
+			// aapt resource value: 0x7f070017
+			public const int buttonPlayerPlay = 2131165207;
 			
 			// aapt resource value: 0x7f070016
-			public const int buttonPlayerFF = 2131165206;
-			
-			// aapt resource value: 0x7f070015
-			public const int buttonPlayerPlay = 2131165205;
-			
-			// aapt resource value: 0x7f070014
-			public const int buttonPlayerRewind = 2131165204;
+			public const int buttonPlayerRewind = 2131165206;
 			
 			// aapt resource value: 0x7f07000f
 			public const int buttonSave = 2131165199;
@@ -413,32 +413,32 @@ namespace AirMedia
 			// aapt resource value: 0x7f070000
 			public const int horizontal = 2131165184;
 			
+			// aapt resource value: 0x7f070019
+			public const int indicatorError = 2131165209;
+			
 			// aapt resource value: 0x7f07001a
-			public const int indicatorError = 2131165210;
-			
-			// aapt resource value: 0x7f07001b
-			public const int indicatorErrorTitle = 2131165211;
-			
-			// aapt resource value: 0x7f070020
-			public const int indicatorEventTitle = 2131165216;
-			
-			// aapt resource value: 0x7f07001e
-			public const int indicatorInfo = 2131165214;
+			public const int indicatorErrorTitle = 2131165210;
 			
 			// aapt resource value: 0x7f07001f
-			public const int indicatorInfoTitle = 2131165215;
-			
-			// aapt resource value: 0x7f070022
-			public const int indicatorLeft = 2131165218;
-			
-			// aapt resource value: 0x7f070023
-			public const int indicatorRight = 2131165219;
-			
-			// aapt resource value: 0x7f07001c
-			public const int indicatorWarning = 2131165212;
+			public const int indicatorEventTitle = 2131165215;
 			
 			// aapt resource value: 0x7f07001d
-			public const int indicatorWarningTitle = 2131165213;
+			public const int indicatorInfo = 2131165213;
+			
+			// aapt resource value: 0x7f07001e
+			public const int indicatorInfoTitle = 2131165214;
+			
+			// aapt resource value: 0x7f070021
+			public const int indicatorLeft = 2131165217;
+			
+			// aapt resource value: 0x7f070022
+			public const int indicatorRight = 2131165218;
+			
+			// aapt resource value: 0x7f07001b
+			public const int indicatorWarning = 2131165211;
+			
+			// aapt resource value: 0x7f07001c
+			public const int indicatorWarningTitle = 2131165212;
 			
 			// aapt resource value: 0x7f070010
 			public const int listDisplaySwitch = 2131165200;
@@ -455,14 +455,14 @@ namespace AirMedia
 			// aapt resource value: 0x7f070002
 			public const int none = 2131165186;
 			
-			// aapt resource value: 0x7f070013
-			public const int playerControlsPanel = 2131165203;
+			// aapt resource value: 0x7f070015
+			public const int playerControlsPanel = 2131165205;
 			
 			// aapt resource value: 0x7f070006
 			public const int playerView = 2131165190;
 			
-			// aapt resource value: 0x7f070024
-			public const int progressBar = 2131165220;
+			// aapt resource value: 0x7f070023
+			public const int progressBar = 2131165219;
 			
 			// aapt resource value: 0x7f07000c
 			public const int progressPanel = 2131165196;
@@ -479,14 +479,11 @@ namespace AirMedia
 			// aapt resource value: 0x7f07000a
 			public const int topBarProgressIndicator = 2131165194;
 			
-			// aapt resource value: 0x7f070019
-			public const int trackArtist = 2131165209;
+			// aapt resource value: 0x7f070014
+			public const int trackInfo = 2131165204;
 			
-			// aapt resource value: 0x7f070017
-			public const int trackInfoPanel = 2131165207;
-			
-			// aapt resource value: 0x7f070018
-			public const int trackTitle = 2131165208;
+			// aapt resource value: 0x7f070013
+			public const int trackInfoPanel = 2131165203;
 			
 			// aapt resource value: 0x7f070003
 			public const int triangle = 2131165187;

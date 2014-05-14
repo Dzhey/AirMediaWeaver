@@ -30,10 +30,15 @@ namespace AirMedia.Platform.UI.MainView
 
             SetContentFragment(typeof(AudioLibraryFragment));
 
-            var playerFacadeFragment = new PlayerFacadeFragment();
-            FragmentManager.BeginTransaction()
-                           .Add(Resource.Id.playerView, playerFacadeFragment, PlayerFacadeFragmentTag)
-                           .Commit();
+            var playerFacadeFragment = (PlayerFacadeFragment) FragmentManager.FindFragmentByTag(PlayerFacadeFragmentTag);
+
+            if (playerFacadeFragment == null)
+            {
+                playerFacadeFragment = new PlayerFacadeFragment();
+                FragmentManager.BeginTransaction()
+                               .Add(Resource.Id.playerView, playerFacadeFragment, PlayerFacadeFragmentTag)
+                               .Commit();
+            }
         }
 
         protected override void OnSaveInstanceState(Bundle outState)
