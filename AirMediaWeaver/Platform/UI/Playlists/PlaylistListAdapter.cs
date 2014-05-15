@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using AirMedia.Core.Data;
 using Android.Views;
 using Android.Widget;
@@ -20,9 +21,9 @@ namespace AirMedia.Platform.UI.Playlists
             get { return _items[position]; }
         }
 
-        public override long GetItemId(int position)
+        public override bool HasStableIds
         {
-            return this[position].Id;
+            get { return true; }
         }
 
         public PlaylistListAdapter()
@@ -31,11 +32,33 @@ namespace AirMedia.Platform.UI.Playlists
             _checkedItems = new HashSet<long>();
         }
 
+        public override long GetItemId(int position)
+        {
+            return this[position].Id;
+        }
+
+        public PlaylistModel FindItem(long itemId)
+        {
+            return _items.FirstOrDefault(model => model.Id == itemId);
+        }
+
         public void SetItems(IEnumerable<PlaylistModel> items)
         {
             _items.Clear();
             _items.AddRange(items);
             NotifyDataSetChanged();
+        }
+
+        public void SetCheckedItems(params long[] itemIds)
+        {
+            _checkedItems.Clear();
+            _checkedItems.UnionWith(itemIds);
+            NotifyDataSetChanged();
+        }
+
+        public long[] GetCheckedItems()
+        {
+            return _checkedItems.ToArray();
         }
 
         public void ToggleItemCheck(long itemId)

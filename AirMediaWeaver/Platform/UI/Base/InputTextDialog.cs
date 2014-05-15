@@ -10,6 +10,8 @@ namespace AirMedia.Platform.UI.Base
 {
     public class InputTextDialogFragment : ConfirmDialogFragment
     {
+        private const string ExtraInitialText = "initial_text";
+
         public string InputText
         {
             get
@@ -22,16 +24,24 @@ namespace AirMedia.Platform.UI.Base
 
         private EditText _inputView;
 
-        public static InputTextDialogFragment NewInstance(
+        public static InputTextDialogFragment CreateInputDialog(
             Context context, 
             string title,
             Bundle payload = null,
             string acceptText = null,
             string declineText = null ,
-            int? iconId = null)
+            int? iconId = null,
+            string initalText = null)
         {
-            return (InputTextDialogFragment) NewInstance(context, title, null, 
-                payload, acceptText, declineText, iconId: iconId, dialogType: typeof(InputTextDialogFragment));
+            var dialog = (InputTextDialogFragment) NewInstance(context, title, null, payload, 
+                acceptText, declineText, iconId: iconId, dialogType: typeof(InputTextDialogFragment));
+
+            if (initalText != null)
+            {
+                dialog.Arguments.PutString(ExtraInitialText, initalText);
+            }
+
+            return dialog;
         }
 
         protected override void BuildDialog(AlertDialog.Builder builder)
@@ -41,6 +51,11 @@ namespace AirMedia.Platform.UI.Base
             var view = LayoutInflater.From(Activity).Inflate(Resource.Layout.View_InputField, null);
 
             _inputView = view.FindViewById<EditText>(Resource.Id.input);
+
+            if (Arguments != null && Arguments.ContainsKey(ExtraInitialText))
+            {
+                _inputView.Text = Arguments.GetString(ExtraInitialText);
+            }
 
             builder.SetView(view);
         }
@@ -57,12 +72,15 @@ namespace AirMedia.Platform.UI.Base
             _inputView.EditorAction -= OnEditorAction;
 
             base.OnPause();
-        }        protected virtual void OnEditorAction(object sender, TextView.EditorActionEventArgs args)
+        }
+
+        protected virtual void OnEditorAction(object sender, TextView.EditorActionEventArgs args)
         {
             if (args.ActionId == ImeAction.Done)
             {
                 PerformAccept();
                 Dismiss();
             }
-        }    }
+        }
+    }
 }

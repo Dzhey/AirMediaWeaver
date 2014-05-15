@@ -29,6 +29,37 @@ namespace AirMedia.Platform.Controller
                 MediaStore.Audio.Playlists.Members.InterfaceConsts.Data
             };
 
+        public static bool RemovePlaylists(params long[] playlistIds)
+        {
+            var resolver = App.Instance.ContentResolver;
+
+            foreach (var playlistId in playlistIds)
+            {
+                var uri = ContentUris.WithAppendedId(MediaStore.Audio.Playlists.ExternalContentUri, playlistId);
+                int ret = resolver.Delete(uri, null, null);
+
+                if (ret < 1) return false;
+            }
+
+            return true;
+        }
+
+        public static bool RenamePlaylist(long playlistId, string playlistName)
+        {
+            var resolver = App.Instance.ContentResolver;
+
+            var insertValues = new ContentValues();
+
+            long date = JavaSystem.CurrentTimeMillis();
+            insertValues.Put(MediaStore.Audio.Playlists.InterfaceConsts.Name, playlistName);
+            insertValues.Put(MediaStore.Audio.Playlists.InterfaceConsts.DateModified, date);
+
+            var uri = ContentUris.WithAppendedId(MediaStore.Audio.Playlists.ExternalContentUri, playlistId);
+            int ret = resolver.Update(uri, insertValues, null, null);
+
+            return ret > 0;
+        }
+
         public static PlaylistModel CreateNewPlaylist(string playlistName)
         {
             var resolver = App.Instance.ContentResolver;

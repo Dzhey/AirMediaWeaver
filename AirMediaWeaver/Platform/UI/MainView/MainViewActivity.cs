@@ -217,7 +217,8 @@ namespace AirMedia.Platform.UI.MainView
 
             if (contentFragment != null)
             {
-                App.MainHandler.PostDelayed(() => SetContentFragment(contentFragment), 200);
+                // Delayed start to let finish animations
+                App.MainHandler.PostDelayed(() => SetContentFragment(contentFragment), 250);
             }
         }
 

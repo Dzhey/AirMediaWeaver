@@ -177,7 +177,9 @@
       <SubType>AndroidResource</SubType>
     </AndroidResource>
     <AndroidResource Include="Resources\Layout\View_DrawerNavigationItem.axml" />
-    <AndroidResource Include="Resources\Layout\View_PlaylistItem.axml" />
+    <AndroidResource Include="Resources\Layout\View_PlaylistItem.axml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
     <AndroidResource Include="Resources\Layout\Fragment_PlaylistDetails.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
@@ -280,6 +282,10 @@
     <AndroidResource Include="Resources\Drawable-xhdpi\ic_action_remove.png" />
     <AndroidResource Include="Resources\Drawable-xxhdpi\ic_action_remove.png" />
     <AndroidResource Include="Resources\Drawable\list_item_color_selector.xml" />
+    <AndroidResource Include="Resources\Drawable-hdpi\ic_action_edit.png" />
+    <AndroidResource Include="Resources\Drawable-mdpi\ic_action_edit.png" />
+    <AndroidResource Include="Resources\Drawable-xhdpi\ic_action_edit.png" />
+    <AndroidResource Include="Resources\Drawable-xxhdpi\ic_action_edit.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\libs\ViewPagerIndicator\ViewPagerIndicator.csproj">

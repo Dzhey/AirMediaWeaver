@@ -13,12 +13,14 @@ namespace AirMedia.Platform.UI.Library
 {
     public class AudioLibraryFragment : MainViewFragment, LoaderManager.ILoaderCallbacks
     {
+        private const int ProgressDelayMillis = 1200;
         private const int TrackListLoaderId = 1;
 
         private ListView _listView;
         private TrackListAdapter _adapter;
         private View _progressPanel;
         private View _emptyIndicatorView;
+        private bool _isInProgress;
 
         public override View OnCreateView(LayoutInflater inflater, 
             ViewGroup container, Bundle savedInstanceState)
@@ -34,8 +36,9 @@ namespace AirMedia.Platform.UI.Library
                 _listView.Adapter = _adapter;
             }
 
+            _isInProgress = true;
             LoaderManager.InitLoader(TrackListLoaderId, null, this);
-            UpdateProgressIndicators(true);
+            App.MainHandler.PostDelayed(UpdateProgressIndicators, ProgressDelayMillis);
 
             return view;
         }
@@ -88,7 +91,7 @@ namespace AirMedia.Platform.UI.Library
                 _listView.Post(() => _adapter.NotifyDataSetChanged());
             }
 
-            UpdateProgressIndicators(false);
+            UpdateProgressIndicators();
         }
 
         private void OnTrackItemClicked(object sender, AdapterView.ItemClickEventArgs args)
@@ -101,11 +104,11 @@ namespace AirMedia.Platform.UI.Library
             }
         }
 
-        private void UpdateProgressIndicators(bool isInProgress)
+        private void UpdateProgressIndicators()
         {
             if (_listView == null || _listView.Count == 0)
             {
-                if (isInProgress)
+                if (_isInProgress)
                 {
                     _progressPanel.Visibility = ViewStates.Visible;
                     _emptyIndicatorView.Visibility = ViewStates.Gone;

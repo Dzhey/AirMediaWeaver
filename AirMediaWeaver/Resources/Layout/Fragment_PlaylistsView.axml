@@ -14,7 +14,8 @@
         android:layout_marginTop="26dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:visibility="gone" />
     <TextView
         android:id="@android:id/empty"
         style="@style/AppTheme.Text.Small"

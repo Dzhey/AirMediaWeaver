@@ -14,14 +14,23 @@ namespace AirMedia.Platform.UI.Playlists
 {
     public class PlaylistsViewFragment : MainViewFragment, ActionMode.ICallback
     {
-        private const string TagCreatePlaylistDialog = "dialog_create_playlist";
+        private const int ProgressDelayMillis = 1200;
+
+        private const string TagInputPlaylistNameDialog = "dialog_input_playlist_name";
+        private const string TagRemovePlaylistsDialog = "dialog_remove_playlists";
         private const int RequestCodeEditPlaylist = 10;
+
+        private const string ExtraIsInActionMode = "is_in_action_mode";
+        private const string ExtraCheckedItemIds = "checked_item_ids";
+        private const string ExtraPlaylistId = "playlist_id";
+        private const string ExtraPlaylistIds = "playlist_ids";
 
         private ListView _listView;
         private View _progressPanel;
         private View _emptyIndicatorView;
         private PlaylistListAdapter _adapter;
         private ActionMode _actionMode;
+        private bool _isInProgress;
 
         public override void OnCreate(Bundle savedInstanceState)
         {
@@ -44,7 +53,30 @@ namespace AirMedia.Platform.UI.Playlists
             _progressPanel = view.FindViewById(Android.Resource.Id.Progress);
             _emptyIndicatorView = view.FindViewById(Android.Resource.Id.Empty);
 
+            if (savedInstanceState != null)
+            {
+                if (savedInstanceState.ContainsKey(ExtraIsInActionMode))
+                {
+                    _actionMode = Activity.StartActionMode(this);
+
+                    // Restore checked items in adapter when action mode is enabled
+                    long[] checkedItemIds = savedInstanceState.GetLongArray(ExtraCheckedItemIds) ?? new long[0];
+                    _adapter.SetCheckedItems(checkedItemIds);
+                }
+            }
+
             return view;
+        }
+
+        public override void OnSaveInstanceState(Bundle outState)
+        {
+            base.OnSaveInstanceState(outState);
+
+            if (_actionMode != null)
+            {
+                outState.PutBoolean(ExtraIsInActionMode, true);
+                outState.PutLongArray(ExtraCheckedItemIds, _adapter.GetCheckedItems());
+            }
         }
 
         public override void OnCreateOptionsMenu(IMenu menu, MenuInflater inflater)
@@ -59,11 +91,12 @@ namespace AirMedia.Platform.UI.Playlists
             switch (item.ItemId)
             {
                 case Resource.Id.ActionNew:
-                    DisplayCreatePlaylistDialog();
+                    DisplayInputPlaylistNameDialog();
                     return true;
-            }
 
-            return base.OnOptionsItemSelected(item);
+                default:
+                    return base.OnOptionsItemSelected(item);
+            }
         }
 
         public override void OnActivityResult(int requestCode, 
@@ -101,11 +134,17 @@ namespace AirMedia.Platform.UI.Playlists
             RegisterRequestResultHandler(typeof(LoadPlaylistsRequest), OnPlaylistsLoaded);
 
             var createPlaylistDialog = (InputTextDialogFragment) FragmentManager
-                .FindFragmentByTag(TagCreatePlaylistDialog);
-
+                .FindFragmentByTag(TagInputPlaylistNameDialog);
             if (createPlaylistDialog != null)
             {
-                createPlaylistDialog.AcceptClick += OnNewPlaylistNameEntered;
+                createPlaylistDialog.AcceptClick += OnPlaylistNameEntered;
+            }
+
+            var removePlaylistsDialog = (ConfirmDialogFragment)FragmentManager
+                .FindFragmentByTag(TagRemovePlaylistsDialog);
+            if (removePlaylistsDialog != null)
+            {
+                removePlaylistsDialog.AcceptClick += OnPlaylistRemoveAccepted;
             }
         }
 
@@ -118,28 +157,74 @@ namespace AirMedia.Platform.UI.Playlists
             RemoveRequestResultHandler(typeof(LoadPlaylistsRequest));
 
             var createPlaylistDialog = (InputTextDialogFragment)FragmentManager
-                .FindFragmentByTag(TagCreatePlaylistDialog);
-
+                .FindFragmentByTag(TagInputPlaylistNameDialog);
             if (createPlaylistDialog != null)
             {
-                createPlaylistDialog.AcceptClick -= OnNewPlaylistNameEntered;
+                createPlaylistDialog.AcceptClick -= OnPlaylistNameEntered;
+            }
+
+            var removePlaylistsDialog = (ConfirmDialogFragment)FragmentManager
+                .FindFragmentByTag(TagRemovePlaylistsDialog);
+            if (removePlaylistsDialog != null)
+            {
+                removePlaylistsDialog.AcceptClick -= OnPlaylistRemoveAccepted;
             }
 
             base.OnPause();
         }
 
-        private void DisplayCreatePlaylistDialog()
+        private void DisplayRemovePlaylistsDialog(params long[] playlistIds)
         {
-            string title = GetString(Resource.String.dialog_create_playlist_title);
-            string confirmText = GetString(Resource.String.dialog_create_playlist_confirm);
-            var dialog = InputTextDialogFragment.NewInstance(Activity, title, acceptText: confirmText);
+            if (playlistIds.Length == 0) return;
 
-            dialog.AcceptClick += OnNewPlaylistNameEntered;
+            var payload = new Bundle();
+            payload.PutLongArray(ExtraPlaylistIds, playlistIds);
 
-            dialog.Show(FragmentManager, TagCreatePlaylistDialog);
+            string title = GetString(Resource.String.dialog_remove_playlists_title);
+            string message = GetString(Resource.String.dialog_remove_playlists_message);
+            message = string.Format(message, playlistIds.Length);
+
+            var dialog = ConfirmDialogFragment.NewInstance(Activity, title, message, payload);
+
+            dialog.AcceptClick += OnPlaylistRemoveAccepted;
+            dialog.Show(FragmentManager, TagRemovePlaylistsDialog);
         }
 
-        private void OnNewPlaylistNameEntered(object sender, Bundle payload)
+        private void DisplayInputPlaylistNameDialog(string initialText = null, long? playlistId = null)
+        {
+            var payload = new Bundle();
+            string title;
+            if (playlistId == null)
+            {
+                title = GetString(Resource.String.dialog_create_playlist_title);
+            }
+            else
+            {
+                title = GetString(Resource.String.dialog_rename_playlist_title);
+                payload.PutLong(ExtraPlaylistId, (long) playlistId);
+            }
+            string confirmText = GetString(Resource.String.dialog_create_playlist_confirm);
+            var dialog = InputTextDialogFragment.CreateInputDialog(Activity, title, payload,
+                confirmText, initalText: initialText);
+
+            dialog.AcceptClick += OnPlaylistNameEntered;
+
+            dialog.Show(FragmentManager, TagInputPlaylistNameDialog);
+        }
+
+        private void OnPlaylistRemoveAccepted(object sender, Bundle payload)
+        {
+            var playlistIds = payload.GetLongArray(ExtraPlaylistIds);
+
+            if (PlaylistManager.RemovePlaylists(playlistIds) == false)
+            {
+                ShowMessage(Resource.String.error_cant_remove_playlists);
+            }
+
+            ReloadList();
+        }
+
+        private void OnPlaylistNameEntered(object sender, Bundle payload)
         {
             var dialog = (InputTextDialogFragment) sender;
             string text = dialog.InputText;
@@ -151,15 +236,40 @@ namespace AirMedia.Platform.UI.Playlists
             }
 
             string textTrimmed = text.Trim();
+
+            if (payload.ContainsKey(ExtraPlaylistId))
+            {
+                long playlistId = payload.GetLong(ExtraPlaylistId);
+
+                if (PlaylistManager.RenamePlaylist(playlistId, textTrimmed) == false)
+                {
+                    ShowMessage(Resource.String.error_cant_rename_playlist);
+                    AmwLog.Error(LogTag, string.Format(
+                        "cant rename playlist (id:{0}) for name \"{1}\"", playlistId, textTrimmed));
+                }
+                else
+                {
+                    var item = _adapter.FindItem(playlistId);
+                    if (item != null)
+                    {
+                        item.Name = textTrimmed;
+                        _adapter.NotifyDataSetChanged();
+                    }
+                }
+
+                return;
+            }
+
             var playlistModel = PlaylistManager.CreateNewPlaylist(textTrimmed);
             if (playlistModel == null)
             {
                 ShowMessage(Resource.String.error_cant_create_playlist);
-                AmwLog.Error(LogTag, string.Format("cant create playlist for name \"{0}\"", text.Trim()));
+                AmwLog.Error(LogTag, string.Format("cant create playlist for name \"{0}\"", textTrimmed));
             }
             else
             {
-                OpenPlaylistDetails(playlistModel.Id);
+                // Delayed start to let finish animations
+                App.MainHandler.PostDelayed(() => OpenPlaylistDetails(playlistModel.Id), 300);
             }
         }
 
@@ -197,39 +307,41 @@ namespace AirMedia.Platform.UI.Playlists
             var intent = FragmentContentActivity.CreateStartIntent(Activity,
                 typeof(PlaylistDetailsFragment), fragmentArgs);
 
-            // Delayed start to let finish animations
-            App.MainHandler.PostDelayed(() => 
-                Activity.StartActivityForResult(intent, RequestCodeEditPlaylist), 200);
+            Activity.StartActivityForResult(intent, RequestCodeEditPlaylist);
         }
 
         private void ReloadList()
         {
-            UpdateProgressIndicators(true);
+            _isInProgress = true;
+            App.MainHandler.PostDelayed(UpdateProgressIndicators, ProgressDelayMillis);
+
             SubmitParallelRequest(new LoadPlaylistsRequest());
         }
 
         private void OnPlaylistsLoaded(object sender, ResultEventArgs args)
         {
+            _isInProgress = false;
             if (args.Request.Status != RequestStatus.Ok)
             {
-                UpdateProgressIndicators(false);
+                UpdateProgressIndicators();
                 AmwLog.Error(LogTag, "error loading playlists");
                 return;
             }
 
             var playlists = ((LoadRequestResult<List<PlaylistModel>>) args.Result).Data;
+           
             if (_adapter != null)
             {
                 _adapter.SetItems(playlists);
             }
-            UpdateProgressIndicators(false);
+            UpdateProgressIndicators();
         }
 
-        private void UpdateProgressIndicators(bool isInProgress)
+        private void UpdateProgressIndicators()
         {
             if (_listView == null || _listView.Count == 0)
             {
-                if (isInProgress)
+                if (_isInProgress)
                 {
                     _progressPanel.Visibility = ViewStates.Visible;
                     _emptyIndicatorView.Visibility = ViewStates.Gone;
@@ -249,12 +361,29 @@ namespace AirMedia.Platform.UI.Playlists
 
         public bool OnActionItemClicked(ActionMode mode, IMenuItem item)
         {
-            int count = _listView.CheckedItemCount;
+            var ids = _listView.GetCheckedItemIds();
 
             switch (item.ItemId)
             {
                 case Resource.Id.ActionRemove:
-                    ShowMessage(string.Format("todo: remove selected item(s) - {0}", count));
+                    DisplayRemovePlaylistsDialog(ids);
+                    mode.Finish();
+                    return true;
+
+                case Resource.Id.ActionRename:
+                    if (ids.Length == 1)
+                    {
+                        var playlistItem = _adapter.FindItem(ids[0]);
+                        if (playlistItem != null)
+                        {
+                            DisplayInputPlaylistNameDialog(playlistItem.Name, ids[0]);
+                            mode.Finish();
+
+                            return true;
+                        }
+                    }
+                    
+                    ShowMessage(Resource.String.error_generic_cant_rename_playlist);
                     mode.Finish();
                     return true;
 
@@ -282,13 +411,23 @@ namespace AirMedia.Platform.UI.Playlists
         {
             int count = _listView.CheckedItemCount;
 
-            if (count == 0)
+            IMenuItem item;
+            switch (count)
             {
-                mode.Finish();
-                return true;
+                case 0:
+                    mode.Finish();
+                    return true;
+
+                case 1:
+                    item = menu.FindItem(Resource.Id.ActionRename);
+                    item.SetVisible(true);
+                    return true;
             }
 
-            return false;
+            item = menu.FindItem(Resource.Id.ActionRename);
+            item.SetVisible(false);
+
+            return true;
         }
     }
 }
