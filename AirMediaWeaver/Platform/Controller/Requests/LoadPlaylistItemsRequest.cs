@@ -18,7 +18,7 @@ namespace AirMedia.Platform.Controller.Requests
         {
             status = RequestStatus.Ok;
 
-            var metadata = PlaylistManager.GetPlaylistTracks(PlaylistId);
+            var metadata = PlaylistDao.GetPlaylistTracks(PlaylistId);
 
             return new LoadRequestResult<List<TrackMetadata>>(RequestResult.ResultCodeOk, metadata);
         }

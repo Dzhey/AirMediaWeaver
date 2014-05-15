@@ -5,6 +5,9 @@ using AirMedia.Platform.Controller;
 using AirMedia.Platform.Controller.Requests;
 using AirMedia.Platform.Data;
 using AirMedia.Platform.UI.Base;
+using AirMedia.Platform.UI.Library;
+using Android.App;
+using Android.Content;
 using Android.OS;
 using Android.Views;
 using Android.Widget;
@@ -14,6 +17,8 @@ namespace AirMedia.Platform.UI.Playlists
     public class PlaylistDetailsFragment : AmwFragment
     {
         public const string ExtraPlaylistId = "playlist_id";
+
+        private const int RequestCodeEditPlaylist = 1000;
 
         private PlaylistItemsAdapter _adapter;
         private ListView _listView;
@@ -29,6 +34,7 @@ namespace AirMedia.Platform.UI.Playlists
 
             _adapter = new PlaylistItemsAdapter();
 
+            SetHasOptionsMenu(true);
             Activity.ActionBar.SetDisplayShowHomeEnabled(true);
             Activity.ActionBar.SetDisplayHomeAsUpEnabled(true);
 
@@ -36,7 +42,7 @@ namespace AirMedia.Platform.UI.Playlists
             {
                 _playlistId = Arguments.GetLong(ExtraPlaylistId);
 
-                var playlist = PlaylistManager.GetPlaylist((long)_playlistId);
+                var playlist = PlaylistDao.GetPlaylist((long)_playlistId);
                 if (playlist != null)
                 {
                     Activity.ActionBar.Title = playlist.Name;
@@ -46,6 +52,11 @@ namespace AirMedia.Platform.UI.Playlists
             {
                 AmwLog.Error(LogTag, "playlist id is not specified to display content");
             }
+        }
+
+        public override void OnCreateOptionsMenu(IMenu menu, MenuInflater inflater)
+        {
+            inflater.Inflate(Resource.Menu.menu_playlists_details, menu);
         }
 
         public override View OnCreateView(LayoutInflater inflater, 
@@ -66,23 +77,64 @@ namespace AirMedia.Platform.UI.Playlists
         {
             base.OnActivityCreated(savedInstanceState);
 
+            ReloadList();
+        }
+
+        private void ReloadList()
+        {
             if (_playlistId != null)
             {
                 UpdateProgressIndicators(true);
                 SubmitParallelRequest(new LoadPlaylistItemsRequest((long) _playlistId));
             }
+            else
+            {
+                AmwLog.Error(LogTag, "Can't reload playlist - playlistId is not specified");
+            }
         }
 
         public override bool OnOptionsItemSelected(IMenuItem item)
         {
-            if (item.ItemId == Android.Resource.Id.Home)
+            switch (item.ItemId)
             {
-                Activity.Finish();
+                case Android.Resource.Id.Home:
+                    Activity.Finish();
+                    return true;
 
-                return true;
+                case Resource.Id.ActionEdit:
+                    var args = new Bundle();
+                    args.PutBoolean(AudioLibraryFragment.ExtraStartInPickMode, true);
+                    args.PutLongArray(AudioLibraryFragment.ExtraCheckedTrackIds, _adapter.GetItemIds());
+                    var intent = FragmentContentActivity.CreateStartIntent(
+                        Activity, typeof (AudioLibraryFragment), args);
+                    Activity.StartActivityForResult(intent, RequestCodeEditPlaylist);
+                    return true;
             }
 
             return base.OnOptionsItemSelected(item);
+        }
+
+        public override void OnActivityResult(int requestCode, Result resultCode, Intent data)
+        {
+            switch (requestCode)
+            {
+                case RequestCodeEditPlaylist:
+                    if (resultCode == Result.Ok)
+                    {
+                        var selectedTracks = data.GetLongArrayExtra(AudioLibraryFragment.ExtraCheckedTrackIds);
+                        if (_playlistId == null || PlaylistDao.UpdatePlaylistContents(
+                            (long)_playlistId, selectedTracks) == false)
+                        {
+                            ShowMessage(Resource.String.error_cant_update_playlists);
+                        }
+                        
+                        ReloadList();
+                    }
+
+                    return;
+            }
+
+            base.OnActivityResult(requestCode, resultCode, data);
         }
 
         public override void OnResume()

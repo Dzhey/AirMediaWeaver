@@ -22,6 +22,8 @@
   <string name="hint_create_playlist">Создать плейлист</string>
   <string name="hint_remove_playlist">Удалить плейлист</string>
   <string name="hint_rename_playlist">Переименовать плейлист</string>
+  <string name="hint_edit_playlist">Добавить или удалить композиции</string>
+  <string name="hint_pick_playlist_tracks">Выберите треки</string>
   <string name="dialog_create_playlist_title">Введите название</string>
   <string name="dialog_rename_playlist_title">Переименовать плейлист</string>
   <string name="dialog_create_playlist_confirm">ОК</string>
@@ -32,6 +34,7 @@
   <string name="error_cant_rename_playlist">Ошибка при переименовании плейлиста</string>
   <string name="error_generic_cant_rename_playlist">Не удалось переименовать плейлист</string>
   <string name="error_cant_remove_playlists">Ошибка при удалении плейлиста</string>
+  <string name="error_cant_update_playlists">Ошибка при обновлении плейлиста</string>
   
   <!-- Logger strings -->
   <string name="title_log_level">Уровень</string>

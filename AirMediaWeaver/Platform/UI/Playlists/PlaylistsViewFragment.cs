@@ -216,7 +216,7 @@ namespace AirMedia.Platform.UI.Playlists
         {
             var playlistIds = payload.GetLongArray(ExtraPlaylistIds);
 
-            if (PlaylistManager.RemovePlaylists(playlistIds) == false)
+            if (PlaylistDao.RemovePlaylists(playlistIds) == false)
             {
                 ShowMessage(Resource.String.error_cant_remove_playlists);
             }
@@ -241,7 +241,7 @@ namespace AirMedia.Platform.UI.Playlists
             {
                 long playlistId = payload.GetLong(ExtraPlaylistId);
 
-                if (PlaylistManager.RenamePlaylist(playlistId, textTrimmed) == false)
+                if (PlaylistDao.RenamePlaylist(playlistId, textTrimmed) == false)
                 {
                     ShowMessage(Resource.String.error_cant_rename_playlist);
                     AmwLog.Error(LogTag, string.Format(
@@ -260,7 +260,7 @@ namespace AirMedia.Platform.UI.Playlists
                 return;
             }
 
-            var playlistModel = PlaylistManager.CreateNewPlaylist(textTrimmed);
+            var playlistModel = PlaylistDao.CreateNewPlaylist(textTrimmed);
             if (playlistModel == null)
             {
                 ShowMessage(Resource.String.error_cant_create_playlist);

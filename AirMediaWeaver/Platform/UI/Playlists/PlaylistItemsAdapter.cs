@@ -12,6 +12,7 @@ namespace AirMedia.Platform.UI.Playlists
             public TrackMetadata Metadata { get; set; }
             public TextView TitleView { get; set; }
             public TextView ArtistView { get; set; }
+            public CheckBox CheckBox { get; set; }
         }
 
         private readonly List<TrackMetadata> _items;
@@ -38,6 +39,11 @@ namespace AirMedia.Platform.UI.Playlists
             NotifyDataSetChanged();
         }
 
+        public long[] GetItemIds()
+        {
+            return _items.ConvertAll(input => input.TrackId).ToArray();
+        }
+
         public override long GetItemId(int position)
         {
             return _items[position].TrackId;
@@ -54,6 +60,7 @@ namespace AirMedia.Platform.UI.Playlists
                 holder = new ViewHolder();
                 holder.TitleView = convertView.FindViewById<TextView>(Android.Resource.Id.Title);
                 holder.ArtistView = convertView.FindViewById<TextView>(Resource.Id.artist);
+                holder.CheckBox = convertView.FindViewById<CheckBox>(Android.Resource.Id.Checkbox);
                 convertView.Tag = holder;
             }
             else
@@ -66,6 +73,7 @@ namespace AirMedia.Platform.UI.Playlists
             holder.Metadata = item;
             holder.TitleView.Text = item.TrackTitle;
             holder.ArtistView.Text = item.ArtistName;
+            holder.CheckBox.Visibility = ViewStates.Gone;
 
             return convertView;
         }

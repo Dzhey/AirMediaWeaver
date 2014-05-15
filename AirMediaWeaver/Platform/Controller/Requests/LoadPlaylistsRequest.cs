@@ -14,7 +14,7 @@ namespace AirMedia.Platform.Controller.Requests
         {
             status = RequestStatus.Ok;
 
-            var playlists = PlaylistManager.GetSystemPlaylists();
+            var playlists = PlaylistDao.GetSystemPlaylists();
 
             return new LoadRequestResult<List<PlaylistModel>>(RequestResult.ResultCodeOk, playlists);
         }

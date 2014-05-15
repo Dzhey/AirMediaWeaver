@@ -8,7 +8,7 @@ using Java.Lang;
 
 namespace AirMedia.Platform.Controller
 {
-    public class PlaylistManager
+    public class PlaylistDao
     {
         private static readonly string[] PlaylistsQueryProjection = new[]
             {
@@ -28,6 +28,36 @@ namespace AirMedia.Platform.Controller
                 MediaStore.Audio.Playlists.Members.InterfaceConsts.Duration,
                 MediaStore.Audio.Playlists.Members.InterfaceConsts.Data
             };
+
+        public static bool UpdatePlaylistContents(long playlistId, long[] trackIds)
+        {
+            ClearPlaylist(playlistId);
+
+            if (trackIds.Length == 0) return true;
+
+            var resolver = App.Instance.ContentResolver;
+            var uri = MediaStore.Audio.Playlists.Members.GetContentUri("external", playlistId);
+
+            var values = new ContentValues[trackIds.Length];
+            for (int i = 0; i < trackIds.Length; i++)
+            {
+                var content = new ContentValues();
+                content.Put(MediaStore.Audio.Playlists.Members.AudioId, trackIds[i]);
+                content.Put(MediaStore.Audio.Playlists.Members.PlayOrder, i);
+                values[i] = content;
+            }
+
+            int ret = resolver.BulkInsert(uri, values);
+
+            return ret == trackIds.Length;
+        }
+
+        public static void ClearPlaylist(long playlistId)
+        {
+            var resolver = App.Instance.ContentResolver;
+            var uri = MediaStore.Audio.Playlists.Members.GetContentUri("external", playlistId);
+            resolver.Delete(uri, null, null);
+        }
 
         public static bool RemovePlaylists(params long[] playlistIds)
         {

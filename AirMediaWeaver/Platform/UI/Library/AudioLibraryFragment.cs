@@ -1,3 +1,4 @@
+using System.Globalization;
 using AirMedia.Core.Log;
 using AirMedia.Platform.Player;
 using AirMedia.Platform.UI.Base;
@@ -11,8 +12,11 @@ using Java.Lang;
 
 namespace AirMedia.Platform.UI.Library
 {
-    public class AudioLibraryFragment : MainViewFragment, LoaderManager.ILoaderCallbacks
+    public class AudioLibraryFragment : MainViewFragment, LoaderManager.ILoaderCallbacks, ActionMode.ICallback, ITrackListAdapterCallbacks
     {
+        public const string ExtraStartInPickMode = "start_in_pick_mode";
+        public const string ExtraCheckedTrackIds = "checked_track_ids";
+
         private const int ProgressDelayMillis = 1200;
         private const int TrackListLoaderId = 1;
 
@@ -21,6 +25,32 @@ namespace AirMedia.Platform.UI.Library
         private View _progressPanel;
         private View _emptyIndicatorView;
         private bool _isInProgress;
+        private bool _isInPickMode;
+        private ActionMode _actionMode;
+        private long[] _checkedItems;
+
+        public override void OnCreate(Bundle savedInstanceState)
+        {
+            base.OnCreate(savedInstanceState);
+
+            if (Arguments != null)
+            {
+                _isInPickMode = Arguments.GetBoolean(ExtraStartInPickMode, false);
+
+                if (savedInstanceState == null && Arguments.ContainsKey(ExtraCheckedTrackIds))
+                {
+                    _checkedItems = Arguments.GetLongArray(ExtraCheckedTrackIds);
+                }
+            }
+
+            if (savedInstanceState != null)
+            {
+                if (savedInstanceState.ContainsKey(ExtraCheckedTrackIds))
+                {
+                    _checkedItems = savedInstanceState.GetLongArray(ExtraCheckedTrackIds);
+                }
+            }
+        }
 
         public override View OnCreateView(LayoutInflater inflater, 
             ViewGroup container, Bundle savedInstanceState)
@@ -36,11 +66,32 @@ namespace AirMedia.Platform.UI.Library
                 _listView.Adapter = _adapter;
             }
 
+            if (_isInPickMode)
+            {
+                _actionMode = Activity.StartActionMode(this);
+                _listView.ChoiceMode = ChoiceMode.Multiple;
+            }
+
+            return view;
+        }
+
+        public override void OnActivityCreated(Bundle savedInstanceState)
+        {
+            base.OnActivityCreated(savedInstanceState);
+
             _isInProgress = true;
             LoaderManager.InitLoader(TrackListLoaderId, null, this);
             App.MainHandler.PostDelayed(UpdateProgressIndicators, ProgressDelayMillis);
+        }
 
-            return view;
+        public override void OnSaveInstanceState(Bundle outState)
+        {
+            base.OnSaveInstanceState(outState);
+
+            if (_actionMode != null)
+            {
+                outState.PutLongArray(ExtraCheckedTrackIds, _listView.GetCheckItemIds());
+            }
         }
 
         public override void OnResume()
@@ -50,16 +101,16 @@ namespace AirMedia.Platform.UI.Library
             _listView.ItemClick += OnTrackItemClicked;
         }
 
-        public override string GetTitle()
-        {
-            return GetString(Resource.String.title_audio_library);
-        }
-
         public override void OnPause()
         {
             _listView.ItemClick -= OnTrackItemClicked;
 
             base.OnPause();
+        }
+
+        public override string GetTitle()
+        {
+            return GetString(Resource.String.title_audio_library);
         }
 
         public Loader OnCreateLoader(int id, Bundle args)
@@ -83,19 +134,56 @@ namespace AirMedia.Platform.UI.Library
 
         public void OnLoadFinished(Loader loader, Object data)
         {
-            _adapter = new TrackListAdapter(Activity, (ICursor) data);
+            _adapter = new TrackListAdapter(Activity, this, (ICursor) data);
+            _adapter.ShouldDisplayCheckboxes = _isInPickMode;
 
             if (_listView != null)
             {
                 _listView.Adapter = _adapter;
                 _listView.Post(() => _adapter.NotifyDataSetChanged());
+
+                // Set initial track selection
+                if (_actionMode != null && _checkedItems != null && _checkedItems.Length > 0)
+                {
+                    App.MainHandler.Post(delegate
+                        {
+                            SetListChecks(_checkedItems);
+                            _actionMode.Invalidate();
+                            _checkedItems = null;
+                        });
+                }
             }
 
             UpdateProgressIndicators();
         }
 
+        private void SetListChecks(long[] checkedTrackIds)
+        {
+            if (_listView == null || _adapter == null || checkedTrackIds == null) return;
+
+            _listView.ClearChoices();
+
+            foreach (var id in checkedTrackIds)
+            {
+                int position = _adapter.FindItemPosition(id);
+                if (position != -1)
+                {
+                    _listView.SetItemChecked(position, true);
+                }
+            }
+
+            _adapter.NotifyDataSetChanged();
+        }
+
         private void OnTrackItemClicked(object sender, AdapterView.ItemClickEventArgs args)
         {
+            if (_actionMode != null)
+            {
+                _actionMode.Invalidate();
+                _adapter.NotifyDataSetChanged();
+                return;
+            }
+
             long trackId = _adapter.GetTrackId(args.View);
 
             if (!PlayerControl.Play(trackId))
@@ -124,6 +212,55 @@ namespace AirMedia.Platform.UI.Library
                 _progressPanel.Visibility = ViewStates.Gone;
                 _emptyIndicatorView.Visibility = ViewStates.Gone;
             }
+        }
+
+        public bool OnActionItemClicked(ActionMode mode, IMenuItem item)
+        {
+            return false;
+        }
+
+        public bool OnCreateActionMode(ActionMode mode, IMenu menu)
+        {
+            return true;
+        }
+
+        public void OnDestroyActionMode(ActionMode mode)
+        {
+            var checkedItemIds = _listView.GetCheckItemIds();
+
+            _listView.ClearChoices();
+            _listView.ChoiceMode = ChoiceMode.None;
+            _actionMode = null;
+
+            if (_isInPickMode)
+            {
+                var data = new Intent().PutExtra(ExtraCheckedTrackIds, checkedItemIds);
+                Activity.SetResult(Result.Ok, data);
+                Activity.Finish();
+            }
+        }
+
+        public bool OnPrepareActionMode(ActionMode mode, IMenu menu)
+        {
+            int count = _listView.CheckedItemCount;
+
+            if (count == 0)
+            {
+                mode.SetTitle(Resource.String.hint_pick_playlist_tracks);
+            }
+            else
+            {
+                mode.Title = count.ToString(CultureInfo.CurrentUICulture);
+            }
+
+            return true;
+        }
+
+        public bool IsItemChecked(int position)
+        {
+            if (_listView == null) return false;
+
+            return _listView.IsItemChecked(position);
         }
     }
 }

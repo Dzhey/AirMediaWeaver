@@ -13,11 +13,52 @@ namespace AirMedia.Platform.UI.Library
             public long TrackId { get; set; }
             public TextView TitleView { get; set; }
             public TextView ArtistView { get; set; }
+            public CheckBox CheckBox { get; set; }
         }
 
-        public TrackListAdapter(Context context, ICursor c) 
+        private bool _shouldDisplayCheckboxes;
+        private readonly ITrackListAdapterCallbacks _callbacks;
+
+        public bool ShouldDisplayCheckboxes
+        {
+            get { return _shouldDisplayCheckboxes; }
+            set
+            {
+                _shouldDisplayCheckboxes = value;
+                NotifyDataSetChanged();
+            }
+        }
+
+        public override bool HasStableIds
+        {
+            get
+            {
+                return true;
+            }
+        }
+
+        public TrackListAdapter(Context context, ITrackListAdapterCallbacks callbacks, ICursor c) 
             : base(context, c, CursorAdapterFlags.None)
         {
+            _callbacks = callbacks;
+        }
+
+        public int FindItemPosition(long itemId)
+        {
+            int? idColumn = null;
+            for (int i = 0; i < Count; i++)
+            {
+                var cursor = (ICursor)GetItem(i);
+
+                if (idColumn == null)
+                {
+                    idColumn = cursor.GetColumnIndex(MediaStore.Audio.Media.InterfaceConsts.Id);
+                }
+
+                if (cursor.GetLong((int) idColumn) == itemId) return i;
+            }
+
+            return -1;
         }
 
         public long GetTrackId(View view)
@@ -60,6 +101,16 @@ namespace AirMedia.Platform.UI.Library
             {
                 holder.ArtistView.SetText(Resource.String.title_unknown_artist);
             }
+
+            if (ShouldDisplayCheckboxes)
+            {
+                holder.CheckBox.Visibility = ViewStates.Visible;
+                holder.CheckBox.Checked = _callbacks.IsItemChecked(cursor.Position);
+            }
+            else
+            {
+                holder.CheckBox.Visibility = ViewStates.Gone;
+            }
         }
 
         public override View NewView(Context context, ICursor cursor, ViewGroup parent)
@@ -69,6 +120,7 @@ namespace AirMedia.Platform.UI.Library
             var holder = new ViewHolder();
             holder.TitleView = view.FindViewById<TextView>(Android.Resource.Id.Title);
             holder.ArtistView = view.FindViewById<TextView>(Resource.Id.artist);
+            holder.CheckBox = view.FindViewById<CheckBox>(Android.Resource.Id.Checkbox);
             view.Tag = holder;
 
             return view;

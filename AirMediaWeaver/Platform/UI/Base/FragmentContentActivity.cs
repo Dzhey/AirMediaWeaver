@@ -80,6 +80,20 @@ namespace AirMedia.Platform.UI.Base
                            .Commit();
         }
 
+        protected override void OnActivityResult(int requestCode, Result resultCode, Intent data)
+        {
+            var fragment = GetContentFragment();
+
+            if (fragment != null)
+            {
+                fragment.OnActivityResult(requestCode, resultCode, data);
+
+                return;
+            }
+
+            base.OnActivityResult(requestCode, resultCode, data);
+        }
+
         public AmwFragment GetContentFragment()
         {
             return (AmwFragment) FragmentManager.FindFragmentByTag(TagContentFragment);

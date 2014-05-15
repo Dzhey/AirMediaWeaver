@@ -63,7 +63,7 @@
   <ItemGroup>
     <Compile Include="Core\Data\PlaylistModel.cs" />
     <Compile Include="Core\Requests\Impl\InitDatabaseRequest.cs" />
-    <Compile Include="Platform\Controller\PlaylistManager.cs" />
+    <Compile Include="Platform\Controller\PlaylistDao.cs" />
     <Compile Include="Platform\Controller\Requests\LoadPlaylistItemsRequest.cs" />
     <Compile Include="Platform\Controller\Requests\LoadPlaylistsRequest.cs" />
     <Compile Include="Platform\Controller\Requests\LoadTrackMetadataRequest.cs" />
@@ -79,6 +79,7 @@
     <Compile Include="Platform\UI\Base\InputTextDialog.cs" />
     <Compile Include="Platform\UI\Base\MainViewFragment.cs" />
     <Compile Include="Platform\UI\Library\AudioLibraryFragment.cs" />
+    <Compile Include="Platform\UI\Library\ITrackListAdapterCallbacks.cs" />
     <Compile Include="Platform\UI\Library\TrackListAdapter.cs" />
     <Compile Include="Platform\UI\Library\TrackListLoader.cs" />
     <Compile Include="Platform\UI\MainView\DrawerNavigationItem.cs" />
@@ -286,6 +287,8 @@
     <AndroidResource Include="Resources\Drawable-mdpi\ic_action_edit.png" />
     <AndroidResource Include="Resources\Drawable-xhdpi\ic_action_edit.png" />
     <AndroidResource Include="Resources\Drawable-xxhdpi\ic_action_edit.png" />
+    <AndroidResource Include="Resources\Menu\context_menu_audio_library.xml" />
+    <AndroidResource Include="Resources\Menu\menu_playlists_details.xml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\libs\ViewPagerIndicator\ViewPagerIndicator.csproj">
