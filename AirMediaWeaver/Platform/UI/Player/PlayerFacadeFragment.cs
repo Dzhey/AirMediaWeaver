@@ -1,6 +1,7 @@
 using System;
 using AirMedia.Platform.Data;
 using AirMedia.Platform.Player;
+using AirMedia.Platform.Player.MediaService;
 using AirMedia.Platform.UI.Base;
 using Android.Content;
 using Android.OS;
@@ -100,20 +101,9 @@ namespace AirMedia.Platform.UI.Player
 
         private void OnPlayToggleClicked(object sender, EventArgs args)
         {
-            var service = _mediaServiceConnection.Binder.Service;
-            if (!_buttonTogglePlayback.Checked)
+            if (_mediaServiceConnection.Binder.TogglePause() == false)
             {
-                if (service.Pause() == false)
-                {
-                    _buttonTogglePlayback.Checked = true;
-                }
-            }
-            else
-            {
-                if (service.Unpause() == false)
-                {
-                    _buttonTogglePlayback.Checked = false;
-                }
+                _buttonTogglePlayback.Checked = false;
             }
         }
 
@@ -170,11 +160,11 @@ namespace AirMedia.Platform.UI.Player
 
         public void OnServiceConnected(MediaPlayerBinder binder)
         {
-            bool isPlaying = binder.Service.IsPlaying();
+            bool isPlaying = binder.IsPlaying();
             _buttonTogglePlayback.Checked = isPlaying;
             UpdatePanelIndicators(!isPlaying);
 
-            var metadata = binder.Service.GetTrackMetadata();
+            var metadata = binder.GetTrackMetadata();
             if (metadata != null)
             {
                 DisplayTrackMetadata((TrackMetadata) metadata);
@@ -187,8 +177,8 @@ namespace AirMedia.Platform.UI.Player
 
         private void DisplayTrackMetadata(TrackMetadata metadata)
         {
-            _trackInfoView.Text = string.Format("{0} {1} {2}", metadata.TrackTitle,
-                UtfDash, metadata.ArtistName);
+            _trackInfoView.Text = string.Format("{0} {1} {2}", metadata.ArtistName,
+                UtfDash, metadata.TrackTitle);
         }
     }
 }

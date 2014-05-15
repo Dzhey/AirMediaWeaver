@@ -1,107 +1,68 @@
-
 using System;
+using AirMedia.Core.Controller.PlaybackSource;
 using AirMedia.Core.Log;
 using AirMedia.Core.Requests.Model;
+using AirMedia.Platform.Controller.PlaybackSource;
 using AirMedia.Platform.Controller.Requests;
 using AirMedia.Platform.Data;
 using AirMedia.Platform.Logger;
-using Android.App;
-using Android.Content;
+using AirMedia.Platform.Player.MediaService;
 using Android.Media;
-using Android.OS;
 using Uri = Android.Net.Uri;
 
-namespace AirMedia.Platform.Player
+namespace AirMedia.Platform.Controller.PlayerBackend
 {
-    [Service(Exported = false, Enabled = true), 
-    IntentFilter(new[] { ActionPlay, ActionStop })]
-    public class MediaPlayerService : Service, 
+    public class AmwPlayer :  Java.Lang.Object, 
         MediaPlayer.IOnPreparedListener, 
         MediaPlayer.IOnErrorListener, 
         MediaPlayer.IOnCompletionListener,
         MediaPlayer.IOnInfoListener,
         MediaPlayer.IOnSeekCompleteListener
     {
-        public const string ExtraTrackId = "track_id";
-        public const string ActionPlay = "org.eb.airmedia.android.intent.action.PLAY";
-        public const string ActionStop = "org.eb.airmedia.android.intent.action.STOP";
-        public const string ActionPause = "org.eb.airmedia.android.intent.action.PAUSE";
-        public const string ActionUnpause = "org.eb.airmedia.android.intent.action.UNPAUSE";
+        private const int MediaPlayerRetryCount = 2;
+        private const int MediaPlayerErrorUnknown = -38;
 
-        private const int MediaPlayerErrorUnknown = 38;
+        private static readonly string LogTag = typeof(AmwPlayer).Name;
 
-        private static readonly string LogTag = typeof (MediaPlayerService).Name;
+        public IAmwPlayerCallbacks Callbacks { get; set; }
+        public PlaybackStatus Status
+        {
+            get
+            {
+                return _playbackStatus;
+            }
+        }
 
         private MediaPlayer _player;
-        private MediaPlayerBinder _binder;
-        private TrackMetadata? _trackMetadata;
+        private readonly QueuePlaybackSource _queue;
         private PlaybackStatus _playbackStatus;
-        private RequestResultListener _requestResultListener;
+        private TrackMetadata? _trackMetadata;
+        private readonly RequestResultListener _requestResultListener;
+        private int _retryCount;
 
-        public override void OnCreate()
+        public AmwPlayer()
         {
-            base.OnCreate();
-
-            _binder = new MediaPlayerBinder(this);
-
-            AmwLog.Debug(LogTag, "MediaPlayerService created");
-
             int random = new Random().Next(int.MaxValue);
-            string listenerTag = string.Format("{0}_{1}", typeof (MediaPlayerService).Name, random);
+            string listenerTag = string.Format("{0}_{1}", typeof(MediaPlayerService).Name, random);
             _requestResultListener = new RequestResultListener(listenerTag);
             _requestResultListener.RegisterResultHandler(
                 typeof(LoadTrackMetadataRequest), OnResolveMetadataRequestResult);
+            
+            _queue = new QueuePlaybackSource();
+            _playbackStatus = PlaybackStatus.Stopped;
         }
 
-        public override void OnDestroy()
+        public TrackMetadata? GetTrackMetadata()
         {
-            _requestResultListener.RemoveResultHandler(typeof(LoadTrackMetadataRequest));
-
-            ReleasePlayer();
-            _binder = null;
-            _trackMetadata = null;
-
-            base.OnDestroy();
-
-            AmwLog.Debug(LogTag, "MediaPlayerService destroyed");
-        }
-
-        public override StartCommandResult OnStartCommand(Intent intent, 
-            StartCommandFlags flags, int startId)
-        {
-            switch (intent.Action)
-            {
-                case ActionPlay:
-                    long trackId = intent.GetLongExtra(ExtraTrackId, -1);
-                    StartPlayback(intent.Data, trackId);
-                    break;
-
-                case ActionStop:
-                    ReleasePlayer();
-                    StopSelf();
-                    break;
-
-                case ActionPause:
-                    Pause();
-                    break;
-
-                case ActionUnpause:
-                    Unpause();
-                    break;
-
-                default:
-                    AmwLog.Error(LogTag, string.Format(
-                        "Unhandled intent received \"{0}\"", intent.Action));
-                    break;
-            }
-
-            return StartCommandResult.Sticky;
+            return _trackMetadata;
         }
 
         public bool Pause()
         {
             if (IsPlaying() == false) return false;
+
             _player.Pause();
+
             SetPlaybackStatus(PlaybackStatus.Paused);
 
             return true;
@@ -122,7 +83,7 @@ namespace AirMedia.Platform.Player
 
         public bool SeekTo(int location)
         {
-            if (_player != null 
+            if (_player != null
                 && (_playbackStatus == PlaybackStatus.Playing
                     || _playbackStatus == PlaybackStatus.Paused))
             {
@@ -155,42 +116,85 @@ namespace AirMedia.Platform.Player
             return _player.Duration;
         }
 
-        public TrackMetadata? GetTrackMetadata()
+        public void ResetQueue()
         {
-            return _trackMetadata;
+            _queue.Reset();
         }
 
-        public override IBinder OnBind(Intent intent)
+        public void Enqueue(IBasicPlaybackSource source)
         {
-            return _binder;
+            _queue.EnqueueSource(source);
         }
 
-        private void StartPlayback(Uri uri, long trackId)
+        public void FastForward()
         {
-            InitPlayer(false);
-
-            if (uri == null)
+            if (IsPlaying())
             {
-                AmwLog.Error(LogTag, "Uri to prepare playback is not specified");
+                _player.Stop();
             }
 
-            AmwLog.Debug(LogTag, string.Format("preparing \"{0}\" to play..", uri));
+            if (Play() == false)
+            {
+                ReleasePlayer();
+            }
+        }
+
+        public void Stop()
+        {
+            if (IsPlaying() || _playbackStatus == PlaybackStatus.Paused)
+            {
+                _player.Stop();
+
+                ReleasePlayer();
+            }
+        }
+
+        public bool Play()
+        {
+            if (IsPlaying())
+            {
+                AmwLog.Warn(LogTag,"Play(): already playing");
+                return false;
+            }
+
+            if (_queue.HasCurrent() == false)
+            {
+                AmwLog.Debug(LogTag, "Play(): no track to play");
+                return false;
+            }
+
+            var track = _queue.GetCurrentResource();
+
+            if (track == null || track.Value.LocalId == null)
+            {
+                AmwLog.Error(LogTag, "Play(): can't fetch next playback resource");
+                return false;
+            }
+
+            var uri = Uri.Parse(track.Value.Uri);
+            AmwLog.Debug(LogTag, string.Format("Preparing \"{0}\"", uri));
+
+            InitPlayer(false);
 
             SetPlaybackStatus(PlaybackStatus.Preparing);
 
-             _requestResultListener.SubmitRequest(new LoadTrackMetadataRequest(trackId));
-
-            _player.SetDataSource(this, uri);
+            _requestResultListener.SubmitRequest(
+                new LoadTrackMetadataRequest((long)track.Value.LocalId));
+            _player.SetDataSource(App.Instance, uri);
             _player.PrepareAsync();
+
+            return true;
         }
 
         public void OnPrepared(MediaPlayer mp)
         {
-            AmwLog.Debug(LogTag, "MediaPlayer prepared, performing playback..");
+            AmwLog.Debug(LogTag, "MediaPlayer prepared, starting playback..");
 
             SetPlaybackStatus(PlaybackStatus.Playing);
 
             mp.Start();
+
+            _retryCount = 0;
         }
 
         public bool OnInfo(MediaPlayer mp, MediaInfo what, int extra)
@@ -200,30 +204,63 @@ namespace AirMedia.Platform.Player
 
         public bool OnError(MediaPlayer mp, MediaError what, int extra)
         {
-            AmwLog.Error(LogTag, string.Format("received MediaPlayer error:" +
+            AmwLog.Warn(LogTag, string.Format("received MediaPlayer error:" +
                                                " \"{0}\"; extra: \"{1}\"", what, extra));
+            ReleasePlayer();
 
-            if (MediaPlayerErrorUnknown == (int) what)
+            if (MediaPlayerErrorUnknown == (int)what)
             {
-                // TODO: retry
-                AmwLog.Debug(LogTag, "retrying to play");
+                if (_retryCount == MediaPlayerRetryCount)
+                {
+                    AmwLog.Error(LogTag, "retry count exceeded, stopping");
+                }
+                else
+                {
+                    _retryCount++;
+                    AmwLog.Debug(LogTag, "retrying to play..");
+                    App.MainHandler.PostDelayed(() => Play(), 200);
+
+                    return true;
+                }
             }
 
-            ReleasePlayer();
+            if (Callbacks != null)
+            {
+                Callbacks.OnPlaybackCompleted();
+            }
 
             return true;
         }
 
         public void OnSeekComplete(MediaPlayer mp)
         {
-            _binder.NotifySeekCompleted();
+            if (Callbacks != null)
+            {
+                Callbacks.OnSeekComplete();
+            }
         }
 
         public void OnCompletion(MediaPlayer mp)
         {
-            AmwLog.Info(LogTag, "playback completed");
+            AmwLog.Debug(LogTag, "playback completed; starting next track..");
+
+            if (!_queue.MoveNext() || !Play())
+            {
+                AmwLog.Debug(LogTag, "playback completed; no more tracks to play");
+                ReleasePlayer();
+                if (Callbacks != null)
+                {
+                    Callbacks.OnPlaybackCompleted();
+                }
+            }
+        }
+
+        public void Release()
+        {
+            AmwLog.Debug(LogTag, "Release() called");
             ReleasePlayer();
-            StopSelf();
+
+            _requestResultListener.RemoveResultHandler(typeof(LoadTrackMetadataRequest));
         }
 
         private void InitPlayer(bool publishStatusUpdate)
@@ -250,9 +287,11 @@ namespace AirMedia.Platform.Player
         {
             if (_player == null) return;
 
+            AmwLog.Debug(LogTag, "releasing media player");
+
             SetPlaybackStatus(PlaybackStatus.Stopped);
 
-            _player.Reset();
+            _player.Release();
             _player = null;
         }
 
@@ -260,16 +299,23 @@ namespace AirMedia.Platform.Player
         {
             if (status == _playbackStatus) return;
 
+            AmwLog.Debug(LogTag, string.Format("changing status ({0}, {1})", _playbackStatus, status));
             _playbackStatus = status;
 
             switch (_playbackStatus)
             {
                 case PlaybackStatus.Stopped:
-                    if (publishUpdate) _binder.NotifyPlaybackStopped();
+                    if (publishUpdate && Callbacks != null)
+                    {
+                        Callbacks.OnPlaybackStopped();
+                    }
                     break;
 
                 case PlaybackStatus.Playing:
-                    if (publishUpdate) _binder.NotifyPlaybackStarted();
+                    if (publishUpdate && Callbacks != null)
+                    {
+                        Callbacks.OnPlaybackStarted();
+                    }
                     break;
 
                 case PlaybackStatus.Preparing:
@@ -292,7 +338,7 @@ namespace AirMedia.Platform.Player
                 return;
             }
 
-            _trackMetadata = ((LoadRequestResult<TrackMetadata?>) (args.Result)).Data;
+            _trackMetadata = ((LoadRequestResult<TrackMetadata?>)(args.Result)).Data;
             if (_trackMetadata == null)
             {
                 AmwLog.Error(LogTag, "returned track metadata is empty");
@@ -302,9 +348,10 @@ namespace AirMedia.Platform.Player
 
             AmwLog.Debug(LogTag, string.Format("track \"{0}\" metadata " +
                                                "successfuly resolved", _trackMetadata.Value.TrackTitle));
-            if (_binder != null)
+
+            if (Callbacks != null)
             {
-                _binder.NotifyTrackMetadataResolved(_trackMetadata.Value);
+                Callbacks.OnTrackMetadataResolved(_trackMetadata.Value);
             }
         }
     }

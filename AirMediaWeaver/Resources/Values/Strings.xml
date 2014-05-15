@@ -10,7 +10,6 @@
   <string name="message_audio_library_empty">Библиотека пока что пуста</string>
   <string name="message_playlists_list_empty">Плейлистов пока что нет</string>
   <string name="message_playlist_empty">В плейлисте еще нет треков</string>
-  <string name="error_unable_to_retrieve_track">Невозможно обнаружить трек</string>
   <string name="title_navigation_item_media_library">Моя фонотека</string>
   <string name="title_navigation_item_playlists">Плейлисты</string>
   <string name="hint_open_main_drawer">Показать панель навигации</string>

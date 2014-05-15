@@ -1,34 +1,53 @@
-
 using System.Collections.Generic;
 using AirMedia.Core.Log;
 using AirMedia.Platform.Data;
 using Android.OS;
 
-namespace AirMedia.Platform.Player
+namespace AirMedia.Platform.Player.MediaService
 {
     public class MediaPlayerBinder : Binder
     {
         private const int PlaybackProgressUpdateIntervalMillis = 200;
         private static readonly string LogTag = typeof (MediaPlayerBinder).Name;
 
-        public MediaPlayerService Service { get; private set; }
-
         private readonly List<IMediaPlayerCallbacks> _listeners;
         private readonly List<IPlaybackProgressListener> _playbackProgressListeners;
+
+        private readonly IBinderCallbacks _callbacks;
         private bool _isProgressUpdating;
         private bool _isSeeking;
 
-        public MediaPlayerBinder(MediaPlayerService service)
+        public MediaPlayerBinder(IBinderCallbacks callbacks)
         {
             _listeners = new List<IMediaPlayerCallbacks>();
             _playbackProgressListeners = new List<IPlaybackProgressListener>();
-            Service = service;
+            _callbacks = callbacks;
+        }
+
+        public TrackMetadata? GetTrackMetadata()
+        {
+            return _callbacks.GetTrackMetadata();
+        }
+
+        public bool IsPlaying()
+        {
+            return _callbacks.IsPlaying();
+        }
+
+        public bool TogglePause()
+        {
+            if (_callbacks.IsPaused())
+            {
+                return _callbacks.Unpause();
+            }
+            
+            return _callbacks.Pause();
         }
 
         public void SeekTo(int location)
         {
             _isSeeking = true;
-            if (Service.SeekTo(location) == false)
+            if (_callbacks.SeekTo(location) == false)
             {
                 _isSeeking = false;
                 AmwLog.Error(LogTag, "one tried to seek from wrong player state");
@@ -121,8 +140,8 @@ namespace AirMedia.Platform.Player
         {
             if (_isSeeking == false)
             {
-                int duration = Service.GetDuration();
-                int position = Service.GetCurrentPosition();
+                int duration = _callbacks.GetDuration();
+                int position = _callbacks.GetCurrentPosition();
                 lock (_playbackProgressListeners)
                 {
                     foreach (var listener in _playbackProgressListeners)

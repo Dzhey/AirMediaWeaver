@@ -184,12 +184,10 @@ namespace AirMedia.Platform.UI.Library
                 return;
             }
 
-            long trackId = _adapter.GetTrackId(args.View);
+            int position = args.Position;
+            long[] trackIds = _adapter.GetDisplayedTrackIds();
 
-            if (!PlayerControl.Play(trackId))
-            {
-                ShowMessage(Resource.String.error_unable_to_retrieve_track);
-            }
+            PlayerControl.Play(trackIds, position);
         }
 
         private void UpdateProgressIndicators()

@@ -43,6 +43,27 @@ namespace AirMedia.Platform.UI.Library
             _callbacks = callbacks;
         }
 
+        public long[] GetDisplayedTrackIds()
+        {
+            int? idColumn = null;
+            int count = Count;
+            var result = new long[count];
+
+            for (int i = 0; i < count; i++)
+            {
+                var cursor = (ICursor)GetItem(i);
+
+                if (idColumn == null)
+                {
+                    idColumn = cursor.GetColumnIndex(MediaStore.Audio.Media.InterfaceConsts.Id);
+                }
+
+                result[i] = cursor.GetLong((int)idColumn);
+            }
+
+            return result;
+        }
+
         public int FindItemPosition(long itemId)
         {
             int? idColumn = null;

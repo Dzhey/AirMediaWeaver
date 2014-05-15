@@ -19,7 +19,10 @@ namespace AirMedia.Platform.Controller
                 MediaStore.Audio.Playlists.InterfaceConsts.DateModified
             };
 
-        private static readonly string[] PlaylistTracksQueryProjection = new[]
+        /// <summary>
+        /// Keep both track metadata projections in sync.
+        /// </summary>
+        private static readonly string[] PlaylistTrackMetadataQueryProjection = new[]
             {
                 MediaStore.Audio.Playlists.Members.AudioId,
                 MediaStore.Audio.Playlists.Members.InterfaceConsts.Title,
@@ -29,6 +32,32 @@ namespace AirMedia.Platform.Controller
                 MediaStore.Audio.Playlists.Members.InterfaceConsts.Data
             };
 
+        /// <summary>
+        /// Keep both track metadata projections in sync.
+        /// </summary>
+        private static readonly string[] TrackMetadataQueryProjection = new[]
+            {
+                MediaStore.Audio.Media.InterfaceConsts.Id,
+                MediaStore.Audio.Media.InterfaceConsts.Title,
+                MediaStore.Audio.Media.InterfaceConsts.Artist,
+                MediaStore.Audio.Media.InterfaceConsts.Album,
+                MediaStore.Audio.Media.InterfaceConsts.Duration,
+                MediaStore.Audio.Media.InterfaceConsts.Data
+            };
+
+        public static TrackMetadata? GetTrackMetadata(long trackId)
+        {
+            var resolver = App.Instance.ContentResolver;
+            var uri = ContentUris.WithAppendedId(MediaStore.Audio.Media.ExternalContentUri, trackId);
+
+            using (var cursor = resolver.Query(uri, TrackMetadataQueryProjection, null, null, null))
+            {
+                if (cursor.MoveToFirst() == false) return null;
+
+                return CreateTrackMetadata(cursor);
+            }
+        }
+        
         public static bool UpdatePlaylistContents(long playlistId, long[] trackIds)
         {
             ClearPlaylist(playlistId);
@@ -109,7 +138,7 @@ namespace AirMedia.Platform.Controller
             {
                 if (cursor.MoveToFirst())
                 {
-                    return CreateFromCursor(cursor);
+                    return CreatePlaylist(cursor);
                 }
             }
 
@@ -128,7 +157,7 @@ namespace AirMedia.Platform.Controller
             {
                 if (cursor.MoveToFirst() == false) return null;
 
-                return CreateFromCursor(cursor);
+                return CreatePlaylist(cursor);
             }
         }
 
@@ -139,7 +168,7 @@ namespace AirMedia.Platform.Controller
             var resolver = App.Instance.ContentResolver;
 
             var uri = MediaStore.Audio.Playlists.Members.GetContentUri("external", playlistId);
-            var cursor = resolver.Query(uri, PlaylistTracksQueryProjection, null, null, orderBy);
+            var cursor = resolver.Query(uri, PlaylistTrackMetadataQueryProjection, null, null, orderBy);
 
             var metadata = new List<TrackMetadata>(cursor.Count);
 
@@ -147,15 +176,7 @@ namespace AirMedia.Platform.Controller
             {
                 while (cursor.MoveToNext())
                 {
-                    metadata.Add(new TrackMetadata
-                        {
-                            TrackId = cursor.GetLong(0),
-                            TrackTitle = cursor.GetString(1),
-                            ArtistName = cursor.GetString(2),
-                            Album = cursor.GetString(3),
-                            Duration = cursor.GetInt(4),
-                            Data = cursor.GetString(5)
-                        });
+                    metadata.Add(CreateTrackMetadata(cursor));
                 }
             }
 
@@ -176,21 +197,27 @@ namespace AirMedia.Platform.Controller
             {
                 while (cursor.MoveToNext())
                 {
-                    playlists.Add(new PlaylistModel
-                        {
-                            Id = cursor.GetLong(0),
-                            Data = cursor.GetString(1),
-                            Name = cursor.GetString(2),
-                            DateAdded = cursor.GetLong(3),
-                            DateModified = cursor.GetLong(4)
-                        });
+                    playlists.Add(CreatePlaylist(cursor));
                 }
             }
 
             return playlists;
         }
 
-        private static PlaylistModel CreateFromCursor(ICursor cursor)
+        private static TrackMetadata CreateTrackMetadata(ICursor cursor)
+        {
+            return new TrackMetadata
+                {
+                    TrackId = cursor.GetLong(0),
+                    TrackTitle = cursor.GetString(1),
+                    ArtistName = cursor.GetString(2),
+                    Album = cursor.GetString(3),
+                    Duration = cursor.GetInt(4),
+                    Data = cursor.GetString(5)
+                };
+        }
+
+        private static PlaylistModel CreatePlaylist(ICursor cursor)
         {
             return new PlaylistModel
             {

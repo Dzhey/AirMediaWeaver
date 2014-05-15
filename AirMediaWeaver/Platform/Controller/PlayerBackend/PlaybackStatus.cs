@@ -1,5 +1,5 @@
 ﻿
-namespace AirMedia.Platform.Player
+namespace AirMedia.Platform.Controller.PlayerBackend
 {
     public enum PlaybackStatus
     {

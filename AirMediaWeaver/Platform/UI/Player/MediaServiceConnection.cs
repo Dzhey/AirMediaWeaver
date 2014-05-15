@@ -1,5 +1,6 @@
 using AirMedia.Core.Log;
 using AirMedia.Platform.Player;
+using AirMedia.Platform.Player.MediaService;
 using Android.Content;
 using Android.OS;
 

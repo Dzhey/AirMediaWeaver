@@ -61,19 +61,29 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core\Controller\PlaybackSource\IBasicPlaybackSource.cs" />
     <Compile Include="Core\Data\PlaylistModel.cs" />
+    <Compile Include="Core\Data\ResourceDescriptor.cs" />
     <Compile Include="Core\Requests\Impl\InitDatabaseRequest.cs" />
+    <Compile Include="Platform\Controller\PlaybackSource\LocalLibraryPlaybackSource.cs" />
+    <Compile Include="Platform\Controller\PlaybackSource\LocalLibraryPlaybackSourceParcel.cs" />
+    <Compile Include="Platform\Controller\PlaybackSource\QueuePlaybackSource.cs" />
+    <Compile Include="Platform\Controller\PlaybackSource\SingleLocalPlaybackSource.cs" />
+    <Compile Include="Platform\Controller\PlayerBackend\AmwPlayer.cs" />
+    <Compile Include="Platform\Controller\PlayerBackend\IAmwPlayerCallbacks.cs" />
+    <Compile Include="Platform\Controller\PlayerBackend\PlayerCommandId.cs" />
     <Compile Include="Platform\Controller\PlaylistDao.cs" />
     <Compile Include="Platform\Controller\Requests\LoadPlaylistItemsRequest.cs" />
     <Compile Include="Platform\Controller\Requests\LoadPlaylistsRequest.cs" />
     <Compile Include="Platform\Controller\Requests\LoadTrackMetadataRequest.cs" />
     <Compile Include="Platform\Data\TrackMetadata.cs" />
+    <Compile Include="Platform\Player\MediaService\IBinderCallbacks.cs" />
     <Compile Include="Platform\Player\IMediaPlayerCallbacks.cs" />
     <Compile Include="Platform\Player\IPlaybackProgressListener.cs" />
-    <Compile Include="Platform\Player\MediaPlayerBinder.cs" />
-    <Compile Include="Platform\Player\MediaPlayerService.cs" />
+    <Compile Include="Platform\Player\MediaService\MediaPlayerBinder.cs" />
+    <Compile Include="Platform\Player\MediaService\MediaPlayerService.cs" />
     <Compile Include="Platform\Player\MetadataResolver.cs" />
-    <Compile Include="Platform\Player\PlaybackStatus.cs" />
+    <Compile Include="Platform\Controller\PlayerBackend\PlaybackStatus.cs" />
     <Compile Include="Platform\Player\PlayerControl.cs" />
     <Compile Include="Platform\UI\Base\FragmentContentActivity.cs" />
     <Compile Include="Platform\UI\Base\InputTextDialog.cs" />
@@ -149,6 +159,7 @@
     <Compile Include="Platform\UI\Playlists\PlaylistListAdapter.cs" />
     <Compile Include="Platform\UI\Playlists\PlaylistsViewFragment.cs" />
     <Compile Include="Platform\UI\Util\Util.cs" />
+    <Compile Include="Platform\Util\ParcelableCreator.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
