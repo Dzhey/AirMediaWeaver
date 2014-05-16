@@ -64,6 +64,7 @@
     <Compile Include="Core\Controller\PlaybackSource\IBasicPlaybackSource.cs" />
     <Compile Include="Core\Data\PlaylistModel.cs" />
     <Compile Include="Core\Data\ResourceDescriptor.cs" />
+    <Compile Include="Core\Data\Sql\Model\PublicTrackRecord.cs" />
     <Compile Include="Core\Requests\Impl\InitDatabaseRequest.cs" />
     <Compile Include="Platform\Controller\PlaybackSource\LocalLibraryPlaybackSource.cs" />
     <Compile Include="Platform\Controller\PlaybackSource\LocalLibraryPlaybackSourceParcel.cs" />
@@ -75,10 +76,13 @@
     <Compile Include="Platform\Controller\PlaylistDao.cs" />
     <Compile Include="Platform\Controller\Requests\LoadPlaylistItemsRequest.cs" />
     <Compile Include="Platform\Controller\Requests\LoadPlaylistsRequest.cs" />
+    <Compile Include="Platform\Controller\Requests\LoadPublishedTracksRequest.cs" />
     <Compile Include="Platform\Controller\Requests\LoadTrackMetadataRequest.cs" />
     <Compile Include="Platform\Controller\Requests\PlayAudioLibraryRequest.cs" />
     <Compile Include="Platform\Controller\Requests\PlayPlaylistRequest.cs" />
     <Compile Include="Platform\Controller\Requests\PlaySystemPlaylistsRequests.cs" />
+    <Compile Include="Platform\Data\Sql\AndroidDatabaseHelper.cs" />
+    <Compile Include="Platform\Data\Sql\Dao\PublicTracksDao.cs" />
     <Compile Include="Platform\Data\TrackMetadata.cs" />
     <Compile Include="Platform\Player\MediaService\IBinderCallbacks.cs" />
     <Compile Include="Platform\Player\IMediaPlayerCallbacks.cs" />
@@ -93,7 +97,7 @@
     <Compile Include="Platform\UI\Base\MainViewFragment.cs" />
     <Compile Include="Platform\UI\Library\AudioLibraryFragment.cs" />
     <Compile Include="Platform\UI\Library\ITrackListAdapterCallbacks.cs" />
-    <Compile Include="Platform\UI\Library\TrackListAdapter.cs" />
+    <Compile Include="Platform\UI\Library\TrackListCursorAdapter.cs" />
     <Compile Include="Platform\UI\Library\TrackListLoader.cs" />
     <Compile Include="Platform\UI\MainView\DrawerNavigationItem.cs" />
     <Compile Include="Platform\UI\MainView\DrawerListAdapter.cs" />
@@ -159,10 +163,14 @@
     <Compile Include="Platform\UI\Player\MediaServiceConnection.cs" />
     <Compile Include="Platform\UI\Player\PlayerFacadeFragment.cs" />
     <Compile Include="Platform\UI\Playlists\PlaylistDetailsFragment.cs" />
-    <Compile Include="Platform\UI\Playlists\PlaylistItemsAdapter.cs" />
+    <Compile Include="Platform\UI\Playlists\TrackListAdapter.cs" />
     <Compile Include="Platform\UI\Playlists\PlaylistListAdapter.cs" />
     <Compile Include="Platform\UI\Playlists\PlaylistsViewFragment.cs" />
+    <Compile Include="Platform\UI\Publications\MyPublicationsFragment.cs" />
+    <Compile Include="Platform\UI\Publications\PublicationsTabFragment.cs" />
     <Compile Include="Platform\UI\Util\Util.cs" />
+    <Compile Include="Platform\UI\ViewUtils\IProgressBarManagerCallbacks.cs" />
+    <Compile Include="Platform\UI\ViewUtils\ProgressBarManager.cs" />
     <Compile Include="Platform\Util\ParcelableCreator.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -200,6 +208,9 @@
       <SubType>AndroidResource</SubType>
     </AndroidResource>
     <AndroidResource Include="Resources\Layout\View_InputField.axml" />
+    <AndroidResource Include="Resources\Layout\Fragment_MyPublications.axml">
+      <SubType>AndroidResource</SubType>
+    </AndroidResource>
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\Values\Strings.xml">

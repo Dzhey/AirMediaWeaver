@@ -9,20 +9,10 @@
         android:layout_alignParentTop="true"
         android:fastScrollEnabled="true" />
     <include
-        android:id="@android:id/progress"
+        android:id="@+id/progressPanel"
         layout="@layout/View_Progress_Panel"
         android:layout_marginTop="26dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:visibility="gone" />
-    <TextView
-        android:id="@android:id/empty"
-        style="@style/AppTheme.Text.Small"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="26dp"
-        android:layout_centerHorizontal="true"
-        android:visibility="gone"
-        android:text="@string/message_playlist_empty" />
+        android:layout_centerHorizontal="true" />
 </RelativeLayout>

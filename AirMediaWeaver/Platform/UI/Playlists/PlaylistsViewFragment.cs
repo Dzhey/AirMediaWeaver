@@ -9,13 +9,12 @@ using Android.Content;
 using Android.OS;
 using Android.Views;
 using Android.Widget;
+using Consts = AirMedia.Core.Consts;
 
 namespace AirMedia.Platform.UI.Playlists
 {
     public class PlaylistsViewFragment : MainViewFragment, ActionMode.ICallback
     {
-        private const int ProgressDelayMillis = 1200;
-
         private const string TagInputPlaylistNameDialog = "dialog_input_playlist_name";
         private const string TagRemovePlaylistsDialog = "dialog_remove_playlists";
         private const int RequestCodeEditPlaylist = 10;
@@ -26,11 +25,8 @@ namespace AirMedia.Platform.UI.Playlists
         private const string ExtraPlaylistIds = "playlist_ids";
 
         private ListView _listView;
-        private View _progressPanel;
-        private View _emptyIndicatorView;
         private PlaylistListAdapter _adapter;
         private ActionMode _actionMode;
-        private bool _isInProgress;
 
         public override void OnCreate(Bundle savedInstanceState)
         {
@@ -50,8 +46,10 @@ namespace AirMedia.Platform.UI.Playlists
             _listView.Adapter = _adapter;
             _listView.ChoiceMode = ChoiceMode.None;
 
-            _progressPanel = view.FindViewById(Android.Resource.Id.Progress);
-            _emptyIndicatorView = view.FindViewById(Android.Resource.Id.Empty);
+            var progressPanel = view.FindViewById<ViewGroup>(Resource.Id.progressPanel);
+
+            RegisterProgressPanel(progressPanel, Consts.DefaultProgressDelayMillis,
+                Resource.String.note_playlists_list_empty);
 
             if (savedInstanceState != null)
             {
@@ -122,6 +120,11 @@ namespace AirMedia.Platform.UI.Playlists
         public override void OnGenericPlaybackRequested()
         {
             SubmitRequest(new PlaySystemPlaylistsRequests());
+        }
+
+        public override bool HasDisplayedContent()
+        {
+            return _listView != null && _listView.Count > 0;
         }
 
         public override string GetTitle()
@@ -321,18 +324,15 @@ namespace AirMedia.Platform.UI.Playlists
 
         private void ReloadList()
         {
-            _isInProgress = true;
-            App.MainHandler.PostDelayed(UpdateProgressIndicators, ProgressDelayMillis);
-
+            SetInProgress(true);
             SubmitParallelRequest(new LoadPlaylistsRequest());
         }
 
         private void OnPlaylistsLoaded(object sender, ResultEventArgs args)
         {
-            _isInProgress = false;
             if (args.Request.Status != RequestStatus.Ok)
             {
-                UpdateProgressIndicators();
+                SetInProgress(false);
                 AmwLog.Error(LogTag, "error loading playlists");
                 return;
             }
@@ -343,7 +343,7 @@ namespace AirMedia.Platform.UI.Playlists
             {
                 _adapter.SetItems(playlists);
             }
-            UpdateProgressIndicators();
+            SetInProgress(false);
         }
 
         private void OnPlaySystemPlayslistsRequestFinished(object sender, ResultEventArgs args)
@@ -377,28 +377,6 @@ namespace AirMedia.Platform.UI.Playlists
             if (args.Request.Status != RequestStatus.Ok)
             {
                 AmwLog.Error(LogTag, "error trying to play audio library");
-            }
-        }
-
-        private void UpdateProgressIndicators()
-        {
-            if (_listView == null || _listView.Count == 0)
-            {
-                if (_isInProgress)
-                {
-                    _progressPanel.Visibility = ViewStates.Visible;
-                    _emptyIndicatorView.Visibility = ViewStates.Gone;
-                }
-                else
-                {
-                    _progressPanel.Visibility = ViewStates.Gone;
-                    _emptyIndicatorView.Visibility = ViewStates.Visible;
-                }
-            }
-            else
-            {
-                _progressPanel.Visibility = ViewStates.Gone;
-                _emptyIndicatorView.Visibility = ViewStates.Gone;
             }
         }
 

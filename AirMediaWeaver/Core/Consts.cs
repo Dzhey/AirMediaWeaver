@@ -4,6 +4,8 @@ namespace AirMedia.Core
 {
     public static class Consts
     {
+        public const int DefaultProgressDelayMillis = 1200;
+
         #region In-App Logging Settings
 
         public const int MaxInAppLoggingCacheEntries = 20000;

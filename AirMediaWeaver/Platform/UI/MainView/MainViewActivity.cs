@@ -4,6 +4,7 @@ using AirMedia.Platform.UI.Base;
 using AirMedia.Platform.UI.Library;
 using AirMedia.Platform.UI.Player;
 using AirMedia.Platform.UI.Playlists;
+using AirMedia.Platform.UI.Publications;
 using Android.App;
 using Android.Content;
 using Android.Content.Res;
@@ -42,6 +43,10 @@ namespace AirMedia.Platform.UI.MainView
                     new DrawerNavigationItem
                         {
                             StringResourceId = Resource.String.title_navigation_item_playlists
+                        },
+                    new DrawerNavigationItem
+                        {
+                            StringResourceId = Resource.String.title_navigation_item_publications
                         }
                 };
         }
@@ -212,6 +217,10 @@ namespace AirMedia.Platform.UI.MainView
 
                 case Resource.String.title_navigation_item_playlists:
                     contentFragment = typeof(PlaylistsViewFragment);
+                    break;
+
+                case Resource.String.title_navigation_item_publications:
+                    contentFragment = typeof(PublicationsTabFragment);
                     break;
 
                 default:

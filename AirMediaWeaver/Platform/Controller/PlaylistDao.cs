@@ -10,6 +10,12 @@ namespace AirMedia.Platform.Controller
 {
     public class PlaylistDao
     {
+        public const string SortByArtist = MediaStore.Audio.Media.InterfaceConsts.Artist + " ASC";
+        public const string SortByTitle = MediaStore.Audio.Media.InterfaceConsts.Title + " ASC";
+        public const string SortByAlbum = MediaStore.Audio.Media.InterfaceConsts.Album + " ASC";
+
+        public static readonly string DefaultTrackSortOrder = string.Join(",", SortByArtist, SortByTitle, SortByAlbum);
+
         private static readonly string[] PlaylistsQueryProjection = new[]
             {
                 MediaStore.Audio.Playlists.InterfaceConsts.Id,
@@ -47,13 +53,10 @@ namespace AirMedia.Platform.Controller
 
         public static List<TrackMetadata> GetSystemTracks()
         {
-            const string sortByArtist = MediaStore.Audio.Media.InterfaceConsts.Artist + " ASC";
-            const string sortByTitle = MediaStore.Audio.Media.InterfaceConsts.Title + " ASC";
-            string sortOrder = string.Join(",", sortByArtist, sortByTitle);
 
             var resolver = App.Instance.ContentResolver;
             var cursor = resolver.Query(MediaStore.Audio.Media.ExternalContentUri,
-                                        TrackMetadataQueryProjection, null, null, sortOrder);
+                                        TrackMetadataQueryProjection, null, null, DefaultTrackSortOrder);
 
             var result = new List<TrackMetadata>(cursor.Count);
 

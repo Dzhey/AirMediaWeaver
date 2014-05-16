@@ -5,7 +5,7 @@ using Android.Widget;
 
 namespace AirMedia.Platform.UI.Playlists
 {
-    public class PlaylistItemsAdapter : BaseAdapter<TrackMetadata>
+    public class TrackListAdapter : BaseAdapter<TrackMetadata>
     {
         private class ViewHolder : Java.Lang.Object
         {
@@ -27,7 +27,7 @@ namespace AirMedia.Platform.UI.Playlists
             get { return _items[position]; }
         }
 
-        public PlaylistItemsAdapter()
+        public TrackListAdapter()
         {
             _items = new List<TrackMetadata>();
         }

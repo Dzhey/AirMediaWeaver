@@ -11,6 +11,7 @@ using Android.OS;
 using Android.Views;
 using Android.Widget;
 using Java.Lang;
+using Consts = AirMedia.Core.Consts;
 
 namespace AirMedia.Platform.UI.Library
 {
@@ -22,14 +23,10 @@ namespace AirMedia.Platform.UI.Library
         public const string ExtraStartInPickMode = "start_in_pick_mode";
         public const string ExtraCheckedTrackIds = "checked_track_ids";
 
-        private const int ProgressDelayMillis = 1200;
         private const int TrackListLoaderId = 1;
 
         private ListView _listView;
-        private TrackListAdapter _adapter;
-        private View _progressPanel;
-        private View _emptyIndicatorView;
-        private bool _isInProgress;
+        private TrackListCursorAdapter _adapter;
         private bool _isInPickMode;
         private ActionMode _actionMode;
         private long[] _checkedItems;
@@ -63,8 +60,9 @@ namespace AirMedia.Platform.UI.Library
             var view = inflater.Inflate(Resource.Layout.Fragment_AudioLibrary, container, false);
 
             _listView = view.FindViewById<ListView>(Android.Resource.Id.List);
-            _progressPanel = view.FindViewById(Android.Resource.Id.Progress);
-            _emptyIndicatorView = view.FindViewById(Android.Resource.Id.Empty);
+            var progresPanel = view.FindViewById<ViewGroup>(Resource.Id.progressPanel);
+            RegisterProgressPanel(progresPanel, Consts.DefaultProgressDelayMillis, 
+                Resource.String.note_audio_library_empty);
 
             if (_adapter != null)
             {
@@ -84,14 +82,18 @@ namespace AirMedia.Platform.UI.Library
         {
             base.OnActivityCreated(savedInstanceState);
 
-            _isInProgress = true;
+            SetInProgress(true);
             LoaderManager.InitLoader(TrackListLoaderId, null, this);
-            App.MainHandler.PostDelayed(UpdateProgressIndicators, ProgressDelayMillis);
         }
 
         public override void OnGenericPlaybackRequested()
         {
             SubmitRequest(new PlayAudioLibraryRequest());
+        }
+
+        public override bool HasDisplayedContent()
+        {
+            return _listView != null && _listView.Count > 0;
         }
 
         private void OnPlayAudioLibraryRequestFinished(object sender, ResultEventArgs args)
@@ -168,7 +170,7 @@ namespace AirMedia.Platform.UI.Library
 
         public void OnLoadFinished(Loader loader, Object data)
         {
-            _adapter = new TrackListAdapter(Activity, this, (ICursor) data);
+            _adapter = new TrackListCursorAdapter(Activity, this, (ICursor) data);
             _adapter.ShouldDisplayCheckboxes = _isInPickMode;
 
             if (_listView != null)
@@ -188,7 +190,7 @@ namespace AirMedia.Platform.UI.Library
                 }
             }
 
-            UpdateProgressIndicators();
+            SetInProgress(false);
         }
 
         private void SetListChecks(long[] checkedTrackIds)
@@ -222,28 +224,6 @@ namespace AirMedia.Platform.UI.Library
             long[] trackIds = _adapter.GetDisplayedTrackIds();
 
             PlayerControl.Play(trackIds, position);
-        }
-
-        private void UpdateProgressIndicators()
-        {
-            if (_listView == null || _listView.Count == 0)
-            {
-                if (_isInProgress)
-                {
-                    _progressPanel.Visibility = ViewStates.Visible;
-                    _emptyIndicatorView.Visibility = ViewStates.Gone;
-                }
-                else
-                {
-                    _progressPanel.Visibility = ViewStates.Gone;
-                    _emptyIndicatorView.Visibility = ViewStates.Visible;
-                }
-            }
-            else
-            {
-                _progressPanel.Visibility = ViewStates.Gone;
-                _emptyIndicatorView.Visibility = ViewStates.Gone;
-            }
         }
 
         public bool OnActionItemClicked(ActionMode mode, IMenuItem item)

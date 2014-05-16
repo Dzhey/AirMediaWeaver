@@ -6,7 +6,7 @@ using Android.Widget;
 
 namespace AirMedia.Platform.UI.Library
 {
-    public class TrackListAdapter : CursorAdapter
+    public class TrackListCursorAdapter : CursorAdapter
     {
         private class ViewHolder : Java.Lang.Object
         {
@@ -37,7 +37,7 @@ namespace AirMedia.Platform.UI.Library
             }
         }
 
-        public TrackListAdapter(Context context, ITrackListAdapterCallbacks callbacks, ICursor c) 
+        public TrackListCursorAdapter(Context context, ITrackListAdapterCallbacks callbacks, ICursor c) 
             : base(context, c, CursorAdapterFlags.None)
         {
             _callbacks = callbacks;

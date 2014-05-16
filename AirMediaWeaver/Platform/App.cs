@@ -3,6 +3,7 @@ using AirMedia.Core.Log;
 using AirMedia.Core.Requests.Impl;
 using AirMedia.Platform.Controller;
 using AirMedia.Platform.Data;
+using AirMedia.Platform.Data.Sql;
 using AirMedia.Platform.Logger;
 using Android.App;
 using Android.OS;
@@ -37,7 +38,8 @@ namespace AirMedia.Platform
             Instance = this;
             Preferences = new UserPreferences(this);
 		    WorkerRequestManager = new WorkerRequestManager(this);
-		    DatabaseHelper = DatabaseHelper.Instance;
+		    DatabaseHelper = new AndroidDatabaseHelper();
+            DatabaseHelper.Init(DatabaseHelper);
 
 		    var rq = new InitDatabaseRequest();
 		    rq.Execute();

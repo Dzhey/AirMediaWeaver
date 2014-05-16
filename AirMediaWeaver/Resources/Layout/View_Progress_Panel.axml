@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/progressPanel"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="28dp"
-    android:gravity="center"
-    android:orientation="horizontal">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android">
+  <LinearLayout
+      android:id="@android:id/progress"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="28dp"
+      android:gravity="center"
+      android:orientation="horizontal"
+      android:visibility="gone">
     <ProgressBar
-        android:id="@+id/progressBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
     <TextView
@@ -17,4 +18,14 @@
         android:layout_height="wrap_content"
         android:text="@string/message_progress"
         android:layout_marginLeft="5dp" />
-</LinearLayout>
+  </LinearLayout>
+  <TextView
+      android:id="@android:id/empty"
+      style="@style/AppTheme.Text.Small"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_centerHorizontal="true"
+      android:layout_marginTop="28dp"
+      android:visibility="gone"
+      android:text="@string/note_content_view_empty" />
+</RelativeLayout>

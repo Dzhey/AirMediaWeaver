@@ -4,7 +4,6 @@ using AirMedia.Core.Requests.Model;
 using AirMedia.Platform.Controller;
 using AirMedia.Platform.Controller.Requests;
 using AirMedia.Platform.Data;
-using AirMedia.Platform.Player;
 using AirMedia.Platform.UI.Base;
 using AirMedia.Platform.UI.Library;
 using Android.App;
@@ -15,17 +14,16 @@ using Android.Widget;
 
 namespace AirMedia.Platform.UI.Playlists
 {
-    public class PlaylistDetailsFragment : AmwFragment
+    public class PlaylistDetailsFragment : MainViewFragment
     {
         public const string ExtraPlaylistId = "playlist_id";
 
         private const int RequestCodeEditPlaylist = 1000;
 
-        private PlaylistItemsAdapter _adapter;
+        private TrackListAdapter _adapter;
         private ListView _listView;
-        private View _progressPanel;
-        private View _emptyIndicatorView;
         private long? _playlistId;
+        private string _playlistName;
 
         public override void OnCreate(Bundle savedInstanceState)
         {
@@ -33,7 +31,7 @@ namespace AirMedia.Platform.UI.Playlists
 
             Activity.ActionBar.SetTitle(Resource.String.title_playlist_details);
 
-            _adapter = new PlaylistItemsAdapter();
+            _adapter = new TrackListAdapter();
 
             SetHasOptionsMenu(true);
             Activity.ActionBar.SetDisplayShowHomeEnabled(true);
@@ -46,13 +44,19 @@ namespace AirMedia.Platform.UI.Playlists
                 var playlist = PlaylistDao.GetPlaylist((long)_playlistId);
                 if (playlist != null)
                 {
-                    Activity.ActionBar.Title = playlist.Name;
+                    _playlistName = playlist.Name;
+                    Activity.ActionBar.Title = _playlistName;
                 }
             }
             else
             {
                 AmwLog.Error(LogTag, "playlist id is not specified to display content");
             }
+        }
+
+        public override string GetTitle()
+        {
+            return _playlistName;
         }
 
         public override void OnCreateOptionsMenu(IMenu menu, MenuInflater inflater)
@@ -68,8 +72,8 @@ namespace AirMedia.Platform.UI.Playlists
             _listView = view.FindViewById<ListView>(Android.Resource.Id.List);
             _listView.Adapter = _adapter;
 
-            _progressPanel = view.FindViewById(Android.Resource.Id.Progress);
-            _emptyIndicatorView = view.FindViewById(Android.Resource.Id.Empty);
+            var progressPanel = view.FindViewById<ViewGroup>(Resource.Id.progressPanel);
+            RegisterProgressPanel(progressPanel, 0, Resource.String.note_playlist_empty);
 
             return view;
         }
@@ -81,11 +85,24 @@ namespace AirMedia.Platform.UI.Playlists
             ReloadList();
         }
 
+        public override void OnGenericPlaybackRequested()
+        {
+            if (_playlistId != null)
+            {
+                SubmitRequest(new PlayPlaylistRequest((long)_playlistId));
+            }
+        }
+
+        public override bool HasDisplayedContent()
+        {
+            return _listView != null && _listView.Count > 0;
+        }
+
         private void ReloadList()
         {
             if (_playlistId != null)
             {
-                UpdateProgressIndicators(true);
+                SetInProgress(true);
                 SubmitParallelRequest(new LoadPlaylistItemsRequest((long) _playlistId));
             }
             else
@@ -185,7 +202,7 @@ namespace AirMedia.Platform.UI.Playlists
         {
             if (args.Request.Status != RequestStatus.Ok)
             {
-                UpdateProgressIndicators(false);
+                SetInProgress(false);
                 AmwLog.Error(LogTag, "Error loading playlist tracks");
                 return;
             }
@@ -195,7 +212,7 @@ namespace AirMedia.Platform.UI.Playlists
             {
                 _adapter.SetItems(metadata);
             }
-            UpdateProgressIndicators(false);
+            SetInProgress(false);
         }
 
         private void OnPlayPlaylistRequestFinished(object sender, ResultEventArgs args)
@@ -213,28 +230,6 @@ namespace AirMedia.Platform.UI.Playlists
                         ShowMessage(Resource.String.error_cant_play_playlist);
                         break;
                 }
-            }
-        }
-
-        private void UpdateProgressIndicators(bool isInProgress)
-        {
-            if (_listView == null || _listView.Count == 0)
-            {
-                if (isInProgress)
-                {
-                    _progressPanel.Visibility = ViewStates.Visible;
-                    _emptyIndicatorView.Visibility = ViewStates.Gone;
-                }
-                else
-                {
-                    _progressPanel.Visibility = ViewStates.Gone;
-                    _emptyIndicatorView.Visibility = ViewStates.Visible;
-                }
-            }
-            else
-            {
-                _progressPanel.Visibility = ViewStates.Gone;
-                _emptyIndicatorView.Visibility = ViewStates.Gone;
             }
         }
     }
