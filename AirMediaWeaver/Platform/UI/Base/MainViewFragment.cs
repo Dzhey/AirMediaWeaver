@@ -1,7 +1,9 @@
 
 
+using System;
 using AirMedia.Platform.UI.Player;
 using AirMedia.Platform.UI.ViewUtils;
+using Android.App;
 using Android.OS;
 using Android.Views;
 
@@ -11,7 +13,22 @@ namespace AirMedia.Platform.UI.Base
         IPlayerFacadeFragmentCallbacks, 
         IProgressBarManagerCallbacks
     {
+
+        private IMainViewFragmentCallbacks _callbacks;
         private ProgressBarManager _progressBarManager;
+
+        public override void OnAttach(Activity activity)
+        {
+            base.OnAttach(activity);
+
+            _callbacks = activity as IMainViewFragmentCallbacks;
+            if (_callbacks == null)
+            {
+                throw new ApplicationException(string.Format(
+                    "containing activity should implement {0} in order to use {1}",
+                    typeof(IMainViewFragmentCallbacks), GetType()));
+            }
+        }
 
         public override void OnCreate(Bundle savedInstanceState)
         {
@@ -20,13 +37,15 @@ namespace AirMedia.Platform.UI.Base
             _progressBarManager = new ProgressBarManager(this);
         }
 
+        public virtual void UpdateNavigationItems(ActionBar actionBar)
+        {
+        }
+
         public abstract string GetTitle();
 
-        public override void OnActivityCreated(Bundle savedInstanceState)
+        public virtual ActionBarNavigationMode GetNavigationMode()
         {
-            base.OnActivityCreated(savedInstanceState);
-
-            Activity.ActionBar.Title = GetTitle();
+            return ActionBarNavigationMode.Standard;
         }
 
         public abstract void OnGenericPlaybackRequested();

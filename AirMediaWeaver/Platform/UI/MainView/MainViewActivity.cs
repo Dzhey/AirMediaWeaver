@@ -17,7 +17,7 @@ using Fragment = Android.App.Fragment;
 namespace AirMedia.Platform.UI.MainView
 {
     [Activity(Label = "Air Media", MainLauncher = true, Icon = "@drawable/icon")]
-    public class MainViewActivity : AmwActivity, IPlayerFacadeFragmentCallbacks
+    public class MainViewActivity : AmwActivity, IPlayerFacadeFragmentCallbacks, IMainViewFragmentCallbacks
     {
         private const string ExtraFragmentStateBundle = "fragment_state_bundle";
         private const string ExtraDisplayFragment = "display_fragment";
@@ -123,17 +123,12 @@ namespace AirMedia.Platform.UI.MainView
 
         private void OnDrawerOpened(object sender, EventArgs args)
         {
-            ActionBar.SetTitle(Resource.String.title_main_view);
+            AdjustActionBarToContent();
         }
 
         private void OnDrawerClosed(object sender, EventArgs args)
         {
-            var contentFragment = GetContentFragment();
-
-            if (contentFragment != null)
-            {
-                ActionBar.Title = contentFragment.GetTitle();
-            }
+            AdjustActionBarToContent();
         }
 
         protected override void OnSaveInstanceState(Bundle outState)
@@ -262,7 +257,25 @@ namespace AirMedia.Platform.UI.MainView
                            .Replace(Resource.Id.contentView, currentFragment, ContentFragmentTag)
                            .CommitAllowingStateLoss();
 
+            App.MainHandler.Post(AdjustActionBarToContent);
+
             App.Preferences.LastMainView = fragmentType;
+        }
+
+        private void AdjustActionBarToContent()
+        {
+            var fragment = GetContentFragment();
+            if (fragment == null || _drawerLayout.IsDrawerOpen(_drawerList))
+            {
+                ActionBar.SetTitle(Resource.String.title_main_view);
+                ActionBar.NavigationMode = ActionBarNavigationMode.Standard;
+            }
+            else
+            {
+                ActionBar.Title = fragment.GetTitle();
+                ActionBar.NavigationMode = fragment.GetNavigationMode();
+                fragment.UpdateNavigationItems(ActionBar);
+            }
         }
 
         private MainViewFragment GetContentFragment()

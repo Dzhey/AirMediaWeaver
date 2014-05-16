@@ -24,6 +24,7 @@
   <string name="title_my_publications">Мои</string>
   <string name="title_publications">Публикации</string>
   <string name="hint_create_playlist">Создать плейлист</string>
+  <string name="hint_edit_pulications">Изменить список публикаций</string>
   <string name="hint_remove_playlist">Удалить плейлист</string>
   <string name="hint_rename_playlist">Переименовать плейлист</string>
   <string name="hint_edit_playlist">Добавить или удалить композиции</string>
@@ -49,6 +50,7 @@
   <string name="error_cant_play_playlist">Ошибка при воспроизведении плейлиста</string>
   <string name="error_cant_load_published_tracklist">Не удалось загрузить данные</string>
   <string name="note_content_view_empty">Нет элементов для отображения</string>
+  <string name="error_cant_update_publications">Ошибка при обновлении публикаций</string>
   
   <!-- Logger strings -->
   <string name="title_log_level">Уровень</string>

@@ -1,8 +1,8 @@
 using System;
 using AirMedia.Core.Log;
-using AirMedia.Platform.Controller.Requests;
 using AirMedia.Platform.UI.Base;
 using Android.App;
+using Android.Content;
 using Android.OS;
 using Android.Views;
 using Android.Widget;
@@ -15,6 +15,7 @@ namespace AirMedia.Platform.UI.Publications
 
         private const int LanPublicationsIndex = 0;
         private const int MyPublicationsIndex = 1;
+        private ISpinnerAdapter _navigationAdapter;
 
         public override void OnAttach(Activity activity)
         {
@@ -24,8 +25,19 @@ namespace AirMedia.Platform.UI.Publications
             var adapter = new ArrayAdapter<string>(Activity, Android.Resource.Layout.SimpleSpinnerItem, items);
             adapter.SetDropDownViewResource(Android.Resource.Layout.SimpleDropDownItem1Line);
 
-            Activity.ActionBar.NavigationMode = ActionBarNavigationMode.List;
-            Activity.ActionBar.SetListNavigationCallbacks(adapter, this);
+            _navigationAdapter = adapter;
+        }
+
+        public override void UpdateNavigationItems(ActionBar actionBar)
+        {
+            if (_navigationAdapter == null)
+            {
+                AmwLog.Error(LogTag, "Can't update navigation items, navigation adapter not ready");
+                return;
+            }
+
+            actionBar.NavigationMode = ActionBarNavigationMode.List;
+            actionBar.SetListNavigationCallbacks(_navigationAdapter, this);
         }
 
         public override void OnDetach()
@@ -35,10 +47,31 @@ namespace AirMedia.Platform.UI.Publications
             Activity.ActionBar.NavigationMode = ActionBarNavigationMode.Standard;
         }
 
+        public override void OnCreate(Bundle savedInstanceState)
+        {
+            base.OnCreate(savedInstanceState);
+
+            SetContentFragment(typeof(MyPublicationsFragment));
+        }
+
         public override View OnCreateView(LayoutInflater inflater, 
             ViewGroup container, Bundle savedInstanceState)
         {
-            return inflater.Inflate(Resource.Layout.View_FragmentContainer, container, false);
+            return inflater.Inflate(Resource.Layout.View_ChildFragmentContainer, container, false);
+        }
+
+        public override void OnActivityResult(int requestCode, Result resultCode, Intent data)
+        {
+            var fragment = GetContentFragment();
+
+            if (fragment != null)
+            {
+                fragment.OnActivityResult(requestCode, resultCode, data);
+
+                return;
+            }
+
+            base.OnActivityResult(requestCode, resultCode, data);
         }
 
         public override string GetTitle()
@@ -111,10 +144,8 @@ namespace AirMedia.Platform.UI.Publications
             }
 
             FragmentManager.BeginTransaction()
-                           .Replace(Resource.Id.contentView, currentFragment, ContentFragmentTag)
+                           .Replace(Resource.Id.childContentView, currentFragment, ContentFragmentTag)
                            .CommitAllowingStateLoss();
-
-            App.Preferences.LastMainView = fragmentType;
         }
 
         private MainViewFragment GetContentFragment()

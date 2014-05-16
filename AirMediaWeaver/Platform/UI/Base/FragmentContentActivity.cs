@@ -10,7 +10,7 @@ using Java.Security;
 namespace AirMedia.Platform.UI.Base
 {
     [Activity(Exported = false)]
-    public class FragmentContentActivity : AmwActivity
+    public class FragmentContentActivity : AmwActivity, IMainViewFragmentCallbacks
     {
         public const string ExtraDisplayFragmentType = "display_fragment_type";
         public const string ExtraFragmentArguments = "fragment_arguments";

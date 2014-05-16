@@ -81,6 +81,7 @@
     <Compile Include="Platform\Controller\Requests\PlayAudioLibraryRequest.cs" />
     <Compile Include="Platform\Controller\Requests\PlayPlaylistRequest.cs" />
     <Compile Include="Platform\Controller\Requests\PlaySystemPlaylistsRequests.cs" />
+    <Compile Include="Platform\Controller\Requests\UpdatePublishedTracksRequest.cs" />
     <Compile Include="Platform\Data\Sql\AndroidDatabaseHelper.cs" />
     <Compile Include="Platform\Data\Sql\Dao\PublicTracksDao.cs" />
     <Compile Include="Platform\Data\TrackMetadata.cs" />
@@ -93,6 +94,7 @@
     <Compile Include="Platform\Controller\PlayerBackend\PlaybackStatus.cs" />
     <Compile Include="Platform\Player\PlayerControl.cs" />
     <Compile Include="Platform\UI\Base\FragmentContentActivity.cs" />
+    <Compile Include="Platform\UI\Base\IMainViewFragmentCallbacks.cs" />
     <Compile Include="Platform\UI\Base\InputTextDialog.cs" />
     <Compile Include="Platform\UI\Base\MainViewFragment.cs" />
     <Compile Include="Platform\UI\Library\AudioLibraryFragment.cs" />
@@ -211,6 +213,7 @@
     <AndroidResource Include="Resources\Layout\Fragment_MyPublications.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
+    <AndroidResource Include="Resources\Layout\View_ChildFragmentContainer.axml" />
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\Values\Strings.xml">
@@ -319,6 +322,7 @@
     <AndroidResource Include="Resources\Drawable-mdpi\ic_action_play.png" />
     <AndroidResource Include="Resources\Drawable-xhdpi\ic_action_play.png" />
     <AndroidResource Include="Resources\Drawable-xxhdpi\ic_action_play.png" />
+    <AndroidResource Include="Resources\Menu\menu_publications_view.xml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\libs\ViewPagerIndicator\ViewPagerIndicator.csproj">
