@@ -67,7 +67,7 @@ namespace AirMedia.Platform.UI.MainView
             ActionBar.SetHomeButtonEnabled(true);
             ActionBar.SetDisplayHomeAsUpEnabled(true);
 
-            Type displayFragmentType = typeof(AudioLibraryFragment);
+            Type displayFragmentType = null;
             if (bundle != null)
             {
                 if (bundle.ContainsKey(ExtraFragmentStateBundle))
@@ -79,6 +79,10 @@ namespace AirMedia.Platform.UI.MainView
                 {
                     displayFragmentType = Type.GetType(bundle.GetString(ExtraDisplayFragment));
                 }
+            }
+            if (displayFragmentType == null)
+            {
+                displayFragmentType = App.Preferences.LastMainView ?? typeof(AudioLibraryFragment);
             }
 
             SetContentFragment(displayFragmentType);
@@ -248,6 +252,8 @@ namespace AirMedia.Platform.UI.MainView
             FragmentManager.BeginTransaction()
                            .Replace(Resource.Id.contentView, currentFragment, ContentFragmentTag)
                            .CommitAllowingStateLoss();
+
+            App.Preferences.LastMainView = fragmentType;
         }
 
         private MainViewFragment GetContentFragment()

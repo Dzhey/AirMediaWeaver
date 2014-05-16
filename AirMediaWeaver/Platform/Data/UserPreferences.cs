@@ -1,6 +1,7 @@
 using System;
 using AirMedia.Core.Data;
 using AirMedia.Core.Log;
+using AirMedia.Platform.UI.Base;
 using Android.Content;
 
 namespace AirMedia.Platform.Data
@@ -9,12 +10,14 @@ namespace AirMedia.Platform.Data
     {
         private const string PreferencesName = "airmedia_prefs";
 
+        private const string PreferenceLastMainView = "last_main_view";
+
         private const string PreferenceDatabaseCreated = "database_created";
         private const string PreferenceDisplayLogLevel = "display_log_level";
         private const string PreferenceLastReadLogEntryId = "last_read_log_entry_id";
         private const string PreferenceIsLogPanelSettingsRevealed = "is_log_panel_settings_revealed";
         private const string PreferencIsLogListExpanded = "is_log_list_expanded";
-		private const string PreferenceIsLogPanelEnabled = "is_log_panel_enabled";
+        private const string PreferenceIsLogPanelEnabled = "is_log_panel_enabled";
 
         private new static readonly string LogTag = typeof (UserPreferences).Name;
 
@@ -34,10 +37,7 @@ namespace AirMedia.Platform.Data
 
                 return _prefs.GetBoolean(PreferenceIsLogPanelEnabled, Core.Consts.IsLogPanelEnabledByDefault);
             }
-            set
-            {
-                _prefs.Edit().PutBoolean(PreferenceIsLogPanelEnabled, value).Commit();
-            }
+            set { _prefs.Edit().PutBoolean(PreferenceIsLogPanelEnabled, value).Commit(); }
         }
 
         public override bool IsLogPanelSettingsRevealed
@@ -46,13 +46,10 @@ namespace AirMedia.Platform.Data
             {
                 if (Core.Consts.IsInAppLoggingEnabled == false) return false;
 
-                return _prefs.GetBoolean(PreferenceIsLogPanelSettingsRevealed, 
-                    Core.Consts.IsLogPanelSettingsRevealedByDefault);
+                return _prefs.GetBoolean(PreferenceIsLogPanelSettingsRevealed,
+                                         Core.Consts.IsLogPanelSettingsRevealedByDefault);
             }
-            set
-            {
-                _prefs.Edit().PutBoolean(PreferenceIsLogPanelSettingsRevealed, value).Commit();
-            }
+            set { _prefs.Edit().PutBoolean(PreferenceIsLogPanelSettingsRevealed, value).Commit(); }
         }
 
         public override bool DatabaseCreated
@@ -72,9 +69,9 @@ namespace AirMedia.Platform.Data
             {
                 try
                 {
-                    int level = _prefs.GetInt(PreferenceDisplayLogLevel, (int)Core.Consts.TmLogLevel);
+                    int level = _prefs.GetInt(PreferenceDisplayLogLevel, (int) Core.Consts.TmLogLevel);
 
-                    return (LogLevel)level;
+                    return (LogLevel) level;
                 }
                 catch (InvalidCastException e)
                 {
@@ -84,10 +81,7 @@ namespace AirMedia.Platform.Data
                 return LogLevel.Verbose;
             }
 
-            set
-            {
-                _prefs.Edit().PutInt(PreferenceDisplayLogLevel, (int) value).Commit();
-            }
+            set { _prefs.Edit().PutInt(PreferenceDisplayLogLevel, (int) value).Commit(); }
         }
 
         public override int LastReadLogEntryId
@@ -95,6 +89,46 @@ namespace AirMedia.Platform.Data
             get { return _prefs.GetInt(PreferenceLastReadLogEntryId, 0); }
 
             set { _prefs.Edit().PutInt(PreferenceLastReadLogEntryId, value).Commit(); }
+        }
+
+        public Type LastMainView
+        {
+            get
+            {
+                string typeName = _prefs.GetString(PreferenceLastMainView, null);
+
+                if (typeName == null) return null;
+
+                var type = Type.GetType(typeName, false);
+
+                if (type == null)
+                {
+                    AmwLog.Error(LogTag, string.Format("Can't retrieve main view type from " +
+                                                       "preference; type name: \"{0}\"", typeName));
+                    return null;
+                }
+
+                if (typeof (MainViewFragment).IsAssignableFrom(type) == false)
+                {
+                    AmwLog.Error(LogTag, string.Format("unexpected main view type " +
+                                                       "from preference; type: \"{0}\"", type));
+
+                    return null;
+                }
+
+                return type;
+            }
+
+            set
+            {
+                if (typeof (MainViewFragment).IsAssignableFrom(value) == false)
+                {
+                    throw new ArgumentException(string.Format(
+                        "invalid main view type provided; type: \"{0}\"", value));
+                }
+
+                _prefs.Edit().PutString(PreferenceLastMainView, value.FullName).Commit();
+            }
         }
     }
 }
