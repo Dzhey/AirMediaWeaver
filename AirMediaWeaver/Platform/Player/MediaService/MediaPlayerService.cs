@@ -19,6 +19,8 @@ namespace AirMedia.Platform.Player.MediaService
         public const string ActionStop = "org.eb.airmedia.android.intent.action.STOP";
         public const string ActionPause = "org.eb.airmedia.android.intent.action.PAUSE";
         public const string ActionUnpause = "org.eb.airmedia.android.intent.action.UNPAUSE";
+        public const string ActionFastForward = "org.eb.airmedia.android.intent.action.FAST_FORWARD";
+        public const string ActionRewind = "org.eb.airmedia.android.intent.action.REWIND";
 
         private static readonly string LogTag = typeof (MediaPlayerService).Name;
 
@@ -83,6 +85,14 @@ namespace AirMedia.Platform.Player.MediaService
 
                 case ActionUnpause:
                     _player.Unpause();
+                    break;
+
+                case ActionFastForward:
+                    _player.FastForward();
+                    break;
+
+                case ActionRewind:
+                    _player.Rewind();
                     break;
 
                 default:

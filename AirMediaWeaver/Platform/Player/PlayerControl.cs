@@ -10,7 +10,21 @@ namespace AirMedia.Platform.Player
 {
     public static class PlayerControl
     {
-        public static readonly string LogTag = typeof (PlayerControl).Name;
+        public static readonly string LogTag = typeof(PlayerControl).Name;
+
+        public static void Rewind()
+        {
+            var intent = new Intent(MediaPlayerService.ActionRewind);
+            intent.SetClass(App.Instance, typeof(MediaPlayerService));
+            App.Instance.StartService(intent);
+        }
+
+        public static void FastForward()
+        {
+            var intent = new Intent(MediaPlayerService.ActionFastForward);
+            intent.SetClass(App.Instance, typeof(MediaPlayerService));
+            App.Instance.StartService(intent);
+        }
 
         public static void Play(long[] trackIds, int position = 0, bool fastForward = true)
         {

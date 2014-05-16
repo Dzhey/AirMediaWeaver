@@ -1,7 +1,4 @@
 using System;
-using AirMedia.Core.Log;
-using AirMedia.Core.Requests.Model;
-using AirMedia.Platform.Controller.Requests;
 using AirMedia.Platform.Data;
 using AirMedia.Platform.Player;
 using AirMedia.Platform.Player.MediaService;
@@ -145,10 +142,12 @@ namespace AirMedia.Platform.UI.Player
 
         private void OnRewindClicked(object sender, EventArgs args)
         {
+            PlayerControl.Rewind();
         }
 
         private void OnFastForwardClicked(object sender, EventArgs args)
         {
+            PlayerControl.FastForward();
         }
 
         public void OnPlaybackStarted()

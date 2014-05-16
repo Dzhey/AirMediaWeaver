@@ -126,6 +126,20 @@ namespace AirMedia.Platform.Controller.PlayerBackend
             _queue.EnqueueSource(source);
         }
 
+        public void Rewind()
+        {
+            if (IsPlaying())
+            {
+                _player.Stop();
+            }
+
+            _queue.MovePrevious();
+            if (Play() == false)
+            {
+                ReleasePlayer();
+            }
+        }
+
         public void FastForward()
         {
             if (IsPlaying())
@@ -133,6 +147,7 @@ namespace AirMedia.Platform.Controller.PlayerBackend
                 _player.Stop();
             }
 
+            _queue.MoveNext();
             if (Play() == false)
             {
                 ReleasePlayer();
