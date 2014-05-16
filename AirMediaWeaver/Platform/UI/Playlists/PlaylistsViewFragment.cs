@@ -359,10 +359,11 @@ namespace AirMedia.Platform.UI.Playlists
 
                     case PlaySystemPlaylistsRequests.ResultCodeErrorNoTracksAvailable:
                         SubmitRequest(new PlayAudioLibraryRequest());
-                        ShowMessage(Resource.String.error_cant_play_playlists_no_audio);
+                        ShowMessage(Resource.String.error_cant_play_playlists_no_tracks);
                         break;
 
                     default:
+                        AmwLog.Error(LogTag, "error trying to enqueue playlists to playback");
                         ShowMessage(Resource.String.error_cant_play_playlists);
                         break;
                 }

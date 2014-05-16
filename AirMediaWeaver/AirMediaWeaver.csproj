@@ -77,6 +77,7 @@
     <Compile Include="Platform\Controller\Requests\LoadPlaylistsRequest.cs" />
     <Compile Include="Platform\Controller\Requests\LoadTrackMetadataRequest.cs" />
     <Compile Include="Platform\Controller\Requests\PlayAudioLibraryRequest.cs" />
+    <Compile Include="Platform\Controller\Requests\PlayPlaylistRequest.cs" />
     <Compile Include="Platform\Controller\Requests\PlaySystemPlaylistsRequests.cs" />
     <Compile Include="Platform\Data\TrackMetadata.cs" />
     <Compile Include="Platform\Player\MediaService\IBinderCallbacks.cs" />
@@ -303,6 +304,10 @@
     <AndroidResource Include="Resources\Drawable-xxhdpi\ic_action_edit.png" />
     <AndroidResource Include="Resources\Menu\context_menu_audio_library.xml" />
     <AndroidResource Include="Resources\Menu\menu_playlists_details.xml" />
+    <AndroidResource Include="Resources\Drawable-hdpi\ic_action_play.png" />
+    <AndroidResource Include="Resources\Drawable-mdpi\ic_action_play.png" />
+    <AndroidResource Include="Resources\Drawable-xhdpi\ic_action_play.png" />
+    <AndroidResource Include="Resources\Drawable-xxhdpi\ic_action_play.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\libs\ViewPagerIndicator\ViewPagerIndicator.csproj">

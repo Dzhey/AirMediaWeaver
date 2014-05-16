@@ -1,5 +1,6 @@
 
 using System;
+using AirMedia.Core.Log;
 using AirMedia.Platform.Controller.PlaybackSource;
 using AirMedia.Platform.Player.MediaService;
 using Android.Content;
@@ -9,6 +10,8 @@ namespace AirMedia.Platform.Player
 {
     public static class PlayerControl
     {
+        public static readonly string LogTag = typeof (PlayerControl).Name;
+
         public static void Play(long[] trackIds, int position = 0, bool fastForward = true)
         {
             App.Instance.StartService(CreateEnqueueIntent(position, trackIds));
@@ -17,6 +20,8 @@ namespace AirMedia.Platform.Player
             intent.SetClass(App.Instance, typeof(MediaPlayerService));
             intent.PutExtra(MediaPlayerService.ExtraFastForward, true);
             App.Instance.StartService(intent);
+
+            AmwLog.Debug(LogTag, string.Format("{0} tracks enqueued", trackIds.Length));
         }
 
         public static void Play(long trackId, bool fastForward = true)

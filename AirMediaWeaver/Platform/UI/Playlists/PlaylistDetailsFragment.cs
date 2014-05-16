@@ -4,6 +4,7 @@ using AirMedia.Core.Requests.Model;
 using AirMedia.Platform.Controller;
 using AirMedia.Platform.Controller.Requests;
 using AirMedia.Platform.Data;
+using AirMedia.Platform.Player;
 using AirMedia.Platform.UI.Base;
 using AirMedia.Platform.UI.Library;
 using Android.App;
@@ -109,6 +110,18 @@ namespace AirMedia.Platform.UI.Playlists
                         Activity, typeof (AudioLibraryFragment), args);
                     Activity.StartActivityForResult(intent, RequestCodeEditPlaylist);
                     return true;
+
+                case Resource.Id.ActionPlay:
+                    if (_adapter.Count < 1 || _playlistId == null)
+                    {
+                        ShowMessage(Resource.String.error_cant_play_playlist_no_tracks);
+                    }
+                    else
+                    {
+                        SubmitRequest(new PlayPlaylistRequest((long)_playlistId));
+                    }
+
+                    return true;
             }
 
             return base.OnOptionsItemSelected(item);
@@ -142,13 +155,30 @@ namespace AirMedia.Platform.UI.Playlists
             base.OnResume();
 
             RegisterRequestResultHandler(typeof(LoadPlaylistItemsRequest), OnPlaylistItemsLoaded);
+            RegisterRequestResultHandler(typeof(PlayPlaylistRequest), OnPlayPlaylistRequestFinished);
+
+            _listView.ItemClick += OnTrackItemClicked;
         }
 
         public override void OnPause()
         {
+            _listView.ItemClick -= OnTrackItemClicked;
+
             RemoveRequestResultHandler(typeof(LoadPlaylistItemsRequest));
+            RemoveRequestResultHandler(typeof(PlayPlaylistRequest));
 
             base.OnPause();
+        }
+
+        private void OnTrackItemClicked(object sender, AdapterView.ItemClickEventArgs args)
+        {
+            if (_playlistId == null)
+            {
+                ShowMessage(Resource.String.error_cant_play_playlist_no_tracks);
+                return;
+            }
+
+            SubmitRequest(new PlayPlaylistRequest((int) _playlistId, args.Position));
         }
 
         private void OnPlaylistItemsLoaded(object sender, ResultEventArgs args)
@@ -166,6 +196,24 @@ namespace AirMedia.Platform.UI.Playlists
                 _adapter.SetItems(metadata);
             }
             UpdateProgressIndicators(false);
+        }
+
+        private void OnPlayPlaylistRequestFinished(object sender, ResultEventArgs args)
+        {
+            if (args.Request.Status != RequestStatus.Ok)
+            {
+                switch (args.Result.ResultCode)
+                {
+                    case PlayPlaylistRequest.ResultCodeErrorNoTracksAvailable:
+                        ShowMessage(Resource.String.error_cant_play_playlist_no_tracks);
+                        break;
+
+                    default:
+                        AmwLog.Error(LogTag, "error trying to enqueue playlist to playback");
+                        ShowMessage(Resource.String.error_cant_play_playlist);
+                        break;
+                }
+            }
         }
 
         private void UpdateProgressIndicators(bool isInProgress)

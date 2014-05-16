@@ -22,6 +22,7 @@
   <string name="hint_remove_playlist">Удалить плейлист</string>
   <string name="hint_rename_playlist">Переименовать плейлист</string>
   <string name="hint_edit_playlist">Добавить или удалить композиции</string>
+  <string name="hint_play_playlist">Воспроизвести плейлист</string>
   <string name="hint_pick_playlist_tracks">Выберите треки</string>
   <string name="dialog_create_playlist_title">Введите название</string>
   <string name="dialog_rename_playlist_title">Переименовать плейлист</string>
@@ -36,9 +37,11 @@
   <string name="error_cant_update_playlists">Ошибка при обновлении плейлиста</string>
   <string name="error_cant_start_audio_library_playback">Не удалось начать воспроизведение</string>
   <string name="error_cant_start_audio_library_playback_no_audio">Загрузите новые треки, чтобы начать</string>
-  <string name="error_cant_play_playlists_no_audio">Добавьте новые треки, чтобы воспроизвести плейлисты</string>
+  <string name="error_cant_play_playlists_no_tracks">Добавьте новые треки, чтобы воспроизвести плейлисты</string>
   <string name="error_cant_play_playlists_no_playlists">Создайте новый плейлист, чтобы воспроизвести его</string>
   <string name="error_cant_play_playlists">Ошибка при воспроизведении плейлиста</string>
+  <string name="error_cant_play_playlist_no_tracks">Добавьте треки, чтобы начать воспроизведение</string>
+  <string name="error_cant_play_playlist">Ошибка при воспроизведении плейлиста</string>
   
   <!-- Logger strings -->
   <string name="title_log_level">Уровень</string>
