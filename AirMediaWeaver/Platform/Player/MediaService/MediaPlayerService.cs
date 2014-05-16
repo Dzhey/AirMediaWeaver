@@ -67,12 +67,9 @@ namespace AirMedia.Platform.Player.MediaService
                     bool fastForward = intent.GetBooleanExtra(ExtraFastForward, false);
                     if (fastForward)
                     {
-                        _player.FastForward();
+                        _player.Stop();
                     }
-                    else
-                    {
-                        _player.Play();
-                    }
+                    _player.Play();
                     break;
 
                 case ActionStop:
