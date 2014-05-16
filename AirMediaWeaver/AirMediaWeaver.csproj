@@ -76,6 +76,8 @@
     <Compile Include="Platform\Controller\Requests\LoadPlaylistItemsRequest.cs" />
     <Compile Include="Platform\Controller\Requests\LoadPlaylistsRequest.cs" />
     <Compile Include="Platform\Controller\Requests\LoadTrackMetadataRequest.cs" />
+    <Compile Include="Platform\Controller\Requests\PlayAudioLibraryRequest.cs" />
+    <Compile Include="Platform\Controller\Requests\PlaySystemPlaylistsRequests.cs" />
     <Compile Include="Platform\Data\TrackMetadata.cs" />
     <Compile Include="Platform\Player\MediaService\IBinderCallbacks.cs" />
     <Compile Include="Platform\Player\IMediaPlayerCallbacks.cs" />
@@ -152,6 +154,7 @@
     <Compile Include="Platform\UI\Base\BaseDialogFragment.cs" />
     <Compile Include="Platform\UI\Base\ConfirmDialogFragment.cs" />
     <Compile Include="Platform\UI\Base\ProgressDialogFragment.cs" />
+    <Compile Include="Platform\UI\Player\IPlayerFacadeFragmentCallbacks.cs" />
     <Compile Include="Platform\UI\Player\MediaServiceConnection.cs" />
     <Compile Include="Platform\UI\Player\PlayerFacadeFragment.cs" />
     <Compile Include="Platform\UI\Playlists\PlaylistDetailsFragment.cs" />

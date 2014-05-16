@@ -49,6 +49,11 @@ namespace AirMedia.Platform.Player.MediaService
         public override StartCommandResult OnStartCommand(Intent intent, 
             StartCommandFlags flags, int startId)
         {
+            if (intent == null)
+            {
+                return StartCommandResult.Sticky;
+            }
+
             switch (intent.Action)
             {
                 case ActionEnqueue:

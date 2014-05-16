@@ -694,11 +694,11 @@ namespace AirMedia
 			// aapt resource value: 0x7f050016
 			public const int dialog_create_playlist_title = 2131034134;
 			
-			// aapt resource value: 0x7f050026
-			public const int dialog_log_details_accept_text = 2131034150;
+			// aapt resource value: 0x7f05002b
+			public const int dialog_log_details_accept_text = 2131034155;
 			
-			// aapt resource value: 0x7f050025
-			public const int dialog_log_details_title = 2131034149;
+			// aapt resource value: 0x7f05002a
+			public const int dialog_log_details_title = 2131034154;
 			
 			// aapt resource value: 0x7f05001a
 			public const int dialog_remove_playlists_message = 2131034138;
@@ -709,17 +709,26 @@ namespace AirMedia
 			// aapt resource value: 0x7f050017
 			public const int dialog_rename_playlist_title = 2131034135;
 			
-			// aapt resource value: 0x7f05002a
-			public const int dialog_save_file_title = 2131034154;
+			// aapt resource value: 0x7f05002f
+			public const int dialog_save_file_title = 2131034159;
 			
-			// aapt resource value: 0x7f05002c
-			public const int dialog_title_send_log_via = 2131034156;
+			// aapt resource value: 0x7f050031
+			public const int dialog_title_send_log_via = 2131034161;
 			
-			// aapt resource value: 0x7f050028
-			public const int error_cant_create_log_file = 2131034152;
+			// aapt resource value: 0x7f05002d
+			public const int error_cant_create_log_file = 2131034157;
 			
 			// aapt resource value: 0x7f05001c
 			public const int error_cant_create_playlist = 2131034140;
+			
+			// aapt resource value: 0x7f050025
+			public const int error_cant_play_playlists = 2131034149;
+			
+			// aapt resource value: 0x7f050023
+			public const int error_cant_play_playlists_no_audio = 2131034147;
+			
+			// aapt resource value: 0x7f050024
+			public const int error_cant_play_playlists_no_playlists = 2131034148;
 			
 			// aapt resource value: 0x7f05001f
 			public const int error_cant_remove_playlists = 2131034143;
@@ -727,8 +736,14 @@ namespace AirMedia
 			// aapt resource value: 0x7f05001d
 			public const int error_cant_rename_playlist = 2131034141;
 			
-			// aapt resource value: 0x7f050027
-			public const int error_cant_save_log_file = 2131034151;
+			// aapt resource value: 0x7f05002c
+			public const int error_cant_save_log_file = 2131034156;
+			
+			// aapt resource value: 0x7f050021
+			public const int error_cant_start_audio_library_playback = 2131034145;
+			
+			// aapt resource value: 0x7f050022
+			public const int error_cant_start_audio_library_playback_no_audio = 2131034146;
 			
 			// aapt resource value: 0x7f050020
 			public const int error_cant_update_playlists = 2131034144;
@@ -739,8 +754,8 @@ namespace AirMedia
 			// aapt resource value: 0x7f05001e
 			public const int error_generic_cant_rename_playlist = 2131034142;
 			
-			// aapt resource value: 0x7f05002b
-			public const int error_log_dir_not_available = 2131034155;
+			// aapt resource value: 0x7f050030
+			public const int error_log_dir_not_available = 2131034160;
 			
 			// aapt resource value: 0x7f05000c
 			public const int hint_close_main_drawer = 2131034124;
@@ -766,8 +781,8 @@ namespace AirMedia
 			// aapt resource value: 0x7f050006
 			public const int message_audio_library_empty = 2131034118;
 			
-			// aapt resource value: 0x7f050029
-			public const int message_log_file_saved = 2131034153;
+			// aapt resource value: 0x7f05002e
+			public const int message_log_file_saved = 2131034158;
 			
 			// aapt resource value: 0x7f050008
 			public const int message_playlist_empty = 2131034120;
@@ -784,11 +799,11 @@ namespace AirMedia
 			// aapt resource value: 0x7f050003
 			public const int title_list_empty = 2131034115;
 			
-			// aapt resource value: 0x7f050022
-			public const int title_log_expand_toggle = 2131034146;
+			// aapt resource value: 0x7f050027
+			public const int title_log_expand_toggle = 2131034151;
 			
-			// aapt resource value: 0x7f050021
-			public const int title_log_level = 2131034145;
+			// aapt resource value: 0x7f050026
+			public const int title_log_level = 2131034150;
 			
 			// aapt resource value: 0x7f050010
 			public const int title_main_view = 2131034128;
@@ -805,11 +820,11 @@ namespace AirMedia
 			// aapt resource value: 0x7f05000e
 			public const int title_playlists_view = 2131034126;
 			
-			// aapt resource value: 0x7f050023
-			public const int title_save_log = 2131034147;
+			// aapt resource value: 0x7f050028
+			public const int title_save_log = 2131034152;
 			
-			// aapt resource value: 0x7f050024
-			public const int title_share_log = 2131034148;
+			// aapt resource value: 0x7f050029
+			public const int title_share_log = 2131034153;
 			
 			// aapt resource value: 0x7f050004
 			public const int title_unknown_artist = 2131034116;

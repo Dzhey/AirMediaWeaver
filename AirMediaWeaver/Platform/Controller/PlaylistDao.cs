@@ -45,6 +45,29 @@ namespace AirMedia.Platform.Controller
                 MediaStore.Audio.Media.InterfaceConsts.Data
             };
 
+        public static List<TrackMetadata> GetSystemTracks()
+        {
+            const string sortByArtist = MediaStore.Audio.Media.InterfaceConsts.Artist + " ASC";
+            const string sortByTitle = MediaStore.Audio.Media.InterfaceConsts.Title + " ASC";
+            string sortOrder = string.Join(",", sortByArtist, sortByTitle);
+
+            var resolver = App.Instance.ContentResolver;
+            var cursor = resolver.Query(MediaStore.Audio.Media.ExternalContentUri,
+                                        TrackMetadataQueryProjection, null, null, sortOrder);
+
+            var result = new List<TrackMetadata>(cursor.Count);
+
+            using (cursor)
+            {
+                while (cursor.MoveToNext())
+                {
+                    result.Add(CreateTrackMetadata(cursor));
+                }
+            }
+
+            return result;
+        }
+
         public static TrackMetadata? GetTrackMetadata(long trackId)
         {
             var resolver = App.Instance.ContentResolver;

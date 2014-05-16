@@ -1,8 +1,12 @@
 using System;
+using AirMedia.Core.Log;
+using AirMedia.Core.Requests.Model;
+using AirMedia.Platform.Controller.Requests;
 using AirMedia.Platform.Data;
 using AirMedia.Platform.Player;
 using AirMedia.Platform.Player.MediaService;
 using AirMedia.Platform.UI.Base;
+using Android.App;
 using Android.Content;
 using Android.OS;
 using Android.Views;
@@ -16,7 +20,8 @@ namespace AirMedia.Platform.UI.Player
         MediaServiceConnection.IConnectionListener
     {
         private static readonly string UtfDash = Char.ConvertFromUtf32(8211);
-        
+
+        private IPlayerFacadeFragmentCallbacks _callbacks;
         private MediaServiceConnection _mediaServiceConnection;
         private ViewGroup _trackInfoPanel;
         private TextView _trackInfoView;
@@ -25,6 +30,26 @@ namespace AirMedia.Platform.UI.Player
         private ToggleButton _buttonTogglePlayback;
         private ToggleButton _buttonFastForward;
         private bool _isTouchingSeekBar;
+
+        public override void OnAttach(Activity activity)
+        {
+            base.OnAttach(activity);
+
+            _callbacks = activity as IPlayerFacadeFragmentCallbacks;
+            if (_callbacks == null)
+            {
+                throw new ApplicationException(
+                    string.Format("Hosting activity should implement \"{0}\" in order to use \"{1}\" fragment",
+                                  typeof (IPlayerFacadeFragmentCallbacks), GetType()));
+            }
+        }
+
+        public override void OnDetach()
+        {
+            _callbacks = null;
+
+            base.OnDetach();
+        }
 
         public override void OnCreate(Bundle savedInstanceState)
         {
@@ -101,6 +126,17 @@ namespace AirMedia.Platform.UI.Player
 
         private void OnPlayToggleClicked(object sender, EventArgs args)
         {
+            var binder = _mediaServiceConnection.Binder;
+
+            if (binder.IsPlaying() == false && binder.IsPaused() == false)
+            {
+                if (_callbacks != null)
+                {
+                    _callbacks.OnGenericPlaybackRequested();
+                }
+                return;
+            }
+
             if (_mediaServiceConnection.Binder.TogglePause() == false)
             {
                 _buttonTogglePlayback.Checked = false;

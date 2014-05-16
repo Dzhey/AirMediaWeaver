@@ -1,10 +1,11 @@
 
 
+using AirMedia.Platform.UI.Player;
 using Android.OS;
 
 namespace AirMedia.Platform.UI.Base
 {
-    public abstract class MainViewFragment : AmwFragment
+    public abstract class MainViewFragment : AmwFragment, IPlayerFacadeFragmentCallbacks
     {
         public abstract string GetTitle();
 
@@ -14,5 +15,7 @@ namespace AirMedia.Platform.UI.Base
 
             Activity.ActionBar.Title = GetTitle();
         }
+
+        public abstract void OnGenericPlaybackRequested();
     }
 }

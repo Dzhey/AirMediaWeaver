@@ -119,6 +119,11 @@ namespace AirMedia.Platform.UI.Playlists
             ReloadList();
         }
 
+        public override void OnGenericPlaybackRequested()
+        {
+            SubmitRequest(new PlaySystemPlaylistsRequests());
+        }
+
         public override string GetTitle()
         {
             return GetString(Resource.String.title_playlists_view);
@@ -132,6 +137,8 @@ namespace AirMedia.Platform.UI.Playlists
             _listView.ItemLongClick += OnPlaylistLongClicked;
 
             RegisterRequestResultHandler(typeof(LoadPlaylistsRequest), OnPlaylistsLoaded);
+            RegisterRequestResultHandler(typeof(PlaySystemPlaylistsRequests), OnPlaySystemPlayslistsRequestFinished);
+            RegisterRequestResultHandler(typeof(PlayAudioLibraryRequest), OnPlayAudioLibraryRequestFinished);
 
             var createPlaylistDialog = (InputTextDialogFragment) FragmentManager
                 .FindFragmentByTag(TagInputPlaylistNameDialog);
@@ -155,6 +162,8 @@ namespace AirMedia.Platform.UI.Playlists
             _listView.SetMultiChoiceModeListener(null);
 
             RemoveRequestResultHandler(typeof(LoadPlaylistsRequest));
+            RemoveRequestResultHandler(typeof(PlaySystemPlaylistsRequests));
+            RemoveRequestResultHandler(typeof(PlayAudioLibraryRequest));
 
             var createPlaylistDialog = (InputTextDialogFragment)FragmentManager
                 .FindFragmentByTag(TagInputPlaylistNameDialog);
@@ -335,6 +344,39 @@ namespace AirMedia.Platform.UI.Playlists
                 _adapter.SetItems(playlists);
             }
             UpdateProgressIndicators();
+        }
+
+        private void OnPlaySystemPlayslistsRequestFinished(object sender, ResultEventArgs args)
+        {
+            if (args.Request.Status != RequestStatus.Ok)
+            {
+                switch (args.Result.ResultCode)
+                {
+                    case PlaySystemPlaylistsRequests.ResultCodeErrorNoPlaylistsAvailable:
+                        SubmitRequest(new PlayAudioLibraryRequest());
+                        ShowMessage(Resource.String.error_cant_play_playlists_no_playlists);
+                        break;
+
+                    case PlaySystemPlaylistsRequests.ResultCodeErrorNoTracksAvailable:
+                        SubmitRequest(new PlayAudioLibraryRequest());
+                        ShowMessage(Resource.String.error_cant_play_playlists_no_audio);
+                        break;
+
+                    default:
+                        ShowMessage(Resource.String.error_cant_play_playlists);
+                        break;
+                }
+            }
+        }
+
+        private void OnPlayAudioLibraryRequestFinished(object sender, ResultEventArgs args)
+        {
+            AmwLog.Verbose(LogTag, "(playlists view) OnPlayAudioLibraryRequestFinished()");
+
+            if (args.Request.Status != RequestStatus.Ok)
+            {
+                AmwLog.Error(LogTag, "error trying to play audio library");
+            }
         }
 
         private void UpdateProgressIndicators()

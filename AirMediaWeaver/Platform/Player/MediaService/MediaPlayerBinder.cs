@@ -34,6 +34,11 @@ namespace AirMedia.Platform.Player.MediaService
             return _callbacks.IsPlaying();
         }
 
+        public bool IsPaused()
+        {
+            return _callbacks.IsPaused();
+        }
+
         public bool TogglePause()
         {
             if (_callbacks.IsPaused())

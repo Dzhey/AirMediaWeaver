@@ -1,5 +1,7 @@
 using System.Globalization;
 using AirMedia.Core.Log;
+using AirMedia.Core.Requests.Model;
+using AirMedia.Platform.Controller.Requests;
 using AirMedia.Platform.Player;
 using AirMedia.Platform.UI.Base;
 using Android.App;
@@ -12,7 +14,10 @@ using Java.Lang;
 
 namespace AirMedia.Platform.UI.Library
 {
-    public class AudioLibraryFragment : MainViewFragment, LoaderManager.ILoaderCallbacks, ActionMode.ICallback, ITrackListAdapterCallbacks
+    public class AudioLibraryFragment : MainViewFragment, 
+        LoaderManager.ILoaderCallbacks, 
+        ActionMode.ICallback, 
+        ITrackListAdapterCallbacks
     {
         public const string ExtraStartInPickMode = "start_in_pick_mode";
         public const string ExtraCheckedTrackIds = "checked_track_ids";
@@ -84,6 +89,31 @@ namespace AirMedia.Platform.UI.Library
             App.MainHandler.PostDelayed(UpdateProgressIndicators, ProgressDelayMillis);
         }
 
+        public override void OnGenericPlaybackRequested()
+        {
+            SubmitRequest(new PlayAudioLibraryRequest());
+        }
+
+        private void OnPlayAudioLibraryRequestFinished(object sender, ResultEventArgs args)
+        {
+            AmwLog.Verbose(LogTag, "(audio library) OnPlayAudioLibraryRequestFinished()");
+
+            if (args.Request.Status != RequestStatus.Ok)
+            {
+                switch (args.Result.ResultCode)
+                {
+                    case PlayAudioLibraryRequest.ResultCodeErrorNoAvailableTracks:
+                        ShowMessage(Resource.String.error_cant_start_audio_library_playback_no_audio);
+                        break;
+
+                    default:
+                        ShowMessage(Resource.String.error_cant_start_audio_library_playback);
+                        AmwLog.Error(LogTag, "unexpected error while trying to start audio library playback");
+                        break;
+                }
+            }
+        }
+
         public override void OnSaveInstanceState(Bundle outState)
         {
             base.OnSaveInstanceState(outState);
@@ -98,12 +128,16 @@ namespace AirMedia.Platform.UI.Library
         {
             base.OnResume();
 
+            RegisterRequestResultHandler(typeof(PlayAudioLibraryRequest), OnPlayAudioLibraryRequestFinished);
+
             _listView.ItemClick += OnTrackItemClicked;
         }
 
         public override void OnPause()
         {
             _listView.ItemClick -= OnTrackItemClicked;
+
+            RemoveRequestResultHandler(typeof(PlayAudioLibraryRequest));
 
             base.OnPause();
         }

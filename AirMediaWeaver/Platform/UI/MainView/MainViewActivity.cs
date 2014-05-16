@@ -16,7 +16,7 @@ using Fragment = Android.App.Fragment;
 namespace AirMedia.Platform.UI.MainView
 {
     [Activity(Label = "Air Media", MainLauncher = true, Icon = "@drawable/icon")]
-    public class MainViewActivity : AmwActivity
+    public class MainViewActivity : AmwActivity, IPlayerFacadeFragmentCallbacks
     {
         private const string ExtraFragmentStateBundle = "fragment_state_bundle";
         private const string ExtraDisplayFragment = "display_fragment";
@@ -293,6 +293,16 @@ namespace AirMedia.Platform.UI.MainView
                 AmwLog.Error(LogTag, string.Format(
                     "Can't save fragment state for \"{0}\". " +
                     "Error: \"{1}\"", fragment.GetType().Name, e));
+            }
+        }
+
+        public void OnGenericPlaybackRequested()
+        {
+            var currentFragment = GetContentFragment();
+
+            if (currentFragment != null)
+            {
+                currentFragment.OnGenericPlaybackRequested();
             }
         }
     }
