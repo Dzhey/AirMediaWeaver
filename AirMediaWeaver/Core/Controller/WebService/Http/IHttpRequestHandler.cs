@@ -1,6 +1,6 @@
 using System.Net;
 
-namespace AirMedia.Core.Controller.WebService
+namespace AirMedia.Core.Controller.WebService.Http
 {
     public interface IHttpRequestHandler
     {

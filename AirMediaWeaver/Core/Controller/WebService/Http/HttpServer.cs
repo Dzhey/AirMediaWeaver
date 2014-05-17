@@ -6,7 +6,7 @@ using AirMedia.Core.Requests.Abs;
 using AirMedia.Core.Requests.Model;
 using AirMedia.Platform.Logger;
 
-namespace AirMedia.Core.Controller.WebService
+namespace AirMedia.Core.Controller.WebService.Http
 {
     public class HttpServer : IDisposable, ObtainHttpListenerContextRequest.IHttpServeCallbacks
     {
@@ -88,7 +88,7 @@ namespace AirMedia.Core.Controller.WebService
                 return false;
             }
 
-            _requestResultListener.SubmitRequest(new ObtainHttpListenerContextRequest(this), true);
+            _requestResultListener.SubmitDedicatedRequest(new ObtainHttpListenerContextRequest(this));
 
             return true;
         }
@@ -133,8 +133,7 @@ namespace AirMedia.Core.Controller.WebService
             if (_httpListener.IsListening)
             {
                 AmwLog.Debug(LogTag, "http listener proceed listening");
-                _requestResultListener.SubmitRequest(
-                    new ObtainHttpListenerContextRequest(this), true);
+                _requestResultListener.SubmitDedicatedRequest(new ObtainHttpListenerContextRequest(this));
             }
             else
             {

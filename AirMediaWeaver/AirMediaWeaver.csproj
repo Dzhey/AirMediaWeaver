@@ -69,12 +69,14 @@
     <Compile Include="Core\Controller\WebService\Http\HttpResponseModel.cs" />
     <Compile Include="Core\Controller\WebService\Http\HttpResponseFactory.cs" />
     <Compile Include="Core\Controller\WebService\Http\HttpResponsePublishedTracks.cs" />
-    <Compile Include="Core\Controller\WebService\IHttpRequestHandler.cs" />
+    <Compile Include="Core\Controller\WebService\Http\IHttpContentProvider.cs" />
+    <Compile Include="Core\Controller\WebService\Http\IHttpRequestHandler.cs" />
     <Compile Include="Core\Controller\WebService\Model\AuthPacketReceivedEventArgs.cs" />
     <Compile Include="Core\Controller\WebService\IMulticastReceiver.cs" />
-    <Compile Include="Core\Controller\WebService\HttpServer.cs" />
+    <Compile Include="Core\Controller\WebService\Http\HttpServer.cs" />
     <Compile Include="Core\Controller\WebService\IMulticastSender.cs" />
     <Compile Include="Core\Controller\WebService\Model\AuthPacket.cs" />
+    <Compile Include="Core\Controller\WebService\Model\HttpBaseTrackInfo.cs" />
     <Compile Include="Core\Controller\WebService\Model\PeerDescriptor.cs" />
     <Compile Include="Core\Controller\WebService\PeerManager.cs" />
     <Compile Include="Core\Controller\WebService\MulticastUdpServer.cs" />
@@ -106,7 +108,8 @@
     <Compile Include="Platform\Controller\Requests\UpdatePublishedTracksRequest.cs" />
     <Compile Include="Platform\Controller\WebService\AirStreamerService.cs" />
     <Compile Include="Platform\Controller\WebService\ConnectivityReceiver.cs" />
-    <Compile Include="Platform\Controller\WebService\HttpRequestHandler.cs" />
+    <Compile Include="Platform\Controller\WebService\Http\HttpContentProvider.cs" />
+    <Compile Include="Platform\Controller\WebService\Http\HttpRequestHandler.cs" />
     <Compile Include="Platform\Data\Sql\AndroidDatabaseHelper.cs" />
     <Compile Include="Platform\Data\Sql\Dao\PublicTracksDao.cs" />
     <Compile Include="Platform\Data\TrackMetadata.cs" />

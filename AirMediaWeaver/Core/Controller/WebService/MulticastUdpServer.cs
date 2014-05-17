@@ -1,6 +1,7 @@
 using System;
 using System.Net;
 using System.Net.Sockets;
+using AirMedia.Core.Controller.WebService.Http;
 using AirMedia.Core.Controller.WebService.Model;
 using AirMedia.Core.Log;
 using AirMedia.Core.Requests.Impl;

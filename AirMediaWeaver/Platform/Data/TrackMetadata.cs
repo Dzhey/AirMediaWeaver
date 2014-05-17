@@ -3,6 +3,7 @@ namespace AirMedia.Platform.Data
 {
     public struct TrackMetadata
     {
+        public string TrackGuid { get; set; }
         public long TrackId { get; set; }
         public string ArtistName { get; set; }
         public string TrackTitle { get; set; }

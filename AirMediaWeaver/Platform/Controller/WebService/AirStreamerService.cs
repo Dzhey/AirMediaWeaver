@@ -1,9 +1,11 @@
 using System;
 using System.Net;
 using AirMedia.Core.Controller.WebService;
+using AirMedia.Core.Controller.WebService.Http;
 using AirMedia.Core.Controller.WebService.Model;
 using AirMedia.Core.Data;
 using AirMedia.Core.Log;
+using AirMedia.Platform.Controller.WebService.Http;
 using Android.App;
 using Android.Content;
 using Android.Net;
@@ -25,6 +27,7 @@ namespace AirMedia.Platform.Controller.WebService
 
         private MulticastUdpServer _multicastUdpServer;
         private HttpServer _httpServer;
+        private HttpContentProvider _httpContentProvider;
         private WifiManager _wifiManager;
         private PeerManager _peerManager;
         private ConnectivityReceiver _connectivityReceiver;
@@ -40,7 +43,8 @@ namespace AirMedia.Platform.Controller.WebService
 
             _wifiManager = (WifiManager) GetSystemService(WifiService);
             _connectivityManager = (ConnectivityManager) GetSystemService(ConnectivityService);
-            _httpRequestHandler = new HttpRequestHandler();
+            _httpContentProvider = new HttpContentProvider();
+            _httpRequestHandler = new HttpRequestHandler(_httpContentProvider);
             _httpServer = new HttpServer(_httpRequestHandler);
             _peerManager = new PeerManager(CoreUserPreferences.Instance.ClientGuid);
             _multicastUdpServer = new MulticastUdpServer();

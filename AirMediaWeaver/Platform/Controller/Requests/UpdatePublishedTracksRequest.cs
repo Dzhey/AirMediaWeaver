@@ -1,4 +1,3 @@
-using System;
 using AirMedia.Core.Data.Sql.Model;
 using AirMedia.Core.Requests.Abs;
 using AirMedia.Core.Requests.Model;

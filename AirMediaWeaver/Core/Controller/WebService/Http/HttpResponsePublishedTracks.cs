@@ -1,5 +1,7 @@
 
 
+using AirMedia.Core.Controller.WebService.Model;
+
 namespace AirMedia.Core.Controller.WebService.Http
 {
     public class HttpResponsePublishedTracks : HttpResponse
@@ -9,6 +11,6 @@ namespace AirMedia.Core.Controller.WebService.Http
             get { return HttpResponseFactory.HttpResponsePublishedTracks; }
         }
 
-        public string FakeData { get; set; }
+        public HttpBaseTrackInfo[] TrackInfo { get; set; }
     }
 }
