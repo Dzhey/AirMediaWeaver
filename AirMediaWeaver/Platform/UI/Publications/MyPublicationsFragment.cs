@@ -54,8 +54,7 @@ namespace AirMedia.Platform.UI.Publications
         {
             base.OnActivityCreated(savedInstanceState);
 
-            SetInProgress(true);
-            SubmitParallelRequest(new LoadPublishedTracksRequest());
+            ReloadList();
         }
 
         public override void OnResume()
@@ -64,14 +63,28 @@ namespace AirMedia.Platform.UI.Publications
 
             RegisterRequestResultHandler(typeof(LoadPublishedTracksRequest), OnTrackListLoaded);
             RegisterRequestResultHandler(typeof(UpdatePublishedTracksRequest), OnUpdatePublishedTracksResult);
+            RegisterRequestResultHandler(typeof(PlayMyPublicationsRequest), OnPlayMyPublicationsRequestFinished);
+            RegisterRequestResultHandler(typeof(PlayAudioLibraryRequest), OnPlayAudioLibraryRequestFinished);
+
+            _listView.ItemClick += OnListItemClicked;
         }
 
         public override void OnPause()
         {
+            _listView.ItemClick += OnListItemClicked;
+
             RemoveRequestResultHandler(typeof(LoadPublishedTracksRequest));
             RemoveRequestResultHandler(typeof(UpdatePublishedTracksRequest));
+            RemoveRequestResultHandler(typeof(PlayMyPublicationsRequest));
+            RemoveRequestResultHandler(typeof(PlayAudioLibraryRequest));
 
             base.OnPause();
+        }
+
+        private void ReloadList()
+        {
+            SetInProgress(true);
+            SubmitParallelRequest(new LoadPublishedTracksRequest());
         }
 
         public override bool OnOptionsItemSelected(IMenuItem item)
@@ -116,12 +129,36 @@ namespace AirMedia.Platform.UI.Publications
 
         public override void OnGenericPlaybackRequested()
         {
-            AmwLog.Info(LogTag, "TODO: enqueue publicated tracks");
+            SubmitRequest(new PlayMyPublicationsRequest());
         }
 
         public override bool HasDisplayedContent()
         {
             return _listView != null && _listView.Count > 0;
+        }
+
+        private void OnListItemClicked(object sender, AdapterView.ItemClickEventArgs args)
+        {
+            SubmitRequest(new PlayMyPublicationsRequest(args.Position));
+        }
+
+        private void OnPlayMyPublicationsRequestFinished(object sender, ResultEventArgs args)
+        {
+            if (args.Request.Status != RequestStatus.Ok)
+            {
+                switch (args.Result.ResultCode)
+                {
+                    case PlayMyPublicationsRequest.ResultCodeErrorNoTracksAvailable:
+                        AmwLog.Info(LogTag, "cant play publications: no published tracks found");
+                        SubmitRequest(new PlayAudioLibraryRequest());
+                        break;
+
+                    default:
+                        ShowMessage(Resource.String.error_cant_play_publications);
+                        AmwLog.Error(LogTag, "Error trying to play track publications");
+                        break;
+                }
+            }
         }
 
         private void OnUpdatePublishedTracksResult(object sender, ResultEventArgs args)
@@ -132,7 +169,27 @@ namespace AirMedia.Platform.UI.Publications
                 AmwLog.Error(LogTag, "Error trying to update track publications");
             }
 
-            SubmitParallelRequest(new LoadPublishedTracksRequest());
+            ReloadList();
+        }
+
+        private void OnPlayAudioLibraryRequestFinished(object sender, ResultEventArgs args)
+        {
+            AmwLog.Verbose(LogTag, "(my publications view) OnPlayAudioLibraryRequestFinished()");
+
+            if (args.Request.Status != RequestStatus.Ok)
+            {
+                switch (args.Result.ResultCode)
+                {
+                    case PlayAudioLibraryRequest.ResultCodeErrorNoAvailableTracks:
+                        ShowMessage(Resource.String.error_cant_start_audio_library_playback_no_audio);
+                        break;
+
+                    default:
+                        ShowMessage(Resource.String.error_cant_start_audio_library_playback);
+                        AmwLog.Error(LogTag, "unexpected error while trying to start audio library playback");
+                        break;
+                }
+            }
         }
 
         private void OnTrackListLoaded(object sender, ResultEventArgs args)

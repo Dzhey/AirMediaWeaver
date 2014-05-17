@@ -1,11 +1,14 @@
 using AirMedia.Core.Data.Sql;
 using AirMedia.Core.Log;
 using AirMedia.Core.Requests.Impl;
+using AirMedia.Core.Requests.Model;
 using AirMedia.Platform.Controller;
+using AirMedia.Platform.Controller.WebService;
 using AirMedia.Platform.Data;
 using AirMedia.Platform.Data.Sql;
 using AirMedia.Platform.Logger;
 using Android.App;
+using Android.Content;
 using Android.OS;
 using System;
 using Android.Runtime;
@@ -22,6 +25,8 @@ namespace AirMedia.Platform
         public static UserPreferences Preferences { get; private set; }
         public static WorkerRequestManager WorkerRequestManager { get; private set; }
         public static DatabaseHelper DatabaseHelper { get; private set; }
+
+	    private RequestResultListener _requestResultListener;
 
 		public App(IntPtr handle, JniHandleOwnership transfer)
 			: base(handle,transfer)
@@ -41,9 +46,25 @@ namespace AirMedia.Platform
 		    DatabaseHelper = new AndroidDatabaseHelper();
             DatabaseHelper.Init(DatabaseHelper);
 
-		    var rq = new InitDatabaseRequest();
-		    rq.Execute();
+            _requestResultListener = new RequestResultListener("application_request_listener");
+            _requestResultListener.RegisterResultHandler(typeof(InitDatabaseRequest), OnDatabaseInitialized);
+
+            _requestResultListener.SubmitRequest(new InitDatabaseRequest());
 		}
+
+        private void OnDatabaseInitialized(object sender, ResultEventArgs args)
+        {
+            if (args.Request.Status != RequestStatus.Ok)
+            {
+                AmwLog.Error(LogTag, "Error inializing database!");
+                return;
+            }
+            AmwLog.Verbose(LogTag, "database initialized successfully");
+
+            var intent = new Intent(this, typeof (AirStreamerService));
+            intent.SetAction(AirStreamerService.ActionStartHttp);
+            StartService(intent);
+        }
     }
 }
 

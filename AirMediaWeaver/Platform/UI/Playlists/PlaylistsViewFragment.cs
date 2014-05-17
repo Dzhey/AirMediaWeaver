@@ -376,7 +376,17 @@ namespace AirMedia.Platform.UI.Playlists
 
             if (args.Request.Status != RequestStatus.Ok)
             {
-                AmwLog.Error(LogTag, "error trying to play audio library");
+                switch (args.Result.ResultCode)
+                {
+                    case PlayAudioLibraryRequest.ResultCodeErrorNoAvailableTracks:
+                        ShowMessage(Resource.String.error_cant_start_audio_library_playback_no_audio);
+                        break;
+
+                    default:
+                        ShowMessage(Resource.String.error_cant_start_audio_library_playback);
+                        AmwLog.Error(LogTag, "unexpected error while trying to start audio library playback");
+                        break;
+                }
             }
         }
 

@@ -7,6 +7,7 @@ using AirMedia.Core.Requests.Controller;
 using Android.App;
 using Android.Content;
 using Android.OS;
+using Android.Util;
 
 namespace AirMedia.Platform.Controller
 {
@@ -49,7 +50,7 @@ namespace AirMedia.Platform.Controller
             _executingRequestIds = new Dictionary<string, ISet<int>>();
             _requestManager = App.WorkerRequestManager;
 
-            AmwLog.Verbose(LogTag, "WorkerService created");
+            Log.Verbose(LogTag, "WorkerService created");
         }
 
         public override StartCommandResult OnStartCommand(Intent intent, StartCommandFlags flags, int startId)
@@ -102,7 +103,7 @@ namespace AirMedia.Platform.Controller
         public override void OnDestroy()
         {
             base.OnDestroy();
-            AmwLog.Verbose(LogTag, "AirMediaService destroyed");
+            Log.Verbose(LogTag, "WorkerService destroyed");
         }
 
         public override IBinder OnBind(Intent intent)
@@ -145,7 +146,12 @@ namespace AirMedia.Platform.Controller
 
             if (_executingRequestIds.ContainsKey(actionId))
             {
-                _executingRequestIds[actionId].Remove(request.RequestId);
+                var set = _executingRequestIds[actionId];
+                set.Remove(request.RequestId);
+                if (set.Count == 0)
+                {
+                    _executingRequestIds.Remove(actionId);
+                }
             }
 
             if (isParallelRequest)

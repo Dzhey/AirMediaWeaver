@@ -111,7 +111,8 @@ namespace AirMedia.Platform.Controller.PlayerBackend
 
         public int GetDuration()
         {
-            if (_player == null) return 0;
+            if (_player == null || (Status != PlaybackStatus.Paused 
+                && Status != PlaybackStatus.Playing)) return 0;
 
             return _player.Duration;
         }

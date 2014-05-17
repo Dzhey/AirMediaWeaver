@@ -51,6 +51,7 @@
   <string name="error_cant_load_published_tracklist">Не удалось загрузить данные</string>
   <string name="note_content_view_empty">Нет элементов для отображения</string>
   <string name="error_cant_update_publications">Ошибка при обновлении публикаций</string>
+  <string name="error_cant_play_publications">Ошибка при воспроизведении публикаций</string>
   
   <!-- Logger strings -->
   <string name="title_log_level">Уровень</string>

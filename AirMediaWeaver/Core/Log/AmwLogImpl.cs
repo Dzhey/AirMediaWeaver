@@ -1,6 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using AirMedia.Core.Data.Sql;
 using AirMedia.Core.Requests.Controller;
 using AirMedia.Core.Requests.Interfaces;
 using AirMedia.Core.Requests.Model;
@@ -41,6 +41,13 @@ namespace AirMedia.Core.Log
 
         protected override void SaveEntries(IEnumerable<LogEntry> entries)
         {
+            if (DatabaseHelper.Instance.IsInitialized == false)
+            {
+                Android.Util.Log.Warn(LogTag, "skipped log entries: database is not ready yet");
+
+                return;
+            }
+
             var records = entries.Select(entry => new LogEntryRecord
                 {
                     Date = entry.LogDate,
