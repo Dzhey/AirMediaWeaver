@@ -10,6 +10,7 @@ namespace AirMedia.Platform.Data
     {
         private const string PreferencesName = "airmedia_prefs";
 
+        private const string PreferenceClientGuid = "client_guid";
         private const string PreferenceLastMainView = "last_main_view";
 
         private const string PreferenceDatabaseCreated = "database_created";
@@ -89,6 +90,31 @@ namespace AirMedia.Platform.Data
             get { return _prefs.GetInt(PreferenceLastReadLogEntryId, 0); }
 
             set { _prefs.Edit().PutInt(PreferenceLastReadLogEntryId, value).Commit(); }
+        }
+
+        public override string ClientGuid
+        {
+            get
+            {
+                string guid = _prefs.GetString(PreferenceClientGuid, null);
+                if (guid == null)
+                {
+                    guid = Guid.NewGuid().ToString();
+                    ClientGuid = guid;
+                }
+
+                return guid;
+            }
+
+            set
+            {
+                if (value == null)
+                {
+                    AmwLog.Warn(LogTag, "client guid reset");
+                }
+
+                _prefs.Edit().PutString(PreferenceClientGuid, value).Commit();
+            }
         }
 
         public Type LastMainView

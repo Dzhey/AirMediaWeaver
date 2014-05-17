@@ -12,6 +12,7 @@ namespace AirMedia.Core.Data
         public abstract bool IsLogPanelEnabled { get; set; }
         public abstract bool IsLogPanelSettingsRevealed { get; set; }
         public abstract int LastReadLogEntryId { get; set; }
+        public abstract string ClientGuid { get; set; }
 
         protected CoreUserPreferences()
         {

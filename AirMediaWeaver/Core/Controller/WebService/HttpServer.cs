@@ -14,7 +14,8 @@ namespace AirMedia.Core.Controller.WebService
 
         private static readonly string[] ContentUris = new[]
             {
-                "/content/publications/"
+                // Publications
+                Consts.UriPublicationsFragment
             };
 
         public bool IsListening
@@ -25,9 +26,11 @@ namespace AirMedia.Core.Controller.WebService
         private HttpListener _httpListener;
         private bool _isDisposed;
         private readonly RequestResultListener _requestResultListener;
+        private readonly IHttpRequestHandler _httpRequestHandler;
 
-        public HttpServer()
+        public HttpServer(IHttpRequestHandler httpRequestHandler)
         {
+            _httpRequestHandler = httpRequestHandler;
             _httpListener = new HttpListener();
             int random = new Random().Next(int.MaxValue);
             string listenerTag = string.Format("{0}_{1}", typeof(HttpServer).Name, random);
@@ -37,15 +40,21 @@ namespace AirMedia.Core.Controller.WebService
                 typeof(ObtainHttpListenerContextRequest), OnHttpListenerContextRequestFinished);
         }
 
-        public bool TryStart()
+        public bool TryStart(int ipAddress)
         {
+            if (_isDisposed)
+            {
+                throw new ObjectDisposedException("http server already disposed");
+            }
+
             if (_httpListener.IsListening)
             {
                 AmwLog.Warn(LogTag, "http listener is already listening for connections");
                 return true;
             }
 
-            var prefixes = RetrieveHttpPrefixes();
+            string ipAddressString = new IPAddress(BitConverter.GetBytes(ipAddress)).ToString();
+            var prefixes = RetrieveHttpPrefixes(ipAddressString);
             _httpListener.Prefixes.Clear();
             foreach (var prefix in prefixes)
             {
@@ -86,24 +95,32 @@ namespace AirMedia.Core.Controller.WebService
 
         public void Stop()
         {
+            if (_isDisposed)
+            {
+                throw new ObjectDisposedException("http server already disposed");
+            }
+
+            if (IsListening == false)
+            {
+                AmwLog.Warn(LogTag, "http listener already stopped");
+                return;
+            }
+
             AmwLog.Debug(LogTag, "stopping http listener..");
             _httpListener.Stop();
             AmwLog.Info(LogTag, "http listener stopped");
         }
 
-        protected virtual string[] RetrieveHttpPrefixes()
+        protected virtual string[] RetrieveHttpPrefixes(string ipAddress)
         {
             var result = new List<string>();
 
-            // TODO: determine appropriate ip address
-            string address = "192.168.1.21:6113";
-
-            AmwLog.Debug(LogTag, string.Format("building http prefixes for \"{0}\"", address));
-
+            AmwLog.Debug(LogTag, string.Format("building http prefixes for \"{0}\"", ipAddress));
 
             foreach (var contentUri in ContentUris)
             {
-                result.Add(string.Format("http://{0}{1}", address, contentUri));
+                result.Add(string.Format("http://{0}:{1}/{2}/", 
+                    ipAddress, Consts.DefaultHttpPort, contentUri));
             }
 
             return result.ToArray();
@@ -124,7 +141,8 @@ namespace AirMedia.Core.Controller.WebService
                 AmwLog.Debug(LogTag, "http listener stopped");
             }
 
-            context.Response.StatusCode = 404;
+            _httpRequestHandler.HandleHttpRequest(this, context);
+
             context.Response.Close();
             AmwLog.Info(LogTag, "http response finished");
         }
@@ -156,7 +174,13 @@ namespace AirMedia.Core.Controller.WebService
 
             if (disposing)
             {
+                if (IsListening)
+                {
+                    Stop();    
+                }
+
                 _requestResultListener.RemoveResultHandler(typeof(ObtainHttpListenerContextRequest));
+                _requestResultListener.Dispose();
                 _httpListener = null;
             }
 

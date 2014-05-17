@@ -4,6 +4,6 @@ namespace AirMedia.Core.Requests.Interfaces
 {
     interface IRequestManager
     {
-        int SubmitRequest(AbsRequest request, bool isParallel = false);
+        int SubmitRequest(AbsRequest request, bool isParallel = false, bool isDedicated = false);
     }
 }

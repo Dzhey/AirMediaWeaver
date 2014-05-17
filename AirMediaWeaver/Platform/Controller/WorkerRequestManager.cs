@@ -17,18 +17,21 @@ namespace AirMedia.Platform.Controller
         }
             
         /// <returns>generated request id</returns>
-        protected override void SubmitRequestImpl(AbsRequest request, int requestId, bool isParallel)
+        protected override void SubmitRequestImpl(AbsRequest request, int requestId, 
+            bool isParallel, bool isDedicated)
         {
-            App.Instance.StartService(CreateIntent(Handler, requestId, isParallel, request));
+            App.Instance.StartService(CreateIntent(Handler, requestId, isParallel, isDedicated, request));
         }
 
-        protected Intent CreateIntent(Handler handler, int requestId, bool isParallel, AbsRequest request)
+        protected Intent CreateIntent(Handler handler, int requestId, bool isParallel, 
+            bool isDedicated, AbsRequest request)
         {
             var intent = new Intent(App.Instance, typeof(WorkerService));
             intent.SetAction(WorkerService.ActionProcessRequest);
             intent.SetPackage(App.Instance.PackageName);
             intent.PutExtra(WorkerService.ExtraRequestId, requestId);
             intent.PutExtra(WorkerService.ExtraIsParallelRequest, isParallel);
+            intent.PutExtra(WorkerService.ExtraIsDedicatedRequest, isDedicated);
 
             return intent;
         }

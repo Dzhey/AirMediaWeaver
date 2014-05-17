@@ -4,6 +4,14 @@ namespace AirMedia.Core
 {
     public static class Consts
     {
+        public const string UriPublicationsFragment = "publications";
+        public const string UriTracksFragment = "tracks";
+
+        public const int SendMulticastAuthIntervalMillis = 10000;
+        public const string DefaultMulticastAddress = "224.100.127.224";
+        public const int DefaultMulticastPort = 6114;
+        public const int DefaultHttpPort = 6116;
+        public const int DefaultMulticastTTL = 3;
         public const int DefaultProgressDelayMillis = 1200;
 
         #region In-App Logging Settings

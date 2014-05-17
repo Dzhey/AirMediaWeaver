@@ -34,6 +34,7 @@ namespace AirMedia.Platform.Controller
         public const string ActionProcessRequest = "process_request";
         public const string ExtraRequestId = "request_id";
         public const string ExtraIsParallelRequest = "is_parallel_request";
+        public const string ExtraIsDedicatedRequest = "is_dedicated_request";
 
         public static readonly string LogTag = typeof(WorkerService).Name;
 
@@ -84,15 +85,23 @@ namespace AirMedia.Platform.Controller
                 }
                 else
                 {
-                    bool isParallelRequest = intent.GetBooleanExtra(ExtraIsParallelRequest, false);
-
-                    if (isParallelRequest)
+                    bool isDedicatedRequest = intent.GetBooleanExtra(ExtraIsDedicatedRequest, false);
+                    if (isDedicatedRequest)
                     {
-                        SubmitParallelRequest(request);
+                        SubmitDedicatedRequest(request);
                     }
                     else
                     {
-                        SubmitRequest(request);
+                        bool isParallelRequest = intent.GetBooleanExtra(ExtraIsParallelRequest, false);
+
+                        if (isParallelRequest)
+                        {
+                            SubmitParallelRequest(request);
+                        }
+                        else
+                        {
+                            SubmitRequest(request);
+                        }
                     }
                 }
             }
@@ -138,6 +147,20 @@ namespace AirMedia.Platform.Controller
 
             _parallelTaskFactory.StartNew(() => request.Execute())
                 .ContinueWith(task => App.MainHandler.Post(() => FinishRequest(request, true)));
+        }
+
+        private void SubmitDedicatedRequest(AbsRequest request)
+        {
+            string actionId = request.ActionTag ?? RequestActionIdDefault;
+
+            if (_executingRequestIds.ContainsKey(actionId) == false)
+            {
+                _executingRequestIds[actionId] = new HashSet<int>();
+            }
+            _executingRequestIds[actionId].Add(request.RequestId);
+
+            Task.Factory.StartNew(() => request.Execute())
+                .ContinueWith(task => App.MainHandler.Post(() => FinishRequest(request, false)));
         }
 
         private void FinishRequest(AbsRequest request, bool isParallelRequest)

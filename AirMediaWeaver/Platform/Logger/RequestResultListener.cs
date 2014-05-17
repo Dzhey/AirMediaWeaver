@@ -103,6 +103,14 @@ namespace AirMedia.Platform.Logger
             _updateDelegates.Remove(requestType);
         }
 
+        public int SubmitDedicatedRequest(AbsRequest request)
+        {
+            App.WorkerRequestManager.SubmitRequest(request, false, true);
+            RegisterRequest(request.RequestId);
+
+            return request.RequestId;
+        }
+
         public int SubmitRequest(AbsRequest request, bool isParallel = false)
         {
             App.WorkerRequestManager.SubmitRequest(request, isParallel);

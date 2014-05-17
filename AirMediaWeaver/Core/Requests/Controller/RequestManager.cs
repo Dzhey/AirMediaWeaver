@@ -124,7 +124,7 @@ namespace AirMedia.Core.Requests.Controller
         }
             
         /// <returns>generated request id</returns>
-        public int SubmitRequest(AbsRequest request, bool isParallel = false)
+        public int SubmitRequest(AbsRequest request, bool isParallel = false, bool isDedicated = false)
         {
             int count = GetActiveRequestsCount();
 
@@ -147,12 +147,13 @@ namespace AirMedia.Core.Requests.Controller
 
             _requestQueue.AddLast(request);
 
-            SubmitRequestImpl(request, requestId, isParallel);
+            SubmitRequestImpl(request, requestId, isParallel, false);
 
             return requestId;
         }
 
-        protected abstract void SubmitRequestImpl(AbsRequest request, int requestId, bool isParallel);
+        protected abstract void SubmitRequestImpl(AbsRequest request, int requestId, 
+            bool isParallel, bool isDedicated);
 
         protected int GenerateRequestId()
         {

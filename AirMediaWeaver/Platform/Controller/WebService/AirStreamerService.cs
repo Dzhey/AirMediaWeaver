@@ -1,5 +1,8 @@
 using System;
+using System.Net;
 using AirMedia.Core.Controller.WebService;
+using AirMedia.Core.Controller.WebService.Model;
+using AirMedia.Core.Data;
 using AirMedia.Core.Log;
 using Android.App;
 using Android.Content;
@@ -20,12 +23,15 @@ namespace AirMedia.Platform.Controller.WebService
         private const string WifiLockName = "airmediaweaver_streamer_wifi_lock";
         private const string WifiMulticastLockName = "airmediaweaver_streamer_wifi_multicast_lock";
 
+        private MulticastUdpServer _multicastUdpServer;
         private HttpServer _httpServer;
         private WifiManager _wifiManager;
+        private PeerManager _peerManager;
         private ConnectivityReceiver _connectivityReceiver;
         private ConnectivityManager _connectivityManager;
         private WifiManager.WifiLock _wifiLock;
         private WifiManager.MulticastLock _multicastLock;
+        private IHttpRequestHandler _httpRequestHandler;
         private bool _isStopped;
 
         public override void OnCreate()
@@ -34,7 +40,11 @@ namespace AirMedia.Platform.Controller.WebService
 
             _wifiManager = (WifiManager) GetSystemService(WifiService);
             _connectivityManager = (ConnectivityManager) GetSystemService(ConnectivityService);
-            _httpServer = new HttpServer();
+            _httpRequestHandler = new HttpRequestHandler();
+            _httpServer = new HttpServer(_httpRequestHandler);
+            _peerManager = new PeerManager(CoreUserPreferences.Instance.ClientGuid);
+            _multicastUdpServer = new MulticastUdpServer();
+            _multicastUdpServer.AuthPacketReceived += OnAuthPacketReceived;
             _connectivityReceiver = new ConnectivityReceiver(_connectivityManager);
 
             _wifiLock = _wifiManager.CreateWifiLock(WifiMode.Full, WifiLockName);
@@ -59,8 +69,19 @@ namespace AirMedia.Platform.Controller.WebService
             if (_httpServer.IsListening == false)
             {
                 AmwLog.Debug(LogTag, "wifi connection established; starting http listener..");
-                _httpServer.TryStart();
+                TryStartHttpServer();
             }
+
+            if (_multicastUdpServer.IsStarted == false)
+            {
+                AmwLog.Debug(LogTag, "starting multicast udp server..");
+                TryStartMulticastUdpServer();
+            }
+        }
+
+        private void OnAuthPacketReceived(object sender, AuthPacketReceivedEventArgs args)
+        {
+            _peerManager.UpdatePeers(args.Packet);
         }
 
         private void OnWifiConnectionLost(object sender, EventArgs args)
@@ -70,12 +91,62 @@ namespace AirMedia.Platform.Controller.WebService
             if (_httpServer.IsListening)
             {
                 AmwLog.Debug(LogTag, "wifi connection lost; stopping http listener..");
-                _httpServer.Stop();   
+                _httpServer.Stop();
+            }
+
+            if (_multicastUdpServer.IsStarted)
+            {
+                AmwLog.Debug(LogTag, "stopping multicast udp server..");
+                TryStartMulticastUdpServer();_multicastUdpServer.Stop();
+            }
+        }
+
+        private void TryStartHttpServer()
+        {
+            if (_connectivityReceiver.IsWifiConnected == false)
+            {
+                AmwLog.Warn(LogTag, "can't start http server: wifi is down");
+
+                return;
+            }
+
+            int ipAddress = _wifiManager.ConnectionInfo.IpAddress;
+            bool isStarted = _httpServer.TryStart(ipAddress);
+            if (!isStarted)
+            {
+                AmwLog.Error(LogTag, "unable to start http server");
+            }
+            else
+            {
+                AmwLog.Info(LogTag, "http server sucessfully started");
+            }
+        }
+
+        private void TryStartMulticastUdpServer()
+        {
+            if (_connectivityReceiver.IsWifiConnected == false)
+            {
+                AmwLog.Warn(LogTag, "can't start udp multicast server: wifi is down");
+
+                return;
+            }
+
+            int ipAddress = _wifiManager.ConnectionInfo.IpAddress;
+            bool isStarted = _multicastUdpServer.TryStart(ipAddress);
+            if (!isStarted)
+            {
+                AmwLog.Error(LogTag, "unable to start multicast server");
+            }
+            else
+            {
+                AmwLog.Info(LogTag, "multicast server sucessfully started");
             }
         }
 
         public override void OnDestroy()
         {
+            _multicastUdpServer.AuthPacketReceived -= OnAuthPacketReceived;
+
             _connectivityReceiver.WifiConnectionEstablished -= OnWifiConnectionEstablished;
             _connectivityReceiver.WifiConnectionLost -= OnWifiConnectionLost;
             UnregisterReceiver(_connectivityReceiver);
@@ -83,6 +154,8 @@ namespace AirMedia.Platform.Controller.WebService
             _wifiLock.Release();
             _multicastLock.Release();
             _httpServer.Dispose();
+            _multicastUdpServer.Dispose();
+
             base.OnDestroy();
 
             AmwLog.Debug(LogTag, "AirStreamerService destroyed");
@@ -96,23 +169,14 @@ namespace AirMedia.Platform.Controller.WebService
             {
                 case ActionStartHttp:
                     _isStopped = false;
-                    if (_connectivityReceiver.IsWifiConnected)
-                    {
-                        bool isStarted = _httpServer.TryStart();
-                        if (!isStarted)
-                        {
-                            AmwLog.Error(LogTag, "unable to start http server");
-                        }
-                    }
-                    else
-                    {
-                        AmwLog.Warn(LogTag, "can't start http server: wifi is down");
-                    }
+                    TryStartHttpServer();
+                    TryStartMulticastUdpServer();
                     break;
 
                 case ActionStopHttp:
                     _isStopped = true;
                     _httpServer.Stop();
+                    _multicastUdpServer.Stop();
                     break;
 
                 default:
