@@ -104,7 +104,7 @@ namespace AirMedia.Platform.UI.Publications
             switch (itemPosition)
             {
                 case LanPublicationsIndex:
-                    SetContentFragment(typeof(MyPublicationsFragment));
+                    SetContentFragment(typeof(LocalPublicationsFragment));
                     break;
 
                 case MyPublicationsIndex:

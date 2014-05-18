@@ -7,7 +7,7 @@ using AirMedia.Core.Utils;
 
 namespace AirMedia.Core.Requests.Abs
 {
-    public abstract class AbsRequest
+    public abstract class AbsRequest : IDisposable
     {
         private string _logTag;
         private int? _requestId;
@@ -20,6 +20,7 @@ namespace AirMedia.Core.Requests.Abs
             };
 
         private Future<RequestResult> _futureResult;
+        private bool _isDisposed;
 
         public string LogTag
         {
@@ -217,6 +218,26 @@ namespace AirMedia.Core.Requests.Abs
             {
                 ResultEvent(this, args);
             }
+        }
+
+        public void Dispose()
+        {
+            throw new NotImplementedException();
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_isDisposed) return;
+
+            if (disposing)
+            {
+                if (_futureResult != null)
+                {
+                    _futureResult.Dispose();
+                }
+            }
+
+            _isDisposed = true;
         }
     }
 }

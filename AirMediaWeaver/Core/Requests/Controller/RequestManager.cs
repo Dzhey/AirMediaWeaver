@@ -147,7 +147,7 @@ namespace AirMedia.Core.Requests.Controller
 
             _requestQueue.AddLast(request);
 
-            SubmitRequestImpl(request, requestId, isParallel, false);
+            SubmitRequestImpl(request, requestId, isParallel, isDedicated);
 
             return requestId;
         }

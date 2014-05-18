@@ -24,6 +24,7 @@ namespace AirMedia.Platform.UI.Player
 
         private IConnectionListener _connectionListener;
         private IMediaPlayerCallbacks _callbacks;
+        private bool _isDisposed;
 
         public MediaServiceConnection(IConnectionListener connectionListener, 
             IMediaPlayerCallbacks callbacks)
@@ -66,6 +67,24 @@ namespace AirMedia.Platform.UI.Player
                 AmwLog.Warn(LogTag, string.Format("media player service " +
                                                   "client leaked \"{0}\"", _callbacks));
             }
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (_isDisposed) return;
+
+            if (disposing)
+            {
+                if (Binder != null)
+                {
+                    Binder.Dispose();
+                    Binder = null;
+                }
+            }
+
+            base.Dispose(disposing);
+
+            _isDisposed = true;
         }
     }
 }

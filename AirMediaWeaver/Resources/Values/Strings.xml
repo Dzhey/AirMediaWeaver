@@ -11,6 +11,7 @@
   <string name="note_playlists_list_empty">Плейлистов пока что нет</string>
   <string name="note_playlist_empty">В плейлисте еще нет треков</string>
   <string name="note_my_publication_list_empty">Нет опубликованных композиций</string>
+  <string name="note_lan_publication_list_empty">Не найдено доступных публикаций</string>
   <string name="title_navigation_item_media_library">Моя фонотека</string>
   <string name="title_navigation_item_playlists">Плейлисты</string>
   <string name="title_navigation_item_publications">Публикации</string>
@@ -52,6 +53,7 @@
   <string name="note_content_view_empty">Нет элементов для отображения</string>
   <string name="error_cant_update_publications">Ошибка при обновлении публикаций</string>
   <string name="error_cant_play_publications">Ошибка при воспроизведении публикаций</string>
+  <string name="error_cant_load_lan_publications">Не удалось загрузить публикации</string>
   
   <!-- Logger strings -->
   <string name="title_log_level">Уровень</string>

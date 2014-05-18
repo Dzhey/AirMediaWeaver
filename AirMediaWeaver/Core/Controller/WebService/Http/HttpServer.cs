@@ -175,11 +175,12 @@ namespace AirMedia.Core.Controller.WebService.Http
             {
                 if (IsListening)
                 {
-                    Stop();    
+                    Stop();
                 }
 
                 _requestResultListener.RemoveResultHandler(typeof(ObtainHttpListenerContextRequest));
                 _requestResultListener.Dispose();
+                _httpListener.Close();
                 _httpListener = null;
             }
 

@@ -38,7 +38,7 @@ namespace AirMedia.Core.Controller.WebService.Http
 
         public static HttpResponse CreateResponse(HttpResponseModel model)
         {
-            if (model.ResponseData == null) return null;
+            if (model == null || model.ResponseData == null) return null;
 
             if (model.ResponseType == HttpResponseNone) return null;
 
@@ -61,6 +61,8 @@ namespace AirMedia.Core.Controller.WebService.Http
 
         public static HttpResponseModel UnpackResponse(string data)
         {
+            if (data == null) return null;
+
             return (HttpResponseModel) JsonConvert.DeserializeObject(data, typeof (HttpResponseModel));
         }
     }

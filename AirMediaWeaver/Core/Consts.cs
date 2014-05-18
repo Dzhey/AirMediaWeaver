@@ -4,6 +4,8 @@ namespace AirMedia.Core
 {
     public static class Consts
     {
+        public const int DefaultWebClientTimeout = 5000;
+
         public const string UriPublicationsFragment = "publications";
         public const string UriTracksFragment = "tracks";
 

@@ -64,6 +64,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core\Controller\AmwWebClient.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Core\Controller\PlaybackSource\IBasicPlaybackSource.cs" />
     <Compile Include="Core\Controller\WebService\Http\HttpResponse.cs" />
     <Compile Include="Core\Controller\WebService\Http\HttpResponseModel.cs" />
@@ -85,7 +88,9 @@
     <Compile Include="Core\Data\PlaylistModel.cs" />
     <Compile Include="Core\Data\ResourceDescriptor.cs" />
     <Compile Include="Core\Data\Sql\Model\PublicTrackRecord.cs" />
+    <Compile Include="Core\Requests\Abs\AbstractWebRequest.cs" />
     <Compile Include="Core\Requests\Abs\ObtainHttpListenerContextRequest.cs" />
+    <Compile Include="Core\Requests\Impl\DownloadBaseTracksInfoRequest.cs" />
     <Compile Include="Core\Requests\Impl\InitDatabaseRequest.cs" />
     <Compile Include="Core\Requests\Impl\ReceiveMulticastAuthRequest.cs" />
     <Compile Include="Core\Requests\Impl\SendMulticastAuthRequest.cs" />
@@ -97,6 +102,7 @@
     <Compile Include="Platform\Controller\PlayerBackend\IAmwPlayerCallbacks.cs" />
     <Compile Include="Platform\Controller\PlayerBackend\PlayerCommandId.cs" />
     <Compile Include="Platform\Controller\PlaylistDao.cs" />
+    <Compile Include="Platform\Controller\Requests\DownloadBaseTracksInfoRequestImpl.cs" />
     <Compile Include="Platform\Controller\Requests\PlayMyPublicationsRequest.cs" />
     <Compile Include="Platform\Controller\Requests\LoadPlaylistItemsRequest.cs" />
     <Compile Include="Platform\Controller\Requests\LoadPlaylistsRequest.cs" />
@@ -106,10 +112,13 @@
     <Compile Include="Platform\Controller\Requests\PlayPlaylistRequest.cs" />
     <Compile Include="Platform\Controller\Requests\PlaySystemPlaylistsRequests.cs" />
     <Compile Include="Platform\Controller\Requests\UpdatePublishedTracksRequest.cs" />
+    <Compile Include="Platform\Controller\WebService\AirStreamerBinder.cs" />
     <Compile Include="Platform\Controller\WebService\AirStreamerService.cs" />
+    <Compile Include="Platform\Controller\WebService\AirStreamerServiceConnection.cs" />
     <Compile Include="Platform\Controller\WebService\ConnectivityReceiver.cs" />
     <Compile Include="Platform\Controller\WebService\Http\HttpContentProvider.cs" />
     <Compile Include="Platform\Controller\WebService\Http\HttpRequestHandler.cs" />
+    <Compile Include="Platform\Controller\WebService\IAmwStreamerService.cs" />
     <Compile Include="Platform\Data\Sql\AndroidDatabaseHelper.cs" />
     <Compile Include="Platform\Data\Sql\Dao\PublicTracksDao.cs" />
     <Compile Include="Platform\Data\TrackMetadata.cs" />
@@ -196,6 +205,7 @@
     <Compile Include="Platform\UI\Playlists\TrackListAdapter.cs" />
     <Compile Include="Platform\UI\Playlists\PlaylistListAdapter.cs" />
     <Compile Include="Platform\UI\Playlists\PlaylistsViewFragment.cs" />
+    <Compile Include="Platform\UI\Publications\LocalPublicationsFragment.cs" />
     <Compile Include="Platform\UI\Publications\MyPublicationsFragment.cs" />
     <Compile Include="Platform\UI\Publications\PublicationsTabFragment.cs" />
     <Compile Include="Platform\UI\Util\Util.cs" />
@@ -242,6 +252,9 @@
       <SubType>AndroidResource</SubType>
     </AndroidResource>
     <AndroidResource Include="Resources\Layout\View_ChildFragmentContainer.axml" />
+    <AndroidResource Include="Resources\Layout\Fragment_LocalPublications.axml">
+      <SubType>AndroidResource</SubType>
+    </AndroidResource>
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\Values\Strings.xml">

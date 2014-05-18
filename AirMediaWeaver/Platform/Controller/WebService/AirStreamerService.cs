@@ -1,5 +1,4 @@
 using System;
-using System.Net;
 using AirMedia.Core.Controller.WebService;
 using AirMedia.Core.Controller.WebService.Http;
 using AirMedia.Core.Controller.WebService.Model;
@@ -15,7 +14,7 @@ using Android.OS;
 namespace AirMedia.Platform.Controller.WebService
 {
     [Service(Exported = false, Enabled = true)]
-    public class AirStreamerService : Service
+    public class AirStreamerService : Service, IAmwStreamerService
     {
         private static readonly string LogTag = typeof (AirStreamerService).Name;
 
@@ -25,6 +24,7 @@ namespace AirMedia.Platform.Controller.WebService
         private const string WifiLockName = "airmediaweaver_streamer_wifi_lock";
         private const string WifiMulticastLockName = "airmediaweaver_streamer_wifi_multicast_lock";
 
+        private AirStreamerBinder _binder;
         private MulticastUdpServer _multicastUdpServer;
         private HttpServer _httpServer;
         private HttpContentProvider _httpContentProvider;
@@ -194,7 +194,17 @@ namespace AirMedia.Platform.Controller.WebService
 
         public override IBinder OnBind(Intent intent)
         {
-            return null;
+            if (_binder == null)
+            {
+                _binder = new AirStreamerBinder(this);
+            }
+
+            return _binder;
+        }
+
+        public PeerManager GetPeerManager()
+        {
+            return _peerManager;
         }
     }
 }
