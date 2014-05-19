@@ -15,7 +15,7 @@ namespace AirMedia.Platform.Controller.Requests
     {
         protected override LoadRequestResult<List<TrackMetadata>> DoLoad(out RequestStatus status)
         {
-            var dao = (PublicTracksDao) DatabaseHelper.Instance.GetDao<PublicTrackRecord>();
+            var dao = (TrackPublicationsDao) DatabaseHelper.Instance.GetDao<TrackPublicationRecord>();
             var metadata = dao.QueryForBaseTrackInfo();
 
             status = RequestStatus.Ok;

@@ -4,6 +4,9 @@ namespace AirMedia.Core
 {
     public static class Consts
     {
+        public const string HttpUserAgent = "AirMediaWeaver/1.0";
+        public const int HttpStreamFileReadBufferSize = 1024*16;
+
         public const int DefaultWebClientTimeout = 5000;
 
         public const string UriPublicationsFragment = "publications";

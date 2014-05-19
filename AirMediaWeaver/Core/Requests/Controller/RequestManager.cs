@@ -15,7 +15,8 @@ namespace AirMedia.Core.Requests.Controller
         private static readonly string LogTag = typeof (RequestManager).Name;
         private static readonly object Mutex = new object();
 
-        private const int RequestQueueSize = 20;
+        private const int RequestQueueSize = 60;
+        private const int QueueFreeThreshold = 20;
         private const int ListenersDisposeThreshold = 100;
 
         private int _requestIdCounter;
@@ -108,39 +109,47 @@ namespace AirMedia.Core.Requests.Controller
             }
         }
 
-        public int GetActiveRequestsCount()
-        {
-            return _requestQueue.Count(x => x.IsFinished == false);
-        }
-
         public AbsRequest FindRequest(int requestId)
         {
             return _requestQueue.FirstOrDefault(request => request.RequestId == requestId);
         }
 
-        public void CancelAllActiveRequests(string requestTag)
+        private void PerformRequestQueueCleanup()
         {
-            _requestQueue.Where(x => x.IsFinished && x.ActionTag == requestTag).ToList().ForEach(x => x.Cancel());
+            if (_requestQueue.Count < RequestQueueSize + QueueFreeThreshold) return;
+
+            int freedCount = 0;
+            var trash = _requestQueue.Take(QueueFreeThreshold).ToArray();
+            foreach (var item in trash)
+            {
+                if (item.IsFinished == false) continue;
+
+                item.UpdateEvent -= HandleRequestUpdate;
+                item.ResultEvent -= HandleRequestResult;
+                _requestQueue.Remove(item);
+                freedCount++;
+            }
+
+            if (freedCount < 1)
+            {
+                AmwLog.Warn(LogTag, string.Format("can't free request queue; too many retaining " +
+                                                    "requests; queue size: \"{0}\"", _requestQueue.Count));
+                foreach (var item in trash)
+                {
+                    AmwLog.Warn(LogTag, string.Format("rataining request: \"{0}\"", item));
+                }
+            }
         }
-            
+
         /// <returns>generated request id</returns>
         public int SubmitRequest(AbsRequest request, bool isParallel = false, bool isDedicated = false)
         {
-            int count = GetActiveRequestsCount();
-
-            Debug.WriteLine(string.Format("active requests count {0}", count), LogTag);
-            Debug.WriteLine(string.Format("request submitted: {0}; parallel: {1}", request, isParallel), LogTag);
+//            Debug.WriteLine(string.Format("request submitted: {0}; parallel: {1}", request, isParallel), LogTag);
 
             int requestId = GenerateRequestId();
             request.RequestId = requestId;
 
-            if (_requestQueue.Count == RequestQueueSize)
-            {
-                var req = _requestQueue.First();
-                req.UpdateEvent -= HandleRequestUpdate;
-                req.ResultEvent -= HandleRequestResult;
-                _requestQueue.Remove(req);
-            }
+            PerformRequestQueueCleanup();
 
 			request.UpdateEvent += HandleRequestUpdate;
 			request.ResultEvent += HandleRequestResult;

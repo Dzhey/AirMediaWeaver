@@ -236,9 +236,9 @@ namespace AirMedia.Platform.Controller
                 {
                     TrackId = cursor.GetLong(0),
                     TrackTitle = cursor.GetString(1),
-                    ArtistName = cursor.GetString(2),
+                    Artist = cursor.GetString(2),
                     Album = cursor.GetString(3),
-                    Duration = cursor.GetInt(4),
+                    TrackDurationMillis = cursor.GetInt(4),
                     Data = cursor.GetString(5)
                 };
         }

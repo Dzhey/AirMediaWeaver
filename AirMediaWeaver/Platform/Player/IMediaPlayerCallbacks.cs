@@ -1,6 +1,6 @@
 
 
-using AirMedia.Platform.Data;
+using AirMedia.Core.Data.Model;
 
 namespace AirMedia.Platform.Player
 {
@@ -8,6 +8,6 @@ namespace AirMedia.Platform.Player
     {
         void OnPlaybackStarted();
         void OnPlaybackStopped();
-        void OnTrackMetadataResolved(TrackMetadata metadata);
+        void OnTrackMetadataResolved(ITrackMetadata metadata);
     }
 }

@@ -1,11 +1,13 @@
+using System;
 using System.Collections.Generic;
 using System.Net;
 using AirMedia.Core.Controller;
 using AirMedia.Core.Controller.WebService.Http;
-using AirMedia.Core.Controller.WebService.Model;
+using AirMedia.Core.Data.Model;
 using AirMedia.Core.Log;
 using AirMedia.Core.Requests.Abs;
 using AirMedia.Core.Requests.Model;
+using AirMedia.Platform.Controller.Requests;
 using AirMedia.Platform.Controller.WebService.Http;
 using AirMedia.Platform.Data;
 using BaseRequestResult = AirMedia.Core.Requests.Model.RequestResult;
@@ -50,9 +52,9 @@ namespace AirMedia.Core.Requests.Impl
                 };
         }
 
-        protected abstract PeerDescriptor[] GetAvailablePeersInfo();
+        protected abstract IPeerDescriptor[] GetAvailablePeersInfo();
 
-        private TrackMetadata[] LookupTrackMetadata(WebClient webClient, PeerDescriptor[] peerInfo)
+        private TrackMetadata[] LookupTrackMetadata(WebClient webClient, IEnumerable<IPeerDescriptor> peerInfo)
         {
             var metadata = new List<TrackMetadata>();
 
@@ -64,9 +66,9 @@ namespace AirMedia.Core.Requests.Impl
             return metadata.ToArray();
         }
 
-        private TrackMetadata[] LookupPeerTrackMetadata(WebClient webClient, PeerDescriptor peerInfo)
+        private TrackMetadata[] LookupPeerTrackMetadata(WebClient webClient, IPeerDescriptor peerInfo)
         {
-            if (peerInfo.IpAddress == null)
+            if (peerInfo.Address == null)
             {
                 AmwLog.Warn(LogTag, string.Format(
                     "can't lookup peer track info: peer ip address unknown; peer: \"{0}\"", peerInfo));
@@ -75,27 +77,40 @@ namespace AirMedia.Core.Requests.Impl
             }
 
             AmwLog.Debug(LogTag, string.Format("downloading base tracks info from peer: {0}", peerInfo));
-            string data = webClient.DownloadString(GetTracksUri(peerInfo.IpAddress));
 
-            var model = HttpResponseFactory.UnpackResponse(data);
-            if (model == null)
+            try
             {
-                AmwLog.Error(LogTag, string.Format("can't parse peer response; peer: {0}", peerInfo));
-                return new TrackMetadata[0];
+                string data = webClient.DownloadString(GetTracksUri(peerInfo.Address));
+
+                var model = HttpResponseFactory.UnpackResponse(data);
+                if (model == null)
+                {
+                    AmwLog.Error(LogTag, string.Format("can't parse peer response; peer: {0}", peerInfo));
+                    return new TrackMetadata[0];
+                }
+
+                var response = HttpResponseFactory.CreateResponse(model);
+                var trackInfoResponse = response as HttpResponsePublishedTracks;
+                if (trackInfoResponse == null)
+                {
+                    AmwLog.Error(LogTag, string.Format("obtained invalid response; peer: {0}" +
+                                                       "; response: {1}", peerInfo, response));
+                    return new TrackMetadata[0];
+                }
+
+                AmwLog.Debug(LogTag, string.Format("downloaded ({0}) tracks info from " +
+                                                   "peer: {1}", trackInfoResponse.TrackInfo.Length, peerInfo));
+
+                return HttpContentProvider.CreateTracksMetadata(peerInfo.PeerGuid, trackInfoResponse.TrackInfo);
+            }
+            catch (WebException e)
+            {
+                AmwLog.Warn(LogTag, string.Format(
+                    "unable to download peer track publications: web exception caught; " +
+                    "peer: \"{0}\"; message: \"{1}\"", peerInfo, e.Message), e.ToString());
             }
 
-            var response = HttpResponseFactory.CreateResponse(model);
-            var trackInfoResponse = response as HttpResponsePublishedTracks;
-            if (trackInfoResponse == null)
-            {
-                AmwLog.Error(LogTag, string.Format("obtained invalid response; peer: {0}" +
-                                                   "; response: {1}", peerInfo, response));
-                return new TrackMetadata[0];
-            }
-            AmwLog.Debug(LogTag, string.Format("downloaded ({0}) tracks info from " +
-                                               "peer: {1}", trackInfoResponse.TrackInfo.Length, peerInfo));
-
-            return HttpContentProvider.CreateTracksMetadata(trackInfoResponse.TrackInfo);
+            return new TrackMetadata[0];
         }
 
         private string GetTracksUri(string ipAddress)

@@ -2,7 +2,9 @@ using AirMedia.Core;
 using AirMedia.Core.Log;
 using AirMedia.Core.Requests.Impl;
 using AirMedia.Core.Requests.Model;
+using AirMedia.Platform.Controller.PlaybackSource;
 using AirMedia.Platform.Controller.Requests;
+using AirMedia.Platform.Player;
 using AirMedia.Platform.UI.Base;
 using AirMedia.Platform.UI.Playlists;
 using Android.OS;
@@ -49,11 +51,15 @@ namespace AirMedia.Platform.UI.Publications
         {
             base.OnResume();
 
+            _listView.ItemClick += OnListItemClicked;
+
             RegisterRequestResultHandler(typeof(DownloadBaseTracksInfoRequestImpl), OnLocalPublicationsLoaded);
         }
 
         public override void OnPause()
         {
+            _listView.ItemClick -= OnListItemClicked;
+
             RemoveRequestResultHandler(typeof(DownloadBaseTracksInfoRequestImpl));
 
             base.OnPause();
@@ -72,6 +78,11 @@ namespace AirMedia.Platform.UI.Publications
         public override bool HasDisplayedContent()
         {
             return _listView.Count > 0;
+        }
+
+        private void OnListItemClicked(object sender, AdapterView.ItemClickEventArgs args)
+        {
+            PlayerControl.Play(_adapter.GetItemGuids(), args.Position);
         }
 
         private void ReloadList()

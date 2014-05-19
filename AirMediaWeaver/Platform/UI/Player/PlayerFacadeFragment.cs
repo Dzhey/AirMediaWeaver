@@ -1,4 +1,5 @@
 using System;
+using AirMedia.Core.Data.Model;
 using AirMedia.Platform.Data;
 using AirMedia.Platform.Player;
 using AirMedia.Platform.Player.MediaService;
@@ -162,7 +163,7 @@ namespace AirMedia.Platform.UI.Player
             UpdatePanelIndicators(true);
         }
 
-        public void OnTrackMetadataResolved(TrackMetadata metadata)
+        public void OnTrackMetadataResolved(ITrackMetadata metadata)
         {
             DisplayTrackMetadata(metadata);
         }
@@ -202,7 +203,7 @@ namespace AirMedia.Platform.UI.Player
             var metadata = binder.GetTrackMetadata();
             if (metadata != null)
             {
-                DisplayTrackMetadata((TrackMetadata) metadata);
+                DisplayTrackMetadata(metadata);
             }
         }
 
@@ -210,9 +211,9 @@ namespace AirMedia.Platform.UI.Player
         {
         }
 
-        private void DisplayTrackMetadata(TrackMetadata metadata)
+        private void DisplayTrackMetadata(ITrackMetadata metadata)
         {
-            _trackInfoView.Text = string.Format("{0} {1} {2}", metadata.ArtistName,
+            _trackInfoView.Text = string.Format("{0} {1} {2}", metadata.Artist,
                 UtfDash, metadata.TrackTitle);
         }
     }

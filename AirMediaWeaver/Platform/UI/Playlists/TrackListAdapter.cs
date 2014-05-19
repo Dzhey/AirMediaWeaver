@@ -39,6 +39,11 @@ namespace AirMedia.Platform.UI.Playlists
             NotifyDataSetChanged();
         }
 
+        public string[] GetItemGuids()
+        {
+            return _items.ConvertAll(input => input.TrackGuid).ToArray();
+        }
+
         public long[] GetItemIds()
         {
             return _items.ConvertAll(input => input.TrackId).ToArray();
@@ -72,7 +77,7 @@ namespace AirMedia.Platform.UI.Playlists
 
             holder.Metadata = item;
             holder.TitleView.Text = item.TrackTitle;
-            holder.ArtistView.Text = item.ArtistName;
+            holder.ArtistView.Text = item.Artist;
             holder.CheckBox.Visibility = ViewStates.Gone;
 
             return convertView;

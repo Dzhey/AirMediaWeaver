@@ -19,7 +19,7 @@ namespace AirMedia.Platform.Controller.Requests
 
         protected override RequestResult ExecuteImpl(out RequestStatus status)
         {
-            var dao = (PublicTracksDao) App.DatabaseHelper.GetDao<PublicTrackRecord>();
+            var dao = (TrackPublicationsDao) App.DatabaseHelper.GetDao<TrackPublicationRecord>();
 
             dao.UpdatePublishedTracks(_trackIds);
 

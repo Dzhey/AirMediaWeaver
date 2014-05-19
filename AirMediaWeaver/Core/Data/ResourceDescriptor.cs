@@ -1,4 +1,4 @@
-
+using System;
 
 namespace AirMedia.Core.Data
 {
@@ -6,6 +6,6 @@ namespace AirMedia.Core.Data
     {
         public string PublicGuid { get; set; }
         public long? LocalId { get; set; }
-        public string Uri { get; set; }
+        public Uri Uri { get; set; }
     }
 }

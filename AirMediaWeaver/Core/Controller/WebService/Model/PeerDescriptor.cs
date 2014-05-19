@@ -2,7 +2,7 @@ using System;
 
 namespace AirMedia.Core.Controller.WebService.Model
 {
-    public class PeerDescriptor
+    public struct PeerDescriptor
     {
         public string Guid { get; set; }
         public string IpAddress { get; set; }

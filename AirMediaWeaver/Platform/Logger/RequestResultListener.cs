@@ -46,6 +46,14 @@ namespace AirMedia.Platform.Logger
             get { return PendingRequestCount > 0; }
         }
 
+        public static RequestResultListener NewInstance(string tag)
+        {
+            int random = new Random().Next(int.MaxValue);
+            string listenerTag = string.Format("{0}_{1}", tag, random);
+
+            return new RequestResultListener(listenerTag);
+        }
+
         public RequestResultListener(string tag)
         {
             Tag = tag;

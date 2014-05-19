@@ -1,6 +1,6 @@
 using System.Linq;
 using System.Threading;
-using AirMedia.Core.Controller.WebService.Model;
+using AirMedia.Core.Data.Model;
 using AirMedia.Core.Log;
 using AirMedia.Core.Requests.Impl;
 using AirMedia.Platform.Controller.WebService;
@@ -17,7 +17,7 @@ namespace AirMedia.Platform.Controller.Requests
         private AutoResetEvent _wait;
         private bool _isDisposed;
 
-        protected override PeerDescriptor[] GetAvailablePeersInfo()
+        protected override IPeerDescriptor[] GetAvailablePeersInfo()
         {
             _connection = new AirStreamerServiceConnection();
             _connection.Connected += OnServiceConnected;
@@ -34,13 +34,13 @@ namespace AirMedia.Platform.Controller.Requests
                     if (!ret)
                     {
                         AmwLog.Error(LogTag, "unable to bind air streamer service");
-                        return new PeerDescriptor[0];
+                        return new IPeerDescriptor[0];
                     }
 
                     if (_wait.WaitOne(ServiceConnectionTimeout) == false)
                     {
                         AmwLog.Error(LogTag, "unable to bind air streamer service: connection timeout");
-                        return new PeerDescriptor[0];
+                        return new IPeerDescriptor[0];
                     }
 
                     AmwLog.Verbose(LogTag, "air streamer service is bound");

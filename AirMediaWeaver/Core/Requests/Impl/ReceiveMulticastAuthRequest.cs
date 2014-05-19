@@ -46,6 +46,8 @@ namespace AirMedia.Core.Requests.Impl
 
             status = RequestStatus.Ok;
 
+            AmwLog.Verbose(LogTag, "FINISHING receive multicast udp message request");
+
             return new LoadRequestResult<AuthPacket>(RequestResult.ResultCodeOk, authPacket);
         }
     }

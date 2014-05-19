@@ -4,52 +4,58 @@ using System.Linq;
 using AirMedia.Core.Controller.PlaybackSource;
 using AirMedia.Core.Data;
 using AirMedia.Core.Log;
-using AirMedia.Platform.Data;
 
 namespace AirMedia.Platform.Controller.PlaybackSource
 {
-    public class LocalLibraryPlaybackSource : IBasicPlaybackSource
+    public class RemotePlaybackSource : IBasicPlaybackSource
     {
-        public static readonly string LogTag = typeof (LocalLibraryPlaybackSource).Name;
+        public static readonly string LogTag = typeof(RemotePlaybackSource).Name;
 
         private int _currentPosition;
-        private readonly LinkedList<long> _trackList;
+        private readonly LinkedList<string> _trackList;
+        private readonly ITrackMetadataDao _trackMetadataDao;
 
-        public static LocalLibraryPlaybackSource CreateFromParcel(LocalLibraryPlaybackSourceParcel parcel)
+        public static RemotePlaybackSource CreateFromParcel(ITrackMetadataDao trackMetadataDao, 
+            RemotePlaybackSourceParcel parcel)
         {
-            return new LocalLibraryPlaybackSource(parcel.TrackIds, parcel.CurrentPosition);
+            return new RemotePlaybackSource(trackMetadataDao, 
+                parcel.TrackGuids, parcel.CurrentPosition);
         }
 
-        public LocalLibraryPlaybackSource()
+        public RemotePlaybackSource(ITrackMetadataDao trackMetadataDao)
         {
-            _trackList = new LinkedList<long>();
+            _trackList = new LinkedList<string>();
+            _trackMetadataDao = trackMetadataDao;
         }
 
-        public LocalLibraryPlaybackSource(params long[] trackIds)
-            : this(trackIds, 0)
+        public RemotePlaybackSource(ITrackMetadataDao trackMetadataDao, params string[] trackGuids)
+            : this(trackMetadataDao, trackGuids, 0)
         {
         }
 
-        public LocalLibraryPlaybackSource(int currentPosition, params long[] trackIds)
-            : this(trackIds, currentPosition)
+        public RemotePlaybackSource(ITrackMetadataDao trackMetadataDao, 
+            int currentPosition, params string[] trackGuids)
+            : this(trackMetadataDao, trackGuids, currentPosition)
         {
-            if (currentPosition < 0 || currentPosition > trackIds.Length)
+            if (currentPosition < 0 || currentPosition > trackGuids.Length)
             {
                 throw new ArgumentException("inconsistent position and tracks passed");
             }
         }
 
-        protected LocalLibraryPlaybackSource(long[] trackIds, int currentPosition)
+        protected RemotePlaybackSource(ITrackMetadataDao trackMetadataDao, 
+            string[] trackGuids, int currentPosition)
         {
-            _trackList = new LinkedList<long>(trackIds);
+            _trackList = new LinkedList<string>(trackGuids);
             _currentPosition = currentPosition;
+            _trackMetadataDao = trackMetadataDao;
         }
 
-        public LocalLibraryPlaybackSourceParcel CreateParcelSource()
+        public RemotePlaybackSourceParcel CreateParcelSource()
         {
-            long[] trackIds = _trackList.ToArray();
+            string[] trackGuids = _trackList.ToArray();
 
-            return new LocalLibraryPlaybackSourceParcel(_currentPosition, trackIds);
+            return new RemotePlaybackSourceParcel(_currentPosition, trackGuids);
         }
 
         public bool HasCurrent()
@@ -89,15 +95,6 @@ namespace AirMedia.Platform.Controller.PlaybackSource
             return true;
         }
 
-        public TrackMetadata? GetCurrentTrackMetadata()
-        {
-            CheckTrackPositionBounds();
-
-            long trackId = _trackList.ElementAt(_currentPosition);
-
-            return PlaylistDao.GetTrackMetadata(trackId);
-        }
-
         public ResourceDescriptor? GetCurrentResource()
         {
             CheckTrackPositionBounds();
@@ -105,24 +102,21 @@ namespace AirMedia.Platform.Controller.PlaybackSource
             return GetResourceImpl(_trackList.ElementAt(_currentPosition));
         }
 
-        protected ResourceDescriptor? GetResourceImpl(long trackId)
+        protected ResourceDescriptor? GetResourceImpl(string trackGuid)
         {
-            var metadata = GetCurrentTrackMetadata();
+            var uri = _trackMetadataDao.GetTrackUri(trackGuid);
 
-            if (metadata == null)
+            if (uri == null)
             {
-                AmwLog.Error(LogTag, string.Format("Can't retrieve track metadata " +
-                                                   "for track id ({0})", trackId));
+                AmwLog.Error(LogTag, string.Format("Can't retrieve track uri for " +
+                                                   "track guid ({0})", trackGuid));
                 return null;
             }
 
-            var metadataVal = metadata.Value;
-
             return new ResourceDescriptor
                 {
-                    PublicGuid = null,
-                    LocalId = metadataVal.TrackId,
-                    Uri = new Uri(metadataVal.Data)
+                    PublicGuid = trackGuid,
+                    Uri = uri
                 };
         }
 

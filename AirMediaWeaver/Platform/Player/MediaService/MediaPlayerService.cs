@@ -1,7 +1,13 @@
+using AirMedia.Core.Controller.PlaybackSource;
+using AirMedia.Core.Data;
+using AirMedia.Core.Data.Model;
+using AirMedia.Core.Data.Sql;
+using AirMedia.Core.Data.Sql.Model;
 using AirMedia.Core.Log;
 using AirMedia.Platform.Controller.PlaybackSource;
 using AirMedia.Platform.Controller.PlayerBackend;
-using AirMedia.Platform.Data;
+using AirMedia.Platform.Controller.WebService.Http;
+using AirMedia.Platform.Data.Sql.Dao;
 using Android.App;
 using Android.Content;
 using Android.OS;
@@ -64,16 +70,20 @@ namespace AirMedia.Platform.Player.MediaService
                     break;
 
                 case ActionPlay:
+                    AmwLog.Debug(LogTag, "action play");
                     bool fastForward = intent.GetBooleanExtra(ExtraFastForward, false);
                     if (fastForward)
                     {
                         _player.Stop();
                     }
                     _player.Play();
+                    AmwLog.Debug(LogTag, "after action play");
                     break;
 
                 case ActionStop:
+                    AmwLog.Debug(LogTag, "action stop");
                     _player.Stop();
+                    AmwLog.Debug(LogTag, "after action stop");
                     break;
 
                 case ActionPause:
@@ -103,15 +113,25 @@ namespace AirMedia.Platform.Player.MediaService
 
         private void EnqueuePlaybackSource(IParcelable parcel)
         {
-            var parcelledSource = parcel as LocalLibraryPlaybackSourceParcel;
-            if (parcelledSource == null)
+            IBasicPlaybackSource source = null;
+            if (parcel is LocalLibraryPlaybackSourceParcel)
             {
-                AmwLog.Error(LogTag, string.Format("can't enqueue \"{0}\"", parcel.GetType()));
+                source = LocalLibraryPlaybackSource.CreateFromParcel(
+                    (LocalLibraryPlaybackSourceParcel) parcel);
 
-                return;
+            } 
+            else if (parcel is RemotePlaybackSourceParcel)
+            {
+                var localPubDao = (TrackPublicationsDao) DatabaseHelper.Instance.GetDao<TrackPublicationRecord>();
+                var trackMetadataDao = new TrackMetadataDao(localPubDao, new HttpContentProvider());
+                source = RemotePlaybackSource.CreateFromParcel(trackMetadataDao, (RemotePlaybackSourceParcel) parcel);
             }
 
-            var source = LocalLibraryPlaybackSource.CreateFromParcel(parcelledSource);
+            if (source == null) 
+            {
+                AmwLog.Error(LogTag, string.Format("can't enqueue \"{0}\"", parcel.GetType()));
+                return;
+            }
 
             _player.ResetQueue();
             _player.Enqueue(source);
@@ -153,7 +173,7 @@ namespace AirMedia.Platform.Player.MediaService
             }
         }
 
-        public void OnTrackMetadataResolved(TrackMetadata metadata)
+        public void OnTrackMetadataResolved(ITrackMetadata metadata)
         {
             if (_binder != null)
             {
@@ -196,7 +216,7 @@ namespace AirMedia.Platform.Player.MediaService
             return _player.Unpause();
         }
 
-        public TrackMetadata? GetTrackMetadata()
+        public ITrackMetadata GetTrackMetadata()
         {
             return _player.GetTrackMetadata();
         }

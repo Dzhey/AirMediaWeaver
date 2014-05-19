@@ -21,7 +21,7 @@ namespace AirMedia.Platform.Controller.Requests
 
         protected override RequestResult ExecuteImpl(out RequestStatus status)
         {
-            var dao = (PublicTracksDao) App.DatabaseHelper.GetDao<PublicTrackRecord>();
+            var dao = (TrackPublicationsDao) App.DatabaseHelper.GetDao<TrackPublicationRecord>();
 
             var tracks = dao.QueryForBaseTrackInfo().Select(track => track.TrackId).ToArray();
 

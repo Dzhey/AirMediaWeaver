@@ -1,4 +1,4 @@
-using AirMedia.Platform.Data;
+using AirMedia.Core.Data.Model;
 
 namespace AirMedia.Platform.Player.MediaService
 {
@@ -11,6 +11,6 @@ namespace AirMedia.Platform.Player.MediaService
         bool IsPlaying();
         bool Pause();
         bool Unpause();
-        TrackMetadata? GetTrackMetadata();
+        ITrackMetadata GetTrackMetadata();
     }
 }

@@ -1,10 +1,9 @@
-using System;
 using AirMedia.Core.Controller.PlaybackSource;
+using AirMedia.Core.Data.Model;
 using AirMedia.Core.Log;
 using AirMedia.Core.Requests.Model;
 using AirMedia.Platform.Controller.PlaybackSource;
 using AirMedia.Platform.Controller.Requests;
-using AirMedia.Platform.Data;
 using AirMedia.Platform.Logger;
 using AirMedia.Platform.Player.MediaService;
 using Android.Media;
@@ -17,7 +16,8 @@ namespace AirMedia.Platform.Controller.PlayerBackend
         MediaPlayer.IOnErrorListener, 
         MediaPlayer.IOnCompletionListener,
         MediaPlayer.IOnInfoListener,
-        MediaPlayer.IOnSeekCompleteListener
+        MediaPlayer.IOnSeekCompleteListener,
+        MediaPlayer.IOnBufferingUpdateListener
     {
         private const int MediaPlayerRetryCount = 2;
         private const int MediaPlayerErrorUnknown = -38;
@@ -36,15 +36,13 @@ namespace AirMedia.Platform.Controller.PlayerBackend
         private MediaPlayer _player;
         private readonly QueuePlaybackSource _queue;
         private PlaybackStatus _playbackStatus;
-        private TrackMetadata? _trackMetadata;
+        private ITrackMetadata _trackMetadata;
         private readonly RequestResultListener _requestResultListener;
         private int _retryCount;
 
         public AmwPlayer()
         {
-            int random = new Random().Next(int.MaxValue);
-            string listenerTag = string.Format("{0}_{1}", typeof(MediaPlayerService).Name, random);
-            _requestResultListener = new RequestResultListener(listenerTag);
+            _requestResultListener = RequestResultListener.NewInstance(typeof (MediaPlayerService).Name);
             _requestResultListener.RegisterResultHandler(
                 typeof(LoadTrackMetadataRequest), OnResolveMetadataRequestResult);
             
@@ -52,7 +50,7 @@ namespace AirMedia.Platform.Controller.PlayerBackend
             _playbackStatus = PlaybackStatus.Stopped;
         }
 
-        public TrackMetadata? GetTrackMetadata()
+        public ITrackMetadata GetTrackMetadata()
         {
             return _trackMetadata;
         }
@@ -87,7 +85,9 @@ namespace AirMedia.Platform.Controller.PlayerBackend
                 && (_playbackStatus == PlaybackStatus.Playing
                     || _playbackStatus == PlaybackStatus.Paused))
             {
+                AmwLog.Debug(LogTag, string.Format("seekTo({0})", location / 1000));
                 _player.SeekTo(location);
+                AmwLog.Debug(LogTag, "seekTo done)");
 
                 return true;
             }
@@ -157,12 +157,14 @@ namespace AirMedia.Platform.Controller.PlayerBackend
 
         public void Stop()
         {
+            AmwLog.Debug(LogTag, "Stop()");
             if (IsPlaying() || _playbackStatus == PlaybackStatus.Paused)
             {
                 _player.Stop();
 
                 ReleasePlayer();
             }
+            AmwLog.Debug(LogTag, "after Stop()");
         }
 
         public bool Play()
@@ -181,21 +183,22 @@ namespace AirMedia.Platform.Controller.PlayerBackend
 
             var track = _queue.GetCurrentResource();
 
-            if (track == null || track.Value.LocalId == null)
+            if (track == null || track.Value.Uri == null)
             {
                 AmwLog.Error(LogTag, "Play(): can't fetch next playback resource");
                 return false;
             }
 
-            var uri = Uri.Parse(track.Value.Uri);
+            var uri = Uri.Parse(track.Value.Uri.ToString());
             AmwLog.Debug(LogTag, string.Format("Preparing \"{0}\"", uri));
 
             InitPlayer(false);
 
             SetPlaybackStatus(PlaybackStatus.Preparing);
 
-            _requestResultListener.SubmitRequest(
-                new LoadTrackMetadataRequest((long)track.Value.LocalId));
+            _requestResultListener.SubmitRequest(new LoadTrackMetadataRequest(
+                track.Value.LocalId, track.Value.PublicGuid));
+
             _player.SetDataSource(App.Instance, uri);
             _player.PrepareAsync();
 
@@ -215,6 +218,8 @@ namespace AirMedia.Platform.Controller.PlayerBackend
 
         public bool OnInfo(MediaPlayer mp, MediaInfo what, int extra)
         {
+            AmwLog.Verbose(LogTag, string.Format("mediaplayer info ({0},{1})", what, extra));
+
             return false;
         }
 
@@ -250,10 +255,17 @@ namespace AirMedia.Platform.Controller.PlayerBackend
 
         public void OnSeekComplete(MediaPlayer mp)
         {
+            AmwLog.Debug(LogTag, "OnSeekComplete()");
             if (Callbacks != null)
             {
                 Callbacks.OnSeekComplete();
             }
+            AmwLog.Debug(LogTag, "after OnSeekComplete()");
+        }
+
+        public void OnBufferingUpdate(MediaPlayer mp, int percent)
+        {
+            AmwLog.Verbose(LogTag, string.Format("media player buffering: {0}%", percent));
         }
 
         public void OnCompletion(MediaPlayer mp)
@@ -295,20 +307,29 @@ namespace AirMedia.Platform.Controller.PlayerBackend
             _player.SetOnErrorListener(this);
             _player.SetOnPreparedListener(this);
             _player.SetOnSeekCompleteListener(this);
+            _player.SetOnBufferingUpdateListener(this);
 
             SetPlaybackStatus(PlaybackStatus.Stopped, publishStatusUpdate);
         }
 
         private void ReleasePlayer()
         {
-            if (_player == null) return;
+            if (_player == null)
+            {
+                AmwLog.Debug(LogTag, "player is already released");
+                return;
+            }
 
             AmwLog.Debug(LogTag, "releasing media player");
 
             SetPlaybackStatus(PlaybackStatus.Stopped);
 
+            AmwLog.Debug(LogTag, "playback status changed to stopped");
+
+            _player.Reset();
             _player.Release();
             _player = null;
+            AmwLog.Debug(LogTag, "player released");
         }
 
         private void SetPlaybackStatus(PlaybackStatus status, bool publishUpdate = true)
@@ -354,7 +375,7 @@ namespace AirMedia.Platform.Controller.PlayerBackend
                 return;
             }
 
-            _trackMetadata = ((LoadRequestResult<TrackMetadata?>)(args.Result)).Data;
+            _trackMetadata = ((LoadRequestResult<ITrackMetadata>)(args.Result)).Data;
             if (_trackMetadata == null)
             {
                 AmwLog.Error(LogTag, "returned track metadata is empty");
@@ -363,11 +384,11 @@ namespace AirMedia.Platform.Controller.PlayerBackend
             }
 
             AmwLog.Debug(LogTag, string.Format("track \"{0}\" metadata " +
-                                               "successfuly resolved", _trackMetadata.Value.TrackTitle));
+                                               "successfuly resolved", _trackMetadata.TrackTitle));
 
             if (Callbacks != null)
             {
-                Callbacks.OnTrackMetadataResolved(_trackMetadata.Value);
+                Callbacks.OnTrackMetadataResolved(_trackMetadata);
             }
         }
     }

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
+using AirMedia.Core.Data.Model;
 using AirMedia.Core.Log;
-using AirMedia.Platform.Data;
 using Android.OS;
 
 namespace AirMedia.Platform.Player.MediaService
@@ -24,7 +24,7 @@ namespace AirMedia.Platform.Player.MediaService
             _callbacks = callbacks;
         }
 
-        public TrackMetadata? GetTrackMetadata()
+        public ITrackMetadata GetTrackMetadata()
         {
             return _callbacks.GetTrackMetadata();
         }
@@ -130,7 +130,7 @@ namespace AirMedia.Platform.Player.MediaService
             StopPlaybackProgressUpdates();
         }
 
-        public void NotifyTrackMetadataResolved(TrackMetadata metadata)
+        public void NotifyTrackMetadataResolved(ITrackMetadata metadata)
         {
             lock (_listeners)
             {
