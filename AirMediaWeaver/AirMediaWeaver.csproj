@@ -69,6 +69,9 @@
     <Compile Include="Core\Controller\AmwWebClient.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Core\Controller\DownloadManager\DownloadStatus.cs" />
+    <Compile Include="Core\Controller\DownloadManager\ITrackDownloadsManager.cs" />
+    <Compile Include="Core\Controller\DownloadManager\TrackDownloadInfo.cs" />
     <Compile Include="Core\Controller\PlaybackSource\IBasicPlaybackSource.cs" />
     <Compile Include="Core\Controller\WebService\Http\HttpResponse.cs" />
     <Compile Include="Core\Controller\WebService\Http\HttpResponseModel.cs" />
@@ -93,13 +96,21 @@
     <Compile Include="Core\Data\ITrackSourceDefinition.cs" />
     <Compile Include="Core\Data\Model\IHttpTrackContentDescriptor.cs" />
     <Compile Include="Core\Data\Model\IPeerDescriptor.cs" />
+    <Compile Include="Core\Data\Model\IRemoteTrackMetadata.cs" />
     <Compile Include="Core\Data\Model\ITrackMetadata.cs" />
     <Compile Include="Core\Data\PlaylistModel.cs" />
     <Compile Include="Core\Data\ResourceDescriptor.cs" />
+    <Compile Include="Core\Data\Sql\Dao\ITrackDownloadsDao.cs" />
     <Compile Include="Core\Data\Sql\Dao\PeersDao.cs" />
     <Compile Include="Core\Data\Sql\Dao\RemoteTrackPublicationsDao.cs" />
+    <Compile Include="Core\Data\Sql\Model\ITrackDownloadRecord.cs" />
     <Compile Include="Core\Data\Sql\Model\PeerRecord.cs" />
     <Compile Include="Core\Data\Sql\Model\RemoteTrackPublicationRecord.cs" />
+    <Compile Include="Core\Requests\Impl\LoadRemoteTrackDownloadsRequest.cs" />
+    <Compile Include="Core\Requests\Impl\LoadRemoteTracksRequest.cs" />
+    <Compile Include="Platform\Controller\DownloadManager\AmwDownloadManager.cs" />
+    <Compile Include="Platform\Data\Sql\Dao\TrackDownloadsDao.cs" />
+    <Compile Include="Platform\Data\Sql\Model\TrackDownloadRecord.cs" />
     <Compile Include="Core\Data\Sql\Model\TrackPublicationRecord.cs" />
     <Compile Include="Core\Data\TrackMetadataDao.cs" />
     <Compile Include="Core\Requests\Abs\AbstractWebRequest.cs" />
@@ -110,6 +121,7 @@
     <Compile Include="Core\Requests\Impl\SendMulticastAuthRequest.cs" />
     <Compile Include="Core\Requests\Impl\SimpleLoadRequest.cs" />
     <Compile Include="Core\Requests\Impl\SimpleRequest.cs" />
+    <Compile Include="Platform\Controller\DownloadActionReceiver.cs" />
     <Compile Include="Platform\Controller\PlaybackSource\LocalLibraryPlaybackSource.cs" />
     <Compile Include="Platform\Controller\PlaybackSource\LocalLibraryPlaybackSourceParcel.cs" />
     <Compile Include="Platform\Controller\PlaybackSource\QueuePlaybackSource.cs" />
@@ -145,6 +157,7 @@
     <Compile Include="Platform\Data\HttpTrackContentDescriptor.cs" />
     <Compile Include="Platform\Data\Sql\AndroidDatabaseHelper.cs" />
     <Compile Include="Platform\Data\Sql\Dao\TrackPublicationsDao.cs" />
+    <Compile Include="Platform\Data\Sql\RemoteTrackMetadata.cs" />
     <Compile Include="Platform\Data\TrackMetadata.cs" />
     <Compile Include="Platform\Player\MediaService\IBinderCallbacks.cs" />
     <Compile Include="Platform\Player\IMediaPlayerCallbacks.cs" />
@@ -226,9 +239,11 @@
     <Compile Include="Platform\UI\Player\MediaServiceConnection.cs" />
     <Compile Include="Platform\UI\Player\PlayerFacadeFragment.cs" />
     <Compile Include="Platform\UI\Playlists\PlaylistDetailsFragment.cs" />
-    <Compile Include="Platform\UI\Playlists\TrackListAdapter.cs" />
+    <Compile Include="Platform\UI\Base\AbsTrackListAdapter.cs" />
     <Compile Include="Platform\UI\Playlists\PlaylistListAdapter.cs" />
     <Compile Include="Platform\UI\Playlists\PlaylistsViewFragment.cs" />
+    <Compile Include="Platform\UI\Playlists\PlaylistTracksAdapter.cs" />
+    <Compile Include="Platform\UI\Publications\DownloadTrackListAdapter.cs" />
     <Compile Include="Platform\UI\Publications\LocalPublicationsFragment.cs" />
     <Compile Include="Platform\UI\Publications\MyPublicationsFragment.cs" />
     <Compile Include="Platform\UI\Publications\PublicationsTabFragment.cs" />
@@ -279,6 +294,7 @@
     <AndroidResource Include="Resources\Layout\Fragment_LocalPublications.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
+    <AndroidResource Include="Resources\Layout\View_DownloadTrackItem.axml" />
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\Values\Strings.xml">
@@ -388,6 +404,10 @@
     <AndroidResource Include="Resources\Drawable-xhdpi\ic_action_play.png" />
     <AndroidResource Include="Resources\Drawable-xxhdpi\ic_action_play.png" />
     <AndroidResource Include="Resources\Menu\menu_publications_view.xml" />
+    <AndroidResource Include="Resources\Drawable-hdpi\ic_action_download.png" />
+    <AndroidResource Include="Resources\Drawable-mdpi\ic_action_download.png" />
+    <AndroidResource Include="Resources\Drawable-xhdpi\ic_action_download.png" />
+    <AndroidResource Include="Resources\Drawable-xxhdpi\ic_action_download.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\libs\ViewPagerIndicator\ViewPagerIndicator.csproj">

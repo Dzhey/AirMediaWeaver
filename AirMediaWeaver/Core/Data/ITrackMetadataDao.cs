@@ -5,8 +5,9 @@ namespace AirMedia.Core.Data
 {
     public interface ITrackMetadataDao
     {
-        Uri GetTrackUri(string trackGuid);
+        Uri GetRemoteTrackUri(string trackGuid);
         ITrackMetadata GetTrackMetadata(string trackGuid);
-        ITrackMetadata[] GetRemoteTracksMetadata();
+        IRemoteTrackMetadata[] GetRemoteTracksMetadata();
+        IRemoteTrackMetadata GetRemoteTrackMetadata(string trackGuid);
     }
 }

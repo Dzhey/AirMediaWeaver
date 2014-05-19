@@ -4,7 +4,6 @@ using AirMedia.Core.Data.Sql;
 using AirMedia.Core.Data.Sql.Dao;
 using AirMedia.Core.Data.Sql.Model;
 using AirMedia.Core.Log;
-using AirMedia.Core.Requests.Abs;
 using AirMedia.Core.Requests.Model;
 using AirMedia.Platform.Controller.Requests;
 

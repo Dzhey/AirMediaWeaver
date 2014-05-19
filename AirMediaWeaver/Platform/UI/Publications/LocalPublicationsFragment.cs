@@ -1,12 +1,14 @@
+using System;
 using AirMedia.Core;
+using AirMedia.Core.Data.Sql;
 using AirMedia.Core.Log;
 using AirMedia.Core.Requests.Impl;
 using AirMedia.Core.Requests.Model;
-using AirMedia.Platform.Controller.PlaybackSource;
-using AirMedia.Platform.Controller.Requests;
+using AirMedia.Platform.Controller.DownloadManager;
+using AirMedia.Platform.Data.Sql.Dao;
+using AirMedia.Platform.Data.Sql.Model;
 using AirMedia.Platform.Player;
 using AirMedia.Platform.UI.Base;
-using AirMedia.Platform.UI.Playlists;
 using Android.OS;
 using Android.Views;
 using Android.Widget;
@@ -16,13 +18,25 @@ namespace AirMedia.Platform.UI.Publications
     public class LocalPublicationsFragment : MainViewFragment
     {
         private ListView _listView;
-        private TrackListAdapter _adapter;
+        private DownloadTrackListAdapter _adapter;
+        private AmwDownloadManager _downloadManager;
 
         public override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
 
-            _adapter = new TrackListAdapter();
+            _adapter = new DownloadTrackListAdapter();
+            _adapter.DisplayDownloadButton = true;
+
+            var trackDownloadsDao = (TrackDownloadsDao) DatabaseHelper.Instance.GetDao<TrackDownloadRecord>();
+            _downloadManager = new AmwDownloadManager(Activity, trackDownloadsDao);
+        }
+
+        public override void OnDestroy()
+        {
+            _downloadManager = null;
+
+            base.OnDestroy();
         }
 
         public override View OnCreateView(LayoutInflater inflater,
@@ -52,15 +66,17 @@ namespace AirMedia.Platform.UI.Publications
             base.OnResume();
 
             _listView.ItemClick += OnListItemClicked;
+            _adapter.DownloadClicked += OnDownloadItemClicked;
 
-            RegisterRequestResultHandler(typeof(DownloadBaseTracksInfoRequestImpl), OnLocalPublicationsLoaded);
+            RegisterRequestResultHandler(typeof(LoadRemoteTrackDownloadsRequest), OnRemoteTracksLoaded);
         }
 
         public override void OnPause()
         {
             _listView.ItemClick -= OnListItemClicked;
+            _adapter.DownloadClicked -= OnDownloadItemClicked;
 
-            RemoveRequestResultHandler(typeof(DownloadBaseTracksInfoRequestImpl));
+            RemoveRequestResultHandler(typeof(LoadRemoteTrackDownloadsRequest));
 
             base.OnPause();
         }
@@ -80,6 +96,22 @@ namespace AirMedia.Platform.UI.Publications
             return _listView.Count > 0;
         }
 
+        private void OnDownloadItemClicked(object sender, DownloadTrackListAdapter.ItemDownloadClickEventArgs args)
+        {
+            var metadata = args.TrackMetadata;
+
+            try
+            {
+                _downloadManager.EnqueueDownload(metadata.TrackGuid);
+                _adapter.AddDownloadTrackGuid(metadata.TrackGuid);
+            }
+            catch (ArgumentException e)
+            {
+                AmwLog.Error(LogTag, string.Format("cant start track download: {0}", e.Message), e.ToString());
+                ShowMessage(Resource.String.error_cant_begin_track_download);
+            }
+        }
+
         private void OnListItemClicked(object sender, AdapterView.ItemClickEventArgs args)
         {
             PlayerControl.Play(_adapter.GetItemGuids(), args.Position);
@@ -89,10 +121,10 @@ namespace AirMedia.Platform.UI.Publications
         {
             SetInProgress(true);
 
-            SubmitParallelRequest(new DownloadBaseTracksInfoRequestImpl());
+            SubmitParallelRequest(new LoadRemoteTrackDownloadsRequest());
         }
 
-        private void OnLocalPublicationsLoaded(object sender, ResultEventArgs args)
+        private void OnRemoteTracksLoaded(object sender, ResultEventArgs args)
         {
             if (args.Request.Status != RequestStatus.Ok)
             {
@@ -102,8 +134,9 @@ namespace AirMedia.Platform.UI.Publications
                 return;
             }
 
-            var result = ((DownloadBaseTracksInfoRequest.RequestResult) args.Result).TrackInfo;
-            _adapter.SetItems(result);
+            var result = (LoadRemoteTrackDownloadsRequest.RequestResult) args.Result;
+            _adapter.SetItems(result.Data);
+            _adapter.SetDownloadTrackGuids(result.DownloadTrackGuids);
 
             SetInProgress(false);
         }

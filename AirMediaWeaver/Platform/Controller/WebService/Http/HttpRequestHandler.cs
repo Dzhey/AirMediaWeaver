@@ -197,8 +197,12 @@ namespace AirMedia.Platform.Controller.WebService.Http
                 }
             }
 
+            response.Headers.Add("Content-Disposition", string.Format(
+                "attachment; filename=\"{0}\"", trackInfo.FileName));
             response.ContentType = trackInfo.ContentType ?? "application/octet-stream";
-            response.StatusCode = (int) HttpStatusCode.PartialContent;
+            response.StatusCode = (int) (requestedRange == null
+                                             ? HttpStatusCode.OK
+                                             : HttpStatusCode.PartialContent);
 
             var sw = new System.Diagnostics.Stopwatch();
             sw.Start();
@@ -212,12 +216,18 @@ namespace AirMedia.Platform.Controller.WebService.Http
 
                     var responseRangeHeader = writer.ComputeContentLength();
                     response.ContentLength64 = responseRangeHeader.Length ?? 0;
-                    response.AddHeader("Content-Range", responseRangeHeader.ToString());
+                    if (requestedRange != null)
+                    {
+                        response.AddHeader("Content-Range", responseRangeHeader.ToString());
+                    }
 
                     PrintResponse(response);
                     AmwLog.Verbose(LogTag, "writing track data to output http stream..");
                     writer.Write();
                 }
+
+                AmwLog.Verbose(LogTag, "track data written, closing stream..");
+                response.Close();
             }
             catch (IOException e)
             {

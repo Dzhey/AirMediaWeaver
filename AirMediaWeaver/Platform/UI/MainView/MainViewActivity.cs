@@ -19,8 +19,9 @@ namespace AirMedia.Platform.UI.MainView
     [Activity(Label = "Air Media", MainLauncher = true, Icon = "@drawable/icon")]
     public class MainViewActivity : AmwActivity, IPlayerFacadeFragmentCallbacks, IMainViewFragmentCallbacks
     {
+        public const string ExtraDisplayFragment = "display_fragment";
+
         private const string ExtraFragmentStateBundle = "fragment_state_bundle";
-        private const string ExtraDisplayFragment = "display_fragment";
         private const string ContentFragmentTag = "content_fragment_tag";
         private const string PlayerFacadeFragmentTag = "player_facade_fragment_tag";
 

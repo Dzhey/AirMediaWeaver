@@ -54,6 +54,7 @@
   <string name="error_cant_update_publications">Ошибка при обновлении публикаций</string>
   <string name="error_cant_play_publications">Ошибка при воспроизведении публикаций</string>
   <string name="error_cant_load_lan_publications">Не удалось загрузить публикации</string>
+  <string name="error_cant_begin_track_download">Не удалось начать загрузку</string>
   
   <!-- Logger strings -->
   <string name="title_log_level">Уровень</string>

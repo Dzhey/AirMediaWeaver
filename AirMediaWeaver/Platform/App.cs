@@ -12,6 +12,7 @@ using Android.Content;
 using Android.OS;
 using System;
 using Android.Runtime;
+using AndroidDownloadManager = Android.App.DownloadManager;
 
 namespace AirMedia.Platform
 {

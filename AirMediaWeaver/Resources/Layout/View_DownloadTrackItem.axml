@@ -42,4 +42,20 @@
             android:ellipsize="end"
             android:text="@android:string/untitled" />
     </LinearLayout>
+    <FrameLayout
+        android:id="@+id/ButtonDownload"
+        android:layout_height="match_parent"
+        android:layout_width="wrap_content"
+        android:paddingLeft="6dp"
+        android:paddingRight="12dp"
+        android:clickable="true">
+        <ImageButton
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:duplicateParentState="true"
+            android:src="@drawable/ic_action_download"
+            android:background="?android:attr/selectableItemBackground"
+            android:clickable="false"
+            android:layout_gravity="center" />
+    </FrameLayout>
 </LinearLayout>

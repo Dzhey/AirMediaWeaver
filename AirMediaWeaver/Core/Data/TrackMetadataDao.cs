@@ -8,6 +8,7 @@ using AirMedia.Core.Data.Sql.Dao;
 using AirMedia.Core.Data.Sql.Model;
 using AirMedia.Core.Utils.StringUtils;
 using AirMedia.Platform.Data;
+using AirMedia.Platform.Data.Sql;
 
 namespace AirMedia.Core.Data
 {
@@ -25,12 +26,31 @@ namespace AirMedia.Core.Data
                       .GetDao<RemoteTrackPublicationRecord>();
         }
 
-        public static TrackMetadata[] CreateMetadata(IEnumerable<RemoteTrackPublicationRecord> records)
+        public static RemoteTrackMetadata[] CreateRemoteTracksMetadata<T>(IEnumerable<T> records) where T : IRemoteTrackMetadata
         {
-            return records.Select(CreateMetadata).ToArray();
+            return records.Select(CreateRemoteTrackMetadata).ToArray();
         }
 
-        public static TrackMetadata CreateMetadata(RemoteTrackPublicationRecord record)
+        public static RemoteTrackMetadata CreateRemoteTrackMetadata<T>(T record) where T : IRemoteTrackMetadata
+        {
+            return new RemoteTrackMetadata
+            {
+                TrackGuid = record.TrackGuid,
+                PeerGuid = record.PeerGuid,
+                Album = record.Album,
+                Artist = record.Artist,
+                TrackDurationMillis = record.TrackDurationMillis,
+                TrackTitle = record.TrackTitle,
+                ContentType = record.ContentType
+            };
+        }
+
+        public static TrackMetadata[] CreateTracksMetadata<T>(IEnumerable<T> records) where T : ITrackMetadata
+        {
+            return records.Select(CreateTrackMetadata).ToArray();
+        }
+
+        public static TrackMetadata CreateTrackMetadata<T>(T record) where T : ITrackMetadata
         {
             return new TrackMetadata
             {
@@ -43,7 +63,8 @@ namespace AirMedia.Core.Data
             };
         }
 
-        public static RemoteTrackPublicationRecord[] CreateMetadata(IEnumerable<ITrackMetadata> records)
+        public static RemoteTrackPublicationRecord[] CreateRemotePublicationsRecord(
+            IEnumerable<ITrackMetadata> records)
         {
             return records.Select(CreateRemotePublicationRecord).ToArray();
         }
@@ -62,10 +83,10 @@ namespace AirMedia.Core.Data
 
         public void UpdateMetadata(IEnumerable<ITrackMetadata> metadata)
         {
-            _pubDao.RedefineDatabaseRecords(CreateMetadata(metadata));
+            _pubDao.RedefineDatabaseRecords(CreateRemotePublicationsRecord(metadata));
         }
 
-        public Uri GetTrackUri(string trackGuid)
+        public Uri GetRemoteTrackUri(string trackGuid)
         {
             const string template = "select {tPeers_cPeerAddress} " +
                                     "from {tPeers} " +
@@ -110,12 +131,21 @@ namespace AirMedia.Core.Data
 
             if (pub == null) return null;
 
-            return CreateMetadata(pub);
+            return CreateTrackMetadata(pub);
         }
 
-        public ITrackMetadata[] GetRemoteTracksMetadata()
+        public IRemoteTrackMetadata[] GetRemoteTracksMetadata()
         {
-            return _pubDao.GetAll().ConvertAll(input => (ITrackMetadata) input).ToArray();
+            return _pubDao.GetAll().Select(CreateRemoteTrackMetadata).ToArray();
+        }
+
+        public IRemoteTrackMetadata GetRemoteTrackMetadata(string trackGuid)
+        {
+            var pub = _pubDao.QueryForGuid(trackGuid);
+
+            if (pub == null) return null;
+
+            return CreateRemoteTrackMetadata(pub);
         }
     }
 }

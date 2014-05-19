@@ -104,7 +104,7 @@ namespace AirMedia.Platform.Controller.PlaybackSource
 
         protected ResourceDescriptor? GetResourceImpl(string trackGuid)
         {
-            var uri = _trackMetadataDao.GetTrackUri(trackGuid);
+            var uri = _trackMetadataDao.GetRemoteTrackUri(trackGuid);
 
             if (uri == null)
             {

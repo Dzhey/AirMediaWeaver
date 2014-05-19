@@ -5,13 +5,13 @@ using AirMedia.Platform.Controller.Requests;
 using AirMedia.Platform.Data;
 using AirMedia.Platform.UI.Base;
 using AirMedia.Platform.UI.Library;
-using AirMedia.Platform.UI.Playlists;
 using Android.App;
 using Android.Content;
 using Android.OS;
 using Android.Views;
 using Android.Widget;
 using Consts = AirMedia.Core.Consts;
+using AirMedia.Platform.UI.Playlists;
 
 namespace AirMedia.Platform.UI.Publications
 {
@@ -20,13 +20,13 @@ namespace AirMedia.Platform.UI.Publications
         private const int RequestCodeEditPublications = 3000;
 
         private ListView _listView;
-        private TrackListAdapter _adapter;
+        private PlaylistTracksAdapter _adapter;
 
         public override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
 
-            _adapter = new TrackListAdapter();
+            _adapter = new PlaylistTracksAdapter();
             SetHasOptionsMenu(true);
         }
 

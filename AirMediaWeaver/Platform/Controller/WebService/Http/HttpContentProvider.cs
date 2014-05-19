@@ -1,4 +1,6 @@
 using System;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using AirMedia.Core.Controller.WebService.Http;
 using AirMedia.Core.Controller.WebService.Model;
@@ -8,9 +10,11 @@ using AirMedia.Core.Data.Sql.Model;
 using AirMedia.Core.Log;
 using AirMedia.Core.Utils.StringUtils;
 using AirMedia.Platform.Data;
+using AirMedia.Platform.Data.Sql;
 using AirMedia.Platform.Data.Sql.Dao;
 using Android.Content;
 using Android.Provider;
+using Android.Webkit;
 using Consts = AirMedia.Core.Consts;
 
 namespace AirMedia.Platform.Controller.WebService.Http
@@ -23,15 +27,16 @@ namespace AirMedia.Platform.Controller.WebService.Http
             {
                 MediaStore.MediaColumns.MimeType,
                 MediaStore.MediaColumns.Size,
-                MediaStore.MediaColumns.Data
+                MediaStore.MediaColumns.Data,
+                MediaStore.MediaColumns.DisplayName
             };
 
-        public static HttpBaseTrackInfo[] CreateHttpBaseTracksInfo(params TrackMetadata[] tracksMetadata)
+        public static HttpBaseTrackInfo[] CreateHttpBaseTracksInfo(params IRemoteTrackMetadata[] tracksMetadata)
         {
             return tracksMetadata.Select(CreateHttpBaseTrackInfo).ToArray();
         }
 
-        public static HttpBaseTrackInfo CreateHttpBaseTrackInfo(TrackMetadata trackMetadata)
+        public static HttpBaseTrackInfo CreateHttpBaseTrackInfo(IRemoteTrackMetadata trackMetadata)
         {
             return new HttpBaseTrackInfo
                 {
@@ -39,23 +44,25 @@ namespace AirMedia.Platform.Controller.WebService.Http
                     Artist = trackMetadata.Artist,
                     DurationMillis = trackMetadata.TrackDurationMillis,
                     TrackGuid = trackMetadata.TrackGuid,
-                    Title = trackMetadata.TrackTitle
+                    Title = trackMetadata.TrackTitle,
+                    ContentType = trackMetadata.ContentType
                 };
         }
 
-        public static TrackMetadata[] CreateTracksMetadata(string peerGuid, params HttpBaseTrackInfo[] tracksInfo)
+        public static RemoteTrackMetadata[] CreateRemoteTracksMetadata(string peerGuid, params HttpBaseTrackInfo[] tracksInfo)
         {
-            return tracksInfo.Select(info => CreateTrackMetadata(peerGuid, info)).ToArray();
+            return tracksInfo.Select(info => CreateRemoteTrackMetadata(peerGuid, info)).ToArray();
         }
 
-        public static TrackMetadata CreateTrackMetadata(string peerGuid, HttpBaseTrackInfo trackInfo)
+        public static RemoteTrackMetadata CreateRemoteTrackMetadata(string peerGuid, HttpBaseTrackInfo trackInfo)
         {
-            return new TrackMetadata
+            return new RemoteTrackMetadata
             {
                 Album = trackInfo.Album,
                 Artist = trackInfo.Artist,
                 TrackDurationMillis = trackInfo.DurationMillis,
                 TrackGuid = trackInfo.TrackGuid,
+                ContentType = trackInfo.ContentType,
                 TrackTitle = trackInfo.Title,
                 PeerGuid = peerGuid
             };
@@ -65,10 +72,16 @@ namespace AirMedia.Platform.Controller.WebService.Http
         {
             var dao = (TrackPublicationsDao) DatabaseHelper.Instance.GetDao<TrackPublicationRecord>();
 
-            var publishedTracks = dao.QueryForHttpBaseTrackInfo()
-                                     .Select(CreateHttpBaseTrackInfo)
-                                     .ToArray();
-            return publishedTracks;
+            var publishedTracks = dao.QueryForHttpBaseTrackInfo().ToArray();
+            var result = new HttpBaseTrackInfo[publishedTracks.Length];
+
+            int i = 0;
+            foreach (var track in publishedTracks)
+            {
+                result[i] = CreateHttpBaseTrackInfo(track);
+                i++;
+            }
+            return result;
         }
 
         public IHttpTrackContentDescriptor GetHttpTrackInfo(string trackGuid)
@@ -102,6 +115,21 @@ namespace AirMedia.Platform.Controller.WebService.Http
                 result.ContentType = cursor.GetString(0);
                 result.ContentLength = cursor.GetLong(1);
                 result.FilePath = cursor.GetString(2);
+                result.FileName = cursor.GetString(3);
+                
+                if (string.IsNullOrWhiteSpace(result.FileName))
+                {
+                    try
+                    {
+                        AmwLog.Debug(LogTag, "can't resolve display name for track; using content uri", trackGuid);
+                        result.FileName = Path.GetFileName(result.FilePath);
+                    }
+                    catch (ArgumentException e)
+                    {
+                        AmwLog.Warn(LogTag, "can't resolve track file name from content uri", e.ToString());
+                        result.FileName = trackGuid;
+                    }
+                }
             }
 
             return result;
@@ -119,6 +147,39 @@ namespace AirMedia.Platform.Controller.WebService.Http
                                    tracks = Consts.UriTracksFragment,
                                    trackId = trackGuid
                                }));
+        }
+
+        public Uri CreateTrackDownloadDestinationUri(IRemoteTrackMetadata metadata)
+        {
+            string path = "file://" + Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath,
+                                                   Android.OS.Environment.DirectoryMusic);
+
+//            if (string.IsNullOrWhiteSpace(metadata.Artist) == false)
+//            {
+//                path += "/" + metadata.Artist;
+//            }
+//
+//            if (string.IsNullOrWhiteSpace(metadata.Album) == false)
+//            {
+//                path += "/" + metadata.Album;
+//            }
+
+            if (string.IsNullOrWhiteSpace(metadata.TrackTitle) == false)
+            {
+                path += "/" + metadata.TrackTitle;
+            }
+            else
+            {
+                path += "/" + metadata.TrackGuid;
+            }
+
+            string extension = MimeTypeMap.Singleton.GetExtensionFromMimeType(metadata.ContentType);
+            if (extension != null)
+            {
+                path += "." + extension;
+            }
+
+            return new Uri(path);
         }
     }
 }

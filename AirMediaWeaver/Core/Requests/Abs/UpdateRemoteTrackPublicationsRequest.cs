@@ -20,6 +20,6 @@ namespace AirMedia.Core.Requests.Abs
             return RequestResult.ResultOk;
         }
 
-        protected abstract ITrackMetadata[] DownloadRemoteTrackPublications();
+        protected abstract IRemoteTrackMetadata[] DownloadRemoteTrackPublications();
     }
 }

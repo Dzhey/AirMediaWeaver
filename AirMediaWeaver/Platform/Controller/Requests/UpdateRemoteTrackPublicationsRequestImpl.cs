@@ -9,7 +9,7 @@ namespace AirMedia.Platform.Controller.Requests
 {
     public class UpdateRemoteTrackPublicationsRequestImpl : UpdateRemoteTrackPublicationsRequest
     {
-        protected override ITrackMetadata[] DownloadRemoteTrackPublications()
+        protected override IRemoteTrackMetadata[] DownloadRemoteTrackPublications()
         {
             var downloadRequest = new DownloadBaseTracksInfoRequestImpl();
             var result = downloadRequest.Execute() as DownloadBaseTracksInfoRequest.RequestResult;
@@ -19,17 +19,17 @@ namespace AirMedia.Platform.Controller.Requests
                 AmwLog.Error(LogTag, "can't retrieve track publications: " +
                                      "error while downloading publications");
 
-                return new ITrackMetadata[0];
+                return new IRemoteTrackMetadata[0];
             }
 
             if (result == null)
             {
                 AmwLog.Error(LogTag, string.Format("obtained unexpected download track publications result"));
 
-                return new ITrackMetadata[0];
+                return new IRemoteTrackMetadata[0];
             }
 
-            return Array.ConvertAll(result.TrackInfo, input => (ITrackMetadata) input);
+            return Array.ConvertAll(result.TrackInfo, input => (IRemoteTrackMetadata)input);
         }
     }
 }

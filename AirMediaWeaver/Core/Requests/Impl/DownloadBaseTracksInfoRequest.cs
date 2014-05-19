@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Net;
 using AirMedia.Core.Controller;
@@ -7,9 +6,9 @@ using AirMedia.Core.Data.Model;
 using AirMedia.Core.Log;
 using AirMedia.Core.Requests.Abs;
 using AirMedia.Core.Requests.Model;
-using AirMedia.Platform.Controller.Requests;
 using AirMedia.Platform.Controller.WebService.Http;
 using AirMedia.Platform.Data;
+using AirMedia.Platform.Data.Sql;
 using BaseRequestResult = AirMedia.Core.Requests.Model.RequestResult;
 
 namespace AirMedia.Core.Requests.Impl
@@ -18,7 +17,7 @@ namespace AirMedia.Core.Requests.Impl
     {
         public class RequestResult : WebRequestResult
         {
-            public TrackMetadata[] TrackInfo { get; set; }
+            public RemoteTrackMetadata[] TrackInfo { get; set; }
 
             public RequestResult(int resultCode) : base(resultCode)
             {
@@ -37,7 +36,7 @@ namespace AirMedia.Core.Requests.Impl
 
                 return new RequestResult(BaseRequestResult.ResultCodeOk)
                     {
-                        TrackInfo = new TrackMetadata[0]
+                        TrackInfo = new RemoteTrackMetadata[0]
                     };
             }
 
@@ -54,9 +53,9 @@ namespace AirMedia.Core.Requests.Impl
 
         protected abstract IPeerDescriptor[] GetAvailablePeersInfo();
 
-        private TrackMetadata[] LookupTrackMetadata(WebClient webClient, IEnumerable<IPeerDescriptor> peerInfo)
+        private RemoteTrackMetadata[] LookupTrackMetadata(WebClient webClient, IEnumerable<IPeerDescriptor> peerInfo)
         {
-            var metadata = new List<TrackMetadata>();
+            var metadata = new List<RemoteTrackMetadata>();
 
             foreach (var peer in peerInfo)
             {
@@ -66,14 +65,14 @@ namespace AirMedia.Core.Requests.Impl
             return metadata.ToArray();
         }
 
-        private TrackMetadata[] LookupPeerTrackMetadata(WebClient webClient, IPeerDescriptor peerInfo)
+        private RemoteTrackMetadata[] LookupPeerTrackMetadata(WebClient webClient, IPeerDescriptor peerInfo)
         {
             if (peerInfo.Address == null)
             {
                 AmwLog.Warn(LogTag, string.Format(
                     "can't lookup peer track info: peer ip address unknown; peer: \"{0}\"", peerInfo));
 
-                return new TrackMetadata[0];
+                return new RemoteTrackMetadata[0];
             }
 
             AmwLog.Debug(LogTag, string.Format("downloading base tracks info from peer: {0}", peerInfo));
@@ -86,7 +85,7 @@ namespace AirMedia.Core.Requests.Impl
                 if (model == null)
                 {
                     AmwLog.Error(LogTag, string.Format("can't parse peer response; peer: {0}", peerInfo));
-                    return new TrackMetadata[0];
+                    return new RemoteTrackMetadata[0];
                 }
 
                 var response = HttpResponseFactory.CreateResponse(model);
@@ -95,13 +94,14 @@ namespace AirMedia.Core.Requests.Impl
                 {
                     AmwLog.Error(LogTag, string.Format("obtained invalid response; peer: {0}" +
                                                        "; response: {1}", peerInfo, response));
-                    return new TrackMetadata[0];
+                    return new RemoteTrackMetadata[0];
                 }
 
                 AmwLog.Debug(LogTag, string.Format("downloaded ({0}) tracks info from " +
                                                    "peer: {1}", trackInfoResponse.TrackInfo.Length, peerInfo));
 
-                return HttpContentProvider.CreateTracksMetadata(peerInfo.PeerGuid, trackInfoResponse.TrackInfo);
+                return HttpContentProvider.CreateRemoteTracksMetadata(
+                    peerInfo.PeerGuid, trackInfoResponse.TrackInfo);
             }
             catch (WebException e)
             {
@@ -110,7 +110,7 @@ namespace AirMedia.Core.Requests.Impl
                     "peer: \"{0}\"; message: \"{1}\"", peerInfo, e.Message), e.ToString());
             }
 
-            return new TrackMetadata[0];
+            return new RemoteTrackMetadata[0];
         }
 
         private string GetTracksUri(string ipAddress)

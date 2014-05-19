@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using AirMedia.Core.Log;
-using AirMedia.Core.Requests.Impl;
 using AirMedia.Core.Requests.Model;
 using AirMedia.Core.Utils;
-using Java.Util;
 
 namespace AirMedia.Core.Requests.Abs
 {
@@ -105,28 +102,7 @@ namespace AirMedia.Core.Requests.Abs
             get { return _statusFinished.Contains(Status); }
         }
 
-        protected AbsRequest()
-        {
-            _resultEventListeners = new LinkedList<EventHandler<ResultEventArgs>>();
-        }
-
-        private LinkedList<EventHandler<ResultEventArgs>> _resultEventListeners;
-
-        public event EventHandler<ResultEventArgs> ResultEvent
-        {
-            add { _resultEventListeners.AddLast(value); }
-            remove
-            {
-                if (GetType() == typeof (ReceiveMulticastAuthRequest))
-                {
-                    Android.Util.Log.Error("ReceiveMulticastAuthRequest", string.Format(
-                        "request result listener detached: \"{0}\"", value));
-                }
-
-                _resultEventListeners.Remove(value);
-            }
-        }
-
+        public event EventHandler<ResultEventArgs> ResultEvent;
         public event EventHandler<UpdateEventArgs> UpdateEvent; 
 
         public void Cancel()
@@ -238,20 +214,16 @@ namespace AirMedia.Core.Requests.Abs
         /// </summary>
         protected virtual void NotifyRequestResult(ResultEventArgs args)
         {
-            /*if (ResultEvent != null)
+            if (ResultEvent != null)
             {
                 ResultEvent(this, args);
-            }*/
-
-            foreach (var resultEventListener in _resultEventListeners)
-            {
-                resultEventListener(this, args);
             }
         }
 
         public void Dispose()
         {
-            throw new NotImplementedException();
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         protected virtual void Dispose(bool disposing)
@@ -264,6 +236,10 @@ namespace AirMedia.Core.Requests.Abs
                 {
                     _futureResult.Dispose();
                 }
+                _requestResult = null;
+                _futureResult = null;
+                ResultEvent = null;
+                UpdateEvent = null;
             }
 
             _isDisposed = true;

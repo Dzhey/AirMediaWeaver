@@ -20,7 +20,7 @@ namespace AirMedia.Platform.UI.Playlists
 
         private const int RequestCodeEditPlaylist = 1000;
 
-        private TrackListAdapter _adapter;
+        private PlaylistTracksAdapter _adapter;
         private ListView _listView;
         private long? _playlistId;
         private string _playlistName;
@@ -31,7 +31,7 @@ namespace AirMedia.Platform.UI.Playlists
 
             Activity.ActionBar.SetTitle(Resource.String.title_playlist_details);
 
-            _adapter = new TrackListAdapter();
+            _adapter = new PlaylistTracksAdapter();
 
             SetHasOptionsMenu(true);
             Activity.ActionBar.SetDisplayShowHomeEnabled(true);

@@ -111,32 +111,38 @@ namespace AirMedia.Core.Requests.Controller
 
         public AbsRequest FindRequest(int requestId)
         {
-            return _requestQueue.FirstOrDefault(request => request.RequestId == requestId);
+            lock (_requestQueue)
+            {
+                return _requestQueue.FirstOrDefault(request => request.RequestId == requestId);
+            }
         }
 
         private void PerformRequestQueueCleanup()
         {
             if (_requestQueue.Count < RequestQueueSize + QueueFreeThreshold) return;
 
-            int freedCount = 0;
-            var trash = _requestQueue.Take(QueueFreeThreshold).ToArray();
-            foreach (var item in trash)
+            lock (_requestQueue)
             {
-                if (item.IsFinished == false) continue;
-
-                item.UpdateEvent -= HandleRequestUpdate;
-                item.ResultEvent -= HandleRequestResult;
-                _requestQueue.Remove(item);
-                freedCount++;
-            }
-
-            if (freedCount < 1)
-            {
-                AmwLog.Warn(LogTag, string.Format("can't free request queue; too many retaining " +
-                                                    "requests; queue size: \"{0}\"", _requestQueue.Count));
+                int freedCount = 0;
+                var trash = _requestQueue.Take(QueueFreeThreshold).ToArray();
                 foreach (var item in trash)
                 {
-                    AmwLog.Warn(LogTag, string.Format("rataining request: \"{0}\"", item));
+                    if (item.IsFinished == false) continue;
+
+                    item.UpdateEvent -= HandleRequestUpdate;
+                    item.ResultEvent -= HandleRequestResult;
+                    _requestQueue.Remove(item);
+                    freedCount++;
+                }
+
+                if (freedCount < 1)
+                {
+                    AmwLog.Warn(LogTag, string.Format("can't free request queue; too many retaining " +
+                                                        "requests; queue size: \"{0}\"", _requestQueue.Count));
+                    foreach (var item in trash)
+                    {
+                        AmwLog.Warn(LogTag, string.Format("rataining request: \"{0}\"", item));
+                    }
                 }
             }
         }
@@ -149,12 +155,15 @@ namespace AirMedia.Core.Requests.Controller
             int requestId = GenerateRequestId();
             request.RequestId = requestId;
 
-            PerformRequestQueueCleanup();
+            request.UpdateEvent += HandleRequestUpdate;
+            request.ResultEvent += HandleRequestResult;
 
-			request.UpdateEvent += HandleRequestUpdate;
-			request.ResultEvent += HandleRequestResult;
+            lock (_requestQueue)
+            {
+                PerformRequestQueueCleanup();
 
-            _requestQueue.AddLast(request);
+                _requestQueue.AddLast(request);
+            }
 
             SubmitRequestImpl(request, requestId, isParallel, isDedicated);
 

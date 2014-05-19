@@ -3,8 +3,6 @@ using AirMedia.Core.Controller.WebService;
 using AirMedia.Core.Controller.WebService.Http;
 using AirMedia.Core.Controller.WebService.Model;
 using AirMedia.Core.Log;
-using AirMedia.Core.Requests.Impl;
-using AirMedia.Core.Requests.Model;
 using AirMedia.Platform.Controller.WebService.Http;
 using AirMedia.Platform.Logger;
 using AirMedia.Platform.Player.MediaService;
