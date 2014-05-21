@@ -1,9 +1,9 @@
 using System.Collections.Generic;
+using AirMedia.Core.Data.Model;
 using AirMedia.Core.Log;
 using AirMedia.Core.Requests.Model;
 using AirMedia.Platform.Controller;
 using AirMedia.Platform.Controller.Requests;
-using AirMedia.Platform.Data;
 using AirMedia.Platform.UI.Base;
 using AirMedia.Platform.UI.Library;
 using Android.App;
@@ -207,7 +207,7 @@ namespace AirMedia.Platform.UI.Playlists
                 return;
             }
 
-            var metadata = ((LoadRequestResult<List<TrackMetadata>>) args.Result).Data;
+            var metadata = ((LoadRequestResult<List<ITrackMetadata>>) args.Result).Data;
             if (_adapter != null)
             {
                 _adapter.SetItems(metadata);

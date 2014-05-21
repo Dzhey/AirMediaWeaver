@@ -1,19 +1,19 @@
 using System;
 using System.Collections.Generic;
-using AirMedia.Platform.Data.Sql;
+using AirMedia.Core.Data.Model;
 using AirMedia.Platform.UI.Base;
 using Android.Views;
 
 namespace AirMedia.Platform.UI.Publications
 {
-    public class DownloadTrackListAdapter : AbsTrackListAdapter<RemoteTrackMetadata>
+    public class DownloadTrackListAdapter : AbsTrackListAdapter<IRemoteTrackMetadata>
     {
         public class ItemDownloadClickEventArgs : EventArgs
         {
-            public RemoteTrackMetadata TrackMetadata { get; set; }
+            public IRemoteTrackMetadata TrackMetadata { get; set; }
         }
 
-        protected new class ViewHolder : AbsTrackListAdapter<RemoteTrackMetadata>.ViewHolder
+        protected new class ViewHolder : AbsTrackListAdapter<IRemoteTrackMetadata>.ViewHolder
         {
             public View ButtonDownload { get; set; }
         }
@@ -63,8 +63,8 @@ namespace AirMedia.Platform.UI.Publications
             return position;
         }
 
-        protected override void BindView(View view, AbsTrackListAdapter<RemoteTrackMetadata>.ViewHolder holder,
-            RemoteTrackMetadata item)
+        protected override void BindView(View view, AbsTrackListAdapter<IRemoteTrackMetadata>.ViewHolder holder,
+            IRemoteTrackMetadata item)
         {
             base.BindView(view, holder, item);
 
@@ -91,7 +91,7 @@ namespace AirMedia.Platform.UI.Publications
             return inflater.Inflate(Resource.Layout.View_DownloadTrackItem, parent, false);
         }
 
-        protected override AbsTrackListAdapter<RemoteTrackMetadata>.ViewHolder CreateViewHolder(View view)
+        protected override AbsTrackListAdapter<IRemoteTrackMetadata>.ViewHolder CreateViewHolder(View view)
         {
             var holder = new ViewHolder();
 

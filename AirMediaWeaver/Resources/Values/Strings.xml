@@ -12,9 +12,11 @@
   <string name="note_playlist_empty">В плейлисте еще нет треков</string>
   <string name="note_my_publication_list_empty">Нет опубликованных композиций</string>
   <string name="note_lan_publication_list_empty">Не найдено доступных публикаций</string>
+  <string name="note_recommendations_list_empty">Не найдено доступных треков</string>
   <string name="title_navigation_item_media_library">Моя фонотека</string>
   <string name="title_navigation_item_playlists">Плейлисты</string>
   <string name="title_navigation_item_publications">Публикации</string>
+  <string name="title_navigation_item_recommendations">Рекомендации</string>
   <string name="hint_open_main_drawer">Показать панель навигации</string>
   <string name="hint_close_main_drawer">Скрыть панель навигации</string>
   <string name="title_audio_library">Моя фонотека</string>
@@ -24,6 +26,7 @@
   <string name="title_lan_publications">Локальные</string>
   <string name="title_my_publications">Мои</string>
   <string name="title_publications">Публикации</string>
+  <string name="title_recommendations">Рекомендации</string>
   <string name="hint_create_playlist">Создать плейлист</string>
   <string name="hint_edit_pulications">Изменить список публикаций</string>
   <string name="hint_remove_playlist">Удалить плейлист</string>

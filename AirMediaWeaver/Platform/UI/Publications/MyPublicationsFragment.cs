@@ -1,8 +1,8 @@
 using System.Collections.Generic;
+using AirMedia.Core.Data.Model;
 using AirMedia.Core.Log;
 using AirMedia.Core.Requests.Model;
 using AirMedia.Platform.Controller.Requests;
-using AirMedia.Platform.Data;
 using AirMedia.Platform.UI.Base;
 using AirMedia.Platform.UI.Library;
 using Android.App;
@@ -202,7 +202,7 @@ namespace AirMedia.Platform.UI.Publications
                 return;
             }
 
-            var data = ((LoadRequestResult<List<TrackMetadata>>) args.Result).Data;
+            var data = ((LoadRequestResult<List<ITrackMetadata>>) args.Result).Data;
             _adapter.SetItems(data);
 
             SetInProgress(false);

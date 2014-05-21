@@ -50,8 +50,17 @@ namespace AirMedia.Core.Data.Dao
                                      "track metadata not found", remoteTrackGuid);
                 return;
             }
-
+            UpdateTrackPlayCount(remoteTrackGuid);
             UpdatePlayCount(metadata);
+        }
+
+        public void UpdateTrackPlayCount(string trackGuid)
+        {
+            if (_trackPlayCountDao.UpdateTrackPlayCount(trackGuid) < 1)
+            {
+                AmwLog.Error(LogTag, string.Format("can't update track play count for " +
+                                                   "trackGuid: \"{0}\"", trackGuid));
+            }
         }
 
         public void UpdateTrackPlayCount(long trackId)
@@ -65,6 +74,7 @@ namespace AirMedia.Core.Data.Dao
 
         public void UpdateArtistPlayCount(string artistName)
         {
+            AmwLog.Verbose(LogTag, string.Format("updating play count for artist \"{0}\"", artistName));
             if (_artistPlayCountDao.UpdateArtistPlayCount(artistName) < 1)
             {
                 AmwLog.Error(LogTag, string.Format("can't update artist play count for " +
@@ -74,6 +84,7 @@ namespace AirMedia.Core.Data.Dao
 
         public void UpdateAlbumPlayCount(string albumName)
         {
+            AmwLog.Verbose(LogTag, string.Format("updating play count for album \"{0}\"", albumName));
             if (_albumPlayCountDao.UpdateAlbumPlayCount(albumName) < 1)
             {
                 AmwLog.Error(LogTag, string.Format("can't update album play count for " +
@@ -83,6 +94,7 @@ namespace AirMedia.Core.Data.Dao
 
         public void UpdateGenrePlayCount(string genreName)
         {
+            AmwLog.Verbose(LogTag, string.Format("updating play count for genre \"{0}\"", genreName));
             if (_genrePlayCountDao.UpdateGenrePlayCount(genreName) < 1)
             {
                 AmwLog.Error(LogTag, string.Format("can't update genre play count for " +

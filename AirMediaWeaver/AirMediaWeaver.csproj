@@ -116,6 +116,7 @@
     <Compile Include="Core\Data\Sql\Model\ITrackDownloadRecord.cs" />
     <Compile Include="Core\Data\Sql\Model\PeerRecord.cs" />
     <Compile Include="Core\Data\Sql\Model\RemoteTrackPublicationRecord.cs" />
+    <Compile Include="Core\Requests\Impl\LoadRecommendationsRequest.cs" />
     <Compile Include="Core\Requests\Impl\LoadRemoteTrackDownloadsRequest.cs" />
     <Compile Include="Core\Requests\Impl\LoadRemoteTracksRequest.cs" />
     <Compile Include="Platform\Controller\DownloadManager\AmwDownloadManager.cs" />
@@ -259,6 +260,7 @@
     <Compile Include="Platform\UI\Publications\LocalPublicationsFragment.cs" />
     <Compile Include="Platform\UI\Publications\MyPublicationsFragment.cs" />
     <Compile Include="Platform\UI\Publications\PublicationsTabFragment.cs" />
+    <Compile Include="Platform\UI\Recommendations\RecommendationsFragment.cs" />
     <Compile Include="Platform\UI\Util\Util.cs" />
     <Compile Include="Platform\UI\ViewUtils\IProgressBarManagerCallbacks.cs" />
     <Compile Include="Platform\UI\ViewUtils\ProgressBarManager.cs" />
@@ -307,6 +309,9 @@
       <SubType>AndroidResource</SubType>
     </AndroidResource>
     <AndroidResource Include="Resources\Layout\View_DownloadTrackItem.axml" />
+    <AndroidResource Include="Resources\Layout\Fragment_Recommendations.axml">
+      <SubType>AndroidResource</SubType>
+    </AndroidResource>
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\Values\Strings.xml">
@@ -427,9 +432,7 @@
       <Name>ViewPagerIndicator</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Platform\UI\Recommendations\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
      Other similar extension points exist, see Microsoft.Common.targets.

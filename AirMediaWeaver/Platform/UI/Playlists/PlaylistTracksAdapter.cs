@@ -1,11 +1,11 @@
 using System.Linq;
-using AirMedia.Platform.Data;
+using AirMedia.Core.Data.Model;
 using AirMedia.Platform.UI.Base;
 using Android.Views;
 
 namespace AirMedia.Platform.UI.Playlists
 {
-    public class PlaylistTracksAdapter : AbsTrackListAdapter<TrackMetadata>
+    public class PlaylistTracksAdapter : AbsTrackListAdapter<ITrackMetadata>
     {
         public override long GetItemId(int position)
         {
@@ -17,7 +17,7 @@ namespace AirMedia.Platform.UI.Playlists
             return Items.Select(input => input.TrackId).ToArray();
         }
 
-        protected override void BindView(View view, ViewHolder holder, TrackMetadata item)
+        protected override void BindView(View view, ViewHolder holder, ITrackMetadata item)
         {
             holder.TitleView.Text = item.TrackTitle;
             holder.ArtistView.Text = item.Artist;

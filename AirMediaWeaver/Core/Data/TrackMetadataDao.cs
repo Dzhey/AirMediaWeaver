@@ -1,13 +1,16 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using AirMedia.Core.Data.Model;
 using AirMedia.Core.Data.Sql;
 using AirMedia.Core.Data.Sql.Dao;
 using AirMedia.Core.Data.Sql.Model;
+using AirMedia.Core.Log;
 using AirMedia.Core.Utils.StringUtils;
 using AirMedia.Platform;
+using AirMedia.Platform.Controller;
 using AirMedia.Platform.Data;
 using AirMedia.Platform.Data.Sql;
 using Android.Provider;
@@ -16,6 +19,8 @@ namespace AirMedia.Core.Data
 {
     public class TrackMetadataDao : ITrackMetadataDao
     {
+        public static readonly string LogTag = typeof (TrackMetadataDao).Name;
+
         private readonly IAmwContentProvider _amwContentProvider;
         private readonly ITrackPublicationsDao _localPubDao;
         private readonly RemoteTrackPublicationsDao _pubDao;
@@ -26,6 +31,31 @@ namespace AirMedia.Core.Data
             _amwContentProvider = amwContentProvider;
             _pubDao = (RemoteTrackPublicationsDao) DatabaseHelper.Instance
                       .GetDao<RemoteTrackPublicationRecord>();
+        }
+
+        public static long[] GetLocalLibraryTrackIds()
+        {
+            var resolver = App.Instance.ContentResolver;
+            var cursor = resolver.Query(MediaStore.Audio.Media.ExternalContentUri,
+                                        new[] { MediaStore.Audio.Media.InterfaceConsts.Id }, null, null, null);
+
+            var trackIds = new long[cursor.Count];
+            using (cursor)
+            {
+                try
+                {
+                    while (cursor.MoveToNext())
+                    {
+                        trackIds[cursor.Position] = cursor.GetLong(0);
+                    }
+                }
+                finally
+                {
+                    cursor.Close();
+                }
+            }
+
+            return trackIds;
         }
 
         public static TrackMetadata[] CreateTracksMetadata<T>(IEnumerable<T> records) where T : ITrackMetadata
@@ -130,7 +160,7 @@ namespace AirMedia.Core.Data
                     tPeers_cPeerAddress = PeerRecord.ColumnAddress,
                     tPeers_cPeerGuid = PeerRecord.ColumnPeerGuid,
                     tTracks = RemoteTrackPublicationRecord.TableName,
-                    tTracks_cTrackGuid = RemoteTrackPublicationRecord.ColumnGuid, 
+                    tTracks_cTrackGuid = RemoteTrackPublicationRecord.ColumnTrackGuid, 
                     tTracks_cPeerGuid = RemoteTrackPublicationRecord.ColumnPeerGuid, 
                     trackGuid
                 });
@@ -173,6 +203,75 @@ namespace AirMedia.Core.Data
             if (pub == null) return null;
 
             return new RemoteTrackMetadata(pub);
+        }
+
+        public IRemoteTrackMetadata[] GetNotPlayedTracks()
+        {
+            var watch = new Stopwatch();
+            watch.Start();
+            var remoteTracks = GetNotPlayedRemoteTracks();
+            watch.Stop();
+            AmwLog.Debug(LogTag, string.Format("got not played remote tracks in {0} seconds",
+                watch.ElapsedMilliseconds / 1000));
+
+            watch.Reset();
+            watch.Start();
+            var localTracks = GetNotPlayedLocalTracks()
+                .Select(metadata => new RemoteTrackMetadata(metadata))
+                .ToArray();
+            watch.Stop();
+
+            AmwLog.Debug(LogTag, string.Format("got not played local tracks in {0} seconds",
+                watch.ElapsedMilliseconds / 1000));
+
+            return remoteTracks.Concat(localTracks).ToArray();
+        }
+
+        private IReadOnlyCollection<IRemoteTrackMetadata> GetNotPlayedRemoteTracks()
+        {
+            const string template = "select * " +
+                                    "from {tRemoteTracks} " +
+                                    "where {tRemoteTracks}.{tRemoteTracks_cTrackGuid} " +
+                                    "not in (select {tPlayCount}.{tPlayCount_cTrackGuid} " +
+                                                    "from {tPlayCount} " +
+                                                    "where {tPlayCount_cPlayCount}>0)";
+            string query = template.HaackFormat(new
+                {
+                    tRemoteTracks = RemoteTrackPublicationRecord.TableName,
+                    tRemoteTracks_cTrackGuid = RemoteTrackPublicationRecord.ColumnTrackGuid,
+                    tPlayCount = TrackPlayCountRecord.TableName,
+                    tPlayCount_cTrackGuid = TrackPlayCountRecord.ColumnTrackGuid,
+                    tPlayCount_cPlayCount = TrackPlayCountRecord.ColumnPlayCount
+                });
+
+            using (var holder = DatabaseHelper.Instance.GetConnectionHolder(this))
+            {
+                var result = holder.Connection
+                                   .Query<RemoteTrackPublicationRecord>(query)
+                                   .ToArray();
+
+                return result;
+            }
+        }
+
+        private IReadOnlyCollection<ITrackMetadata> GetNotPlayedLocalTracks()
+        {
+            var trackPlayCountDao = (TrackPlayCountDao)DatabaseHelper.Instance.GetDao<TrackPlayCountRecord>();
+            var trackIds = new HashSet<long>(GetLocalLibraryTrackIds());
+            var playedTrackIds = new HashSet<long>(trackPlayCountDao.GetPlayedTrackIds());
+
+            var notPlayedTrackIds = trackIds.Except(playedTrackIds);
+            var result = new List<ITrackMetadata>();
+            foreach (var id in notPlayedTrackIds)
+            {
+                var metadata = PlaylistDao.GetTrackMetadata(id);
+                if (metadata != null)
+                {
+                    result.Add(metadata);
+                }
+            }
+
+            return result;
         }
     }
 }

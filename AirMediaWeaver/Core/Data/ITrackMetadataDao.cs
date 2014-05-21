@@ -9,5 +9,10 @@ namespace AirMedia.Core.Data
         ITrackMetadata GetTrackMetadata(string trackGuid);
         IRemoteTrackMetadata[] GetRemoteTracksMetadata();
         IRemoteTrackMetadata GetRemoteTrackMetadata(string trackGuid);
+
+        /// <summary>
+        /// </summary>
+        /// <returns>local and remote tracks</returns>
+        IRemoteTrackMetadata[] GetNotPlayedTracks();
     }
 }
