@@ -109,6 +109,7 @@
     <Compile Include="Core\Requests\Impl\LoadRemoteTrackDownloadsRequest.cs" />
     <Compile Include="Core\Requests\Impl\LoadRemoteTracksRequest.cs" />
     <Compile Include="Platform\Controller\DownloadManager\AmwDownloadManager.cs" />
+    <Compile Include="Platform\Controller\Receivers\RemoteTrackPublicationsUpdateReceiver.cs" />
     <Compile Include="Platform\Data\Sql\Dao\TrackDownloadsDao.cs" />
     <Compile Include="Platform\Data\Sql\Model\TrackDownloadRecord.cs" />
     <Compile Include="Core\Data\Sql\Model\TrackPublicationRecord.cs" />

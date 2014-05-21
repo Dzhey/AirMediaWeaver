@@ -5,10 +5,12 @@ using AirMedia.Core.Log;
 using AirMedia.Core.Requests.Impl;
 using AirMedia.Core.Requests.Model;
 using AirMedia.Platform.Controller.DownloadManager;
+using AirMedia.Platform.Controller.Receivers;
 using AirMedia.Platform.Data.Sql.Dao;
 using AirMedia.Platform.Data.Sql.Model;
 using AirMedia.Platform.Player;
 using AirMedia.Platform.UI.Base;
+using Android.Content;
 using Android.OS;
 using Android.Views;
 using Android.Widget;
@@ -20,6 +22,7 @@ namespace AirMedia.Platform.UI.Publications
         private ListView _listView;
         private DownloadTrackListAdapter _adapter;
         private AmwDownloadManager _downloadManager;
+        private RemoteTrackPublicationsUpdateReceiver _tracksUpdateReceiver;
 
         public override void OnCreate(Bundle savedInstanceState)
         {
@@ -27,6 +30,8 @@ namespace AirMedia.Platform.UI.Publications
 
             _adapter = new DownloadTrackListAdapter();
             _adapter.DisplayDownloadButton = true;
+
+            _tracksUpdateReceiver = new RemoteTrackPublicationsUpdateReceiver();
 
             var trackDownloadsDao = (TrackDownloadsDao) DatabaseHelper.Instance.GetDao<TrackDownloadRecord>();
             _downloadManager = new AmwDownloadManager(Activity, trackDownloadsDao);
@@ -59,6 +64,24 @@ namespace AirMedia.Platform.UI.Publications
             base.OnActivityCreated(savedInstanceState);
 
             ReloadList();
+        }
+
+        public override void OnStart()
+        {
+            base.OnStart();
+
+            _tracksUpdateReceiver.RemoteTrackPublicationsUpdate += OnTrackPublicationsUpdated;
+
+            var filter = new IntentFilter(RemoteTrackPublicationsUpdateReceiver.ActionRemoteTrackPublicationsUpdated);
+            Activity.RegisterReceiver(_tracksUpdateReceiver, filter);
+        }
+
+        public override void OnStop()
+        {
+            _tracksUpdateReceiver.RemoteTrackPublicationsUpdate -= OnTrackPublicationsUpdated;
+            Activity.UnregisterReceiver(_tracksUpdateReceiver);
+
+            base.OnStop();
         }
 
         public override void OnResume()
@@ -115,6 +138,11 @@ namespace AirMedia.Platform.UI.Publications
         private void OnListItemClicked(object sender, AdapterView.ItemClickEventArgs args)
         {
             PlayerControl.Play(_adapter.GetItemGuids(), args.Position);
+        }
+
+        private void OnTrackPublicationsUpdated(object sender, EventArgs args)
+        {
+            ReloadList();
         }
 
         private void ReloadList()

@@ -4,11 +4,25 @@ using AirMedia.Core.Log;
 using AirMedia.Core.Requests.Abs;
 using AirMedia.Core.Requests.Impl;
 using AirMedia.Core.Requests.Model;
+using AirMedia.Platform.Controller.Receivers;
+using Android.Content;
 
 namespace AirMedia.Platform.Controller.Requests
 {
     public class UpdateRemoteTrackPublicationsRequestImpl : UpdateRemoteTrackPublicationsRequest
     {
+        protected override RequestResult ExecuteImpl(out RequestStatus status)
+        {
+            var result = base.ExecuteImpl(out status);
+
+            var updateIntent = new Intent(RemoteTrackPublicationsUpdateReceiver.ActionRemoteTrackPublicationsUpdated);
+            updateIntent.SetPackage(App.Instance.PackageName);
+            App.Instance.SendBroadcast(updateIntent);
+            AmwLog.Debug(LogTag, "update remote track publications broadcast sent");
+
+            return result;
+        }
+
         protected override IRemoteTrackMetadata[] DownloadRemoteTrackPublications()
         {
             var downloadRequest = new DownloadBaseTracksInfoRequestImpl();
