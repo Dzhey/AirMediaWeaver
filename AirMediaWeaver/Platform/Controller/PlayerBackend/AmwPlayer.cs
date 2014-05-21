@@ -27,15 +27,18 @@ namespace AirMedia.Platform.Controller.PlayerBackend
         public IAmwPlayerCallbacks Callbacks { get; set; }
         public PlaybackStatus Status
         {
-            get
-            {
-                return _playbackStatus;
-            }
+            get { return _playbackStatus; }
+        }
+
+        public PlaybackStatus PreviousStatus
+        {
+            get { return _previousStatus; }
         }
 
         private MediaPlayer _player;
         private readonly QueuePlaybackSource _queue;
         private PlaybackStatus _playbackStatus;
+        private PlaybackStatus _previousStatus;
         private ITrackMetadata _trackMetadata;
         private readonly RequestResultListener _requestResultListener;
         private int _retryCount;
@@ -53,6 +56,24 @@ namespace AirMedia.Platform.Controller.PlayerBackend
         public ITrackMetadata GetTrackMetadata()
         {
             return _trackMetadata;
+        }
+
+        public long? GetCurrentTrackId()
+        {
+            var resource = _queue.GetCurrentResource();
+
+            if (resource == null) return null;
+
+            return resource.Value.LocalId;
+        }
+
+        public string GetCurrentTrackGuid()
+        {
+            var resource = _queue.GetCurrentResource();
+
+            if (resource == null) return null;
+
+            return resource.Value.PublicGuid;
         }
 
         public bool Pause()
@@ -337,6 +358,7 @@ namespace AirMedia.Platform.Controller.PlayerBackend
             if (status == _playbackStatus) return;
 
             AmwLog.Debug(LogTag, string.Format("changing status ({0}, {1})", _playbackStatus, status));
+            _previousStatus = _playbackStatus;
             _playbackStatus = status;
 
             switch (_playbackStatus)

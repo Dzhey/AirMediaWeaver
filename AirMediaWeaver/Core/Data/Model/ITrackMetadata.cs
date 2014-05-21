@@ -6,5 +6,6 @@ namespace AirMedia.Core.Data.Model
         string TrackTitle { get; set; }
         string Album { get; set; }
         int TrackDurationMillis { get; set; }
+        string Genre { get; set; }
     }
 }

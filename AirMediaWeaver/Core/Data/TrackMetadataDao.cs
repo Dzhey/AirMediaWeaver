@@ -7,8 +7,10 @@ using AirMedia.Core.Data.Sql;
 using AirMedia.Core.Data.Sql.Dao;
 using AirMedia.Core.Data.Sql.Model;
 using AirMedia.Core.Utils.StringUtils;
+using AirMedia.Platform;
 using AirMedia.Platform.Data;
 using AirMedia.Platform.Data.Sql;
+using Android.Provider;
 
 namespace AirMedia.Core.Data
 {
@@ -24,25 +26,6 @@ namespace AirMedia.Core.Data
             _amwContentProvider = amwContentProvider;
             _pubDao = (RemoteTrackPublicationsDao) DatabaseHelper.Instance
                       .GetDao<RemoteTrackPublicationRecord>();
-        }
-
-        public static RemoteTrackMetadata[] CreateRemoteTracksMetadata<T>(IEnumerable<T> records) where T : IRemoteTrackMetadata
-        {
-            return records.Select(CreateRemoteTrackMetadata).ToArray();
-        }
-
-        public static RemoteTrackMetadata CreateRemoteTrackMetadata<T>(T record) where T : IRemoteTrackMetadata
-        {
-            return new RemoteTrackMetadata
-            {
-                TrackGuid = record.TrackGuid,
-                PeerGuid = record.PeerGuid,
-                Album = record.Album,
-                Artist = record.Artist,
-                TrackDurationMillis = record.TrackDurationMillis,
-                TrackTitle = record.TrackTitle,
-                ContentType = record.ContentType
-            };
         }
 
         public static TrackMetadata[] CreateTracksMetadata<T>(IEnumerable<T> records) where T : ITrackMetadata
@@ -79,6 +62,50 @@ namespace AirMedia.Core.Data
                     Artist = metadata.Artist,
                     TrackDurationMillis = metadata.TrackDurationMillis
                 };
+        }
+
+        public static string[] QueryForAudioGenres(int audioId)
+        {
+            var resolver = App.Instance.ContentResolver;
+            var uri = MediaStore.Audio.Genres.GetContentUriForAudioId("external", audioId);
+            var cursor = resolver.Query(uri,
+                new[] { MediaStore.Audio.Genres.InterfaceConsts.Name },
+                null,
+                null,
+                null);
+
+            var result = new string[cursor.Count];
+
+            using (cursor)
+            {
+                while (cursor.MoveToNext())
+                {
+                    result[cursor.Position] = cursor.GetString(0);
+                }
+
+                return result;
+            }
+        }
+
+        public static string QueryForAudioGenre(int audioId)
+        {
+            var resolver = App.Instance.ContentResolver;
+            var uri = MediaStore.Audio.Genres.GetContentUriForAudioId("external", audioId);
+            var cursor = resolver.Query(uri,
+                new[] { MediaStore.Audio.Genres.InterfaceConsts.Name },
+                null,
+                null,
+                null);
+
+            using (cursor)
+            {
+                if (cursor.MoveToNext())
+                {
+                    return cursor.GetString(0);
+                }
+
+                return string.Empty;
+            }
         }
 
         public void UpdateMetadata(IEnumerable<ITrackMetadata> metadata)
@@ -136,7 +163,7 @@ namespace AirMedia.Core.Data
 
         public IRemoteTrackMetadata[] GetRemoteTracksMetadata()
         {
-            return _pubDao.GetAll().Select(CreateRemoteTrackMetadata).ToArray();
+            return _pubDao.GetAll().Select(item => new RemoteTrackPublicationRecord(item)).ToArray();
         }
 
         public IRemoteTrackMetadata GetRemoteTrackMetadata(string trackGuid)
@@ -145,7 +172,7 @@ namespace AirMedia.Core.Data
 
             if (pub == null) return null;
 
-            return CreateRemoteTrackMetadata(pub);
+            return new RemoteTrackMetadata(pub);
         }
     }
 }

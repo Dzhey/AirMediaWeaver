@@ -90,6 +90,8 @@
     <Compile Include="Core\Controller\WebService\MulticastUdpServer.cs" />
     <Compile Include="Core\Controller\WebService\MulticastUdpServerException.cs" />
     <Compile Include="Core\Controller\WebService\WebServiceException.cs" />
+    <Compile Include="Core\Data\Dao\IPlayCountDao.cs" />
+    <Compile Include="Core\Data\Dao\PlayCountDao.cs" />
     <Compile Include="Core\Data\IAmwContentProvider.cs" />
     <Compile Include="Core\Data\ITrackMetadataDao.cs" />
     <Compile Include="Core\Data\ITrackPublicationsDao.cs" />
@@ -100,9 +102,17 @@
     <Compile Include="Core\Data\Model\ITrackMetadata.cs" />
     <Compile Include="Core\Data\PlaylistModel.cs" />
     <Compile Include="Core\Data\ResourceDescriptor.cs" />
+    <Compile Include="Core\Data\Sql\Dao\ArtistPlayCountDao.cs" />
+    <Compile Include="Core\Data\Sql\Dao\AlbumPlayCountDao.cs" />
+    <Compile Include="Core\Data\Sql\Dao\GenrePlayCountDao.cs" />
     <Compile Include="Core\Data\Sql\Dao\ITrackDownloadsDao.cs" />
     <Compile Include="Core\Data\Sql\Dao\PeersDao.cs" />
     <Compile Include="Core\Data\Sql\Dao\RemoteTrackPublicationsDao.cs" />
+    <Compile Include="Core\Data\Sql\Dao\TrackPlayCountDao.cs" />
+    <Compile Include="Core\Data\Sql\Model\ArtistPlayCountRecord.cs" />
+    <Compile Include="Core\Data\Sql\Model\AlbumPlayCountRecord.cs" />
+    <Compile Include="Core\Data\Sql\Model\TrackPlayCountRecord.cs" />
+    <Compile Include="Core\Data\Sql\Model\GenrePlayCountRecord.cs" />
     <Compile Include="Core\Data\Sql\Model\ITrackDownloadRecord.cs" />
     <Compile Include="Core\Data\Sql\Model\PeerRecord.cs" />
     <Compile Include="Core\Data\Sql\Model\RemoteTrackPublicationRecord.cs" />
@@ -110,6 +120,7 @@
     <Compile Include="Core\Requests\Impl\LoadRemoteTracksRequest.cs" />
     <Compile Include="Platform\Controller\DownloadManager\AmwDownloadManager.cs" />
     <Compile Include="Platform\Controller\Receivers\RemoteTrackPublicationsUpdateReceiver.cs" />
+    <Compile Include="Platform\Data\Dao\AndroidPlayCountDao.cs" />
     <Compile Include="Platform\Data\Sql\Dao\TrackDownloadsDao.cs" />
     <Compile Include="Platform\Data\Sql\Model\TrackDownloadRecord.cs" />
     <Compile Include="Core\Data\Sql\Model\TrackPublicationRecord.cs" />
@@ -416,7 +427,9 @@
       <Name>ViewPagerIndicator</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Platform\UI\Recommendations\" />
+  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
      Other similar extension points exist, see Microsoft.Common.targets.

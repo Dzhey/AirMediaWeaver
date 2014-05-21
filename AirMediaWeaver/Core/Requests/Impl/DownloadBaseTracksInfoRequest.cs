@@ -7,7 +7,6 @@ using AirMedia.Core.Log;
 using AirMedia.Core.Requests.Abs;
 using AirMedia.Core.Requests.Model;
 using AirMedia.Platform.Controller.WebService.Http;
-using AirMedia.Platform.Data;
 using AirMedia.Platform.Data.Sql;
 using BaseRequestResult = AirMedia.Core.Requests.Model.RequestResult;
 

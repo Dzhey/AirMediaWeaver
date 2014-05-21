@@ -80,7 +80,10 @@ namespace AirMedia.Platform.Controller
             {
                 if (cursor.MoveToFirst() == false) return null;
 
-                return CreateTrackMetadata(cursor);
+                var metadata = CreateTrackMetadata(cursor);
+                metadata.Genre = TrackMetadataDao.QueryForAudioGenre((int) trackId);
+
+                return metadata;
             }
         }
         

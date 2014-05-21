@@ -10,5 +10,6 @@ namespace AirMedia.Core.Controller.WebService.Model
         public string Album { get; set; }
         public string Title { get; set; }
         public int DurationMillis { get; set; }
+        public string Genre { get; set; }
     }
 }

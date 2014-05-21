@@ -1,5 +1,6 @@
 using AirMedia.Core.Controller.PlaybackSource;
 using AirMedia.Core.Data;
+using AirMedia.Core.Data.Dao;
 using AirMedia.Core.Data.Model;
 using AirMedia.Core.Data.Sql;
 using AirMedia.Core.Data.Sql.Model;
@@ -7,6 +8,7 @@ using AirMedia.Core.Log;
 using AirMedia.Platform.Controller.PlaybackSource;
 using AirMedia.Platform.Controller.PlayerBackend;
 using AirMedia.Platform.Controller.WebService.Http;
+using AirMedia.Platform.Data.Dao;
 using AirMedia.Platform.Data.Sql.Dao;
 using Android.App;
 using Android.Content;
@@ -32,6 +34,7 @@ namespace AirMedia.Platform.Player.MediaService
 
         private AmwPlayer _player;
         private MediaPlayerBinder _binder;
+        private PlayCountDao _playCountDao;
 
         public override void OnCreate()
         {
@@ -39,6 +42,7 @@ namespace AirMedia.Platform.Player.MediaService
 
             _binder = new MediaPlayerBinder(this);
             _player = new AmwPlayer();
+            _playCountDao = new AndroidPlayCountDao();
             _player.Callbacks = this;
 
             AmwLog.Debug(LogTag, "MediaPlayerService created");
@@ -175,6 +179,17 @@ namespace AirMedia.Platform.Player.MediaService
 
         public void OnTrackMetadataResolved(ITrackMetadata metadata)
         {
+            AmwLog.Debug(LogTag, "playing track metadata resolved, updating play counters..");
+            long? trackId = _player.GetCurrentTrackId();
+            if (trackId != null)
+            {
+                _playCountDao.UpdatePlayCount((long)trackId);
+            }
+            else
+            {
+                _playCountDao.UpdatePlayCount(_player.GetCurrentTrackGuid());
+            }
+
             if (_binder != null)
             {
                 _binder.NotifyTrackMetadataResolved(metadata);

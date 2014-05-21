@@ -45,7 +45,8 @@ namespace AirMedia.Platform.Controller.WebService.Http
                     DurationMillis = trackMetadata.TrackDurationMillis,
                     TrackGuid = trackMetadata.TrackGuid,
                     Title = trackMetadata.TrackTitle,
-                    ContentType = trackMetadata.ContentType
+                    ContentType = trackMetadata.ContentType,
+                    Genre = trackMetadata.Genre
                 };
         }
 
@@ -64,7 +65,8 @@ namespace AirMedia.Platform.Controller.WebService.Http
                 TrackGuid = trackInfo.TrackGuid,
                 ContentType = trackInfo.ContentType,
                 TrackTitle = trackInfo.Title,
-                PeerGuid = peerGuid
+                PeerGuid = peerGuid,
+                Genre = trackInfo.Genre
             };
         }
 
