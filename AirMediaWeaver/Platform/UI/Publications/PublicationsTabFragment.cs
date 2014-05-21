@@ -47,13 +47,6 @@ namespace AirMedia.Platform.UI.Publications
             Activity.ActionBar.NavigationMode = ActionBarNavigationMode.Standard;
         }
 
-        public override void OnCreate(Bundle savedInstanceState)
-        {
-            base.OnCreate(savedInstanceState);
-
-            SetContentFragment(typeof(MyPublicationsFragment));
-        }
-
         public override View OnCreateView(LayoutInflater inflater, 
             ViewGroup container, Bundle savedInstanceState)
         {
