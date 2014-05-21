@@ -55,6 +55,7 @@
   <string name="error_cant_play_publications">Ошибка при воспроизведении публикаций</string>
   <string name="error_cant_load_lan_publications">Не удалось загрузить публикации</string>
   <string name="error_cant_begin_track_download">Не удалось начать загрузку</string>
+  <string name="error_cant_start_playback_no_publications_found">Не найдено доступных публикаций для воспроизвдения</string>
   
   <!-- Logger strings -->
   <string name="title_log_level">Уровень</string>

@@ -111,7 +111,15 @@ namespace AirMedia.Platform.UI.Publications
 
         public override void OnGenericPlaybackRequested()
         {
-            ShowMessage("TODO: generic playback");
+            var itemGuids = _adapter.GetItemGuids();
+
+            if (itemGuids.Length < 1)
+            {
+                ShowMessage(Resource.String.error_cant_start_playback_no_publications_found);
+                return;
+            }
+
+            PlayerControl.Play(itemGuids);
         }
 
         public override bool HasDisplayedContent()
