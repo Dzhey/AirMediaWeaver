@@ -3,6 +3,7 @@ using AirMedia.Core.Data.Sql;
 using AirMedia.Core.Data.Sql.Dao;
 using AirMedia.Core.Data.Sql.Model;
 using AirMedia.Core.Log;
+using SQLite;
 
 namespace AirMedia.Core.Data.Dao
 {
@@ -75,30 +76,54 @@ namespace AirMedia.Core.Data.Dao
         public void UpdateArtistPlayCount(string artistName)
         {
             AmwLog.Verbose(LogTag, string.Format("updating play count for artist \"{0}\"", artistName));
-            if (_artistPlayCountDao.UpdateArtistPlayCount(artistName) < 1)
+            try
             {
-                AmwLog.Error(LogTag, string.Format("can't update artist play count for " +
-                                                   "artistName: \"{0}\"", artistName));
+                if (_artistPlayCountDao.UpdateArtistPlayCount(artistName) < 1)
+                {
+                    AmwLog.Error(LogTag, string.Format("can't update artist play count for " +
+                                                       "artistName: \"{0}\"", artistName));
+                }
+            }
+            catch (SQLiteException e)
+            {
+                AmwLog.Warn(LogTag, string.Format("unable to update artist play " +
+                                                  "count: \"{0}\"; SQL exception", artistName), e.ToString());
             }
         }
 
         public void UpdateAlbumPlayCount(string albumName)
         {
             AmwLog.Verbose(LogTag, string.Format("updating play count for album \"{0}\"", albumName));
-            if (_albumPlayCountDao.UpdateAlbumPlayCount(albumName) < 1)
+            try
             {
-                AmwLog.Error(LogTag, string.Format("can't update album play count for " +
-                                                   "albumName: \"{0}\"", albumName));
+                if (_albumPlayCountDao.UpdateAlbumPlayCount(albumName) < 1)
+                {
+                    AmwLog.Error(LogTag, string.Format("can't update album play count for " +
+                                                       "albumName: \"{0}\"", albumName));
+                }
+            }
+            catch (SQLiteException e)
+            {
+                AmwLog.Warn(LogTag, string.Format("unable to update album play " +
+                                                  "count: \"{0}\"; SQL exception", albumName), e.ToString());
             }
         }
 
         public void UpdateGenrePlayCount(string genreName)
         {
             AmwLog.Verbose(LogTag, string.Format("updating play count for genre \"{0}\"", genreName));
-            if (_genrePlayCountDao.UpdateGenrePlayCount(genreName) < 1)
+            try 
             {
-                AmwLog.Error(LogTag, string.Format("can't update genre play count for " +
-                                                   "genreName: \"{0}\"", genreName));
+                if (_genrePlayCountDao.UpdateGenrePlayCount(genreName) < 1)
+                {
+                    AmwLog.Error(LogTag, string.Format("can't update genre play count for " +
+                                                       "genreName: \"{0}\"", genreName));
+                }
+            }
+            catch (SQLiteException e)
+            {
+                AmwLog.Warn(LogTag, string.Format("unable to update genre play " +
+                                                  "count: \"{0}\"; SQL exception", genreName), e.ToString());
             }
         }
 

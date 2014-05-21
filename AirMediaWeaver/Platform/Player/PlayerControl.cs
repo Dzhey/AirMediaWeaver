@@ -1,5 +1,8 @@
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using AirMedia.Core.Data;
 using AirMedia.Core.Log;
 using AirMedia.Platform.Controller.PlaybackSource;
 using AirMedia.Platform.Player.MediaService;
@@ -24,6 +27,20 @@ namespace AirMedia.Platform.Player
             var intent = new Intent(MediaPlayerService.ActionFastForward);
             intent.SetClass(App.Instance, typeof(MediaPlayerService));
             App.Instance.StartService(intent);
+        }
+
+        public static void Play<TTrack>(IReadOnlyCollection<TTrack> tracks, int position, bool fastForward = true) 
+            where TTrack : ITrackSourceDefinition
+        {
+            var selection = tracks.Select(track => (ITrackSourceDefinition) track).ToArray();
+            App.Instance.StartService(CreateEnqueueIntent(position, selection));
+
+            var intent = new Intent(MediaPlayerService.ActionPlay);
+            intent.SetClass(App.Instance, typeof(MediaPlayerService));
+            intent.PutExtra(MediaPlayerService.ExtraFastForward, true);
+            App.Instance.StartService(intent);
+
+            AmwLog.Debug(LogTag, string.Format("{0} mixed tracks enqueued", selection.Length));
         }
 
         public static void Play(string[] trackGuids, int position = 0, bool fastForward = true)
@@ -79,6 +96,23 @@ namespace AirMedia.Platform.Player
             var intent = new Intent(MediaPlayerService.ActionUnpause);
             intent.SetClass(App.Instance, typeof(MediaPlayerService));
             App.Instance.StartService(intent);
+        }
+
+        private static Intent CreateEnqueueIntent(int position, IReadOnlyCollection<ITrackSourceDefinition> tracks) 
+        {
+            if (tracks.Count < 1)
+            {
+                throw new ApplicationException("no tracks provided");
+            }
+
+            var intent = new Intent(MediaPlayerService.ActionEnqueue);
+            intent.SetClass(App.Instance, typeof(MediaPlayerService));
+
+            var parcelSource = new MixedPlaybackSourceParcel(position, tracks);
+
+            intent.PutExtra(MediaPlayerService.ExtraPlaybackSource, parcelSource);
+
+            return intent;
         }
 
         private static Intent CreateEnqueueIntent(int position, params string[] trackGuids)

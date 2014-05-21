@@ -128,7 +128,13 @@ namespace AirMedia.Platform.Player.MediaService
             {
                 var localPubDao = (TrackPublicationsDao) DatabaseHelper.Instance.GetDao<TrackPublicationRecord>();
                 var trackMetadataDao = new TrackMetadataDao(localPubDao, new HttpContentProvider());
-                source = RemotePlaybackSource.CreateFromParcel(trackMetadataDao, (RemotePlaybackSourceParcel) parcel);
+                source = RemotePlaybackSource.CreateFromParcel(trackMetadataDao, (RemotePlaybackSourceParcel)parcel);
+            }
+            else if (parcel is MixedPlaybackSourceParcel)
+            {
+                var localPubDao = (TrackPublicationsDao)DatabaseHelper.Instance.GetDao<TrackPublicationRecord>();
+                var trackMetadataDao = new TrackMetadataDao(localPubDao, new HttpContentProvider());
+                source = MixedPlaybackSource.CreateFromParcel(trackMetadataDao, (MixedPlaybackSourceParcel)parcel);
             }
 
             if (source == null) 

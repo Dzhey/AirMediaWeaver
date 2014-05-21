@@ -59,6 +59,8 @@
   <string name="error_cant_load_lan_publications">Не удалось загрузить публикации</string>
   <string name="error_cant_begin_track_download">Не удалось начать загрузку</string>
   <string name="error_cant_start_playback_no_publications_found">Не найдено доступных публикаций для воспроизвдения</string>
+  <string name="error_cant_load_recommendations">Не удалось загрузить данные</string>
+  <string name="error_cant_play_recommendations_list_empty">Нет треков для воспроизведения</string>
   
   <!-- Logger strings -->
   <string name="title_log_level">Уровень</string>

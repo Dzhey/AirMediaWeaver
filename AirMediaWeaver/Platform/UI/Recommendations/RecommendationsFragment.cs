@@ -4,6 +4,7 @@ using AirMedia.Core.Data.Model;
 using AirMedia.Core.Log;
 using AirMedia.Core.Requests.Impl;
 using AirMedia.Core.Requests.Model;
+using AirMedia.Platform.Player;
 using AirMedia.Platform.UI.Base;
 using Android.OS;
 using Android.Views;
@@ -81,7 +82,13 @@ namespace AirMedia.Platform.UI.Recommendations
 
         public override void OnGenericPlaybackRequested()
         {
-            ShowMessage("todo");
+            if (_adapter.Count < 1)
+            {
+                ShowMessage(Resource.String.error_cant_play_recommendations_list_empty);
+                return;
+            }
+
+            PlayerControl.Play(_adapter.Items, 0);
         }
 
         public override bool HasDisplayedContent()
@@ -91,7 +98,7 @@ namespace AirMedia.Platform.UI.Recommendations
 
         private void OnListItemClicked(object sender, AdapterView.ItemClickEventArgs args)
         {
-            ShowMessage("todo: play");
+            PlayerControl.Play(_adapter.Items, args.Position);
         }
 
         private void OnTrackListLoaded(object sender, ResultEventArgs args)
@@ -99,8 +106,8 @@ namespace AirMedia.Platform.UI.Recommendations
             if (args.Request.Status != RequestStatus.Ok)
             {
                 SetInProgress(false);
-                ShowMessage(Resource.String.error_cant_load_published_tracklist);
-                AmwLog.Error(LogTag, "Error loading published track list");
+                ShowMessage(Resource.String.error_cant_load_recommendations);
+                AmwLog.Error(LogTag, "Error loading recommdation track list");
                 return;
             }
 

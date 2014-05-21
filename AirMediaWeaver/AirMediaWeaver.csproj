@@ -120,6 +120,8 @@
     <Compile Include="Core\Requests\Impl\LoadRemoteTrackDownloadsRequest.cs" />
     <Compile Include="Core\Requests\Impl\LoadRemoteTracksRequest.cs" />
     <Compile Include="Platform\Controller\DownloadManager\AmwDownloadManager.cs" />
+    <Compile Include="Platform\Controller\PlaybackSource\MixedPlaybackSourceParcel.cs" />
+    <Compile Include="Platform\Controller\PlaybackSource\MixedPlaybackSource.cs" />
     <Compile Include="Platform\Controller\Receivers\RemoteTrackPublicationsUpdateReceiver.cs" />
     <Compile Include="Platform\Data\Dao\AndroidPlayCountDao.cs" />
     <Compile Include="Platform\Data\Sql\Dao\TrackDownloadsDao.cs" />
@@ -261,6 +263,7 @@
     <Compile Include="Platform\UI\Publications\MyPublicationsFragment.cs" />
     <Compile Include="Platform\UI\Publications\PublicationsTabFragment.cs" />
     <Compile Include="Platform\UI\Recommendations\RecommendationsFragment.cs" />
+    <Compile Include="Platform\UI\Search\SearchFragment.cs" />
     <Compile Include="Platform\UI\Util\Util.cs" />
     <Compile Include="Platform\UI\ViewUtils\IProgressBarManagerCallbacks.cs" />
     <Compile Include="Platform\UI\ViewUtils\ProgressBarManager.cs" />
