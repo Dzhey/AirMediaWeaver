@@ -47,11 +47,11 @@ namespace AirMedia.Core.Controller.WebService
                 AmwLog.Error(LogTag, "no peer guid specified in provided auth packet");
                 return false;
             }
-            /*if (packet.Guid == _selfGuid)
+            if (packet.Guid == _selfGuid)
             {
                 AmwLog.Error(LogTag, "self peer guid specified in provided auth packet");
                 return false;
-            }*/
+            }
 
             bool isNewPeer = _discoveredPeers.Contains(packet.Guid) == false;
             var peer = (PeerRecord) FindPeer(packet.Guid);

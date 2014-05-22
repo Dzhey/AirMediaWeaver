@@ -67,6 +67,7 @@
   <string name="hint_empty_search_input">Пожалуйста, введите поисковый запрос</string>
   <string name="hint_empty_search_results">Не найдено треков</string>
   <string name="hint_no_started_search">Результаты поиска появятся здесь</string>
+  <string name="error_cant_play_search_results_list_empty">Нет треков для воспроизведения</string>
   <string name="filter_item_all">Все</string>
   <string name="filter_item_title">Названия треков</string>
   <string name="filter_item_artist">Исполнители</string>

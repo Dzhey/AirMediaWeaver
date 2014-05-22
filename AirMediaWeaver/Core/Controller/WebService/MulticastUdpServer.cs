@@ -56,7 +56,7 @@ namespace AirMedia.Core.Controller.WebService
             _sendSocket.SetSocketOption(SocketOptionLevel.IP, 
                 SocketOptionName.MulticastTimeToLive, Consts.DefaultMulticastTTL);
             _sendSocket.SetSocketOption(SocketOptionLevel.IP,
-                SocketOptionName.MulticastLoopback, true);
+                SocketOptionName.MulticastLoopback, false);
 
             _multicastIpEndPoint = new IPEndPoint(_serverAddress, Consts.DefaultMulticastPort);
             _sendSocket.Connect(_multicastIpEndPoint);

@@ -3,8 +3,10 @@ using AirMedia.Core.Data.Model;
 using AirMedia.Core.Log;
 using AirMedia.Core.Requests.Impl;
 using AirMedia.Core.Requests.Model;
+using AirMedia.Platform.Player;
 using AirMedia.Platform.UI.Base;
 using AirMedia.Platform.UI.Playlists;
+using Android.Content;
 using Android.OS;
 using Android.Views;
 using Android.Views.InputMethods;
@@ -69,6 +71,7 @@ namespace AirMedia.Platform.UI.Search
 
             _searchCriteriaSpinner.ItemSelected += OnFilteringItemSelected;
             _searchView.EditorAction += OnSearchEditorAction;
+            _listView.ItemClick += OnTrackItemClicked;
 
             RegisterRequestResultHandler(typeof(PerformTracksSearchRequest), OnSearchRequestFinished);
         }
@@ -77,10 +80,37 @@ namespace AirMedia.Platform.UI.Search
         {
             _searchCriteriaSpinner.ItemSelected -= OnFilteringItemSelected;
             _searchView.EditorAction -= OnSearchEditorAction;
+            _listView.ItemClick -= OnTrackItemClicked;
 
             RemoveRequestResultHandler(typeof(PerformTracksSearchRequest));
 
             base.OnPause();
+        }
+
+        public override string GetTitle()
+        {
+            return GetString(Resource.String.title_search);
+        }
+
+        public override void OnGenericPlaybackRequested()
+        {
+            if (_tracksAdapter.Count < 1)
+            {
+                ShowMessage(Resource.String.error_cant_play_search_results_list_empty);
+                return;
+            }
+
+            PlayerControl.Play(_tracksAdapter.Items, 0);
+        }
+
+        public override bool HasDisplayedContent()
+        {
+            return _listView.Count > 0;
+        }
+
+        private void OnTrackItemClicked(object sender, AdapterView.ItemClickEventArgs args)
+        {
+            PlayerControl.Play(_tracksAdapter.Items, args.Position);
         }
 
         private void SubmitSearch(string searchString)
@@ -133,6 +163,8 @@ namespace AirMedia.Platform.UI.Search
             if (args.ActionId == ImeAction.Done)
             {
                 SubmitSearch(_searchView.Text);
+                var imm = (InputMethodManager)Activity.GetSystemService(Context.InputMethodService);
+                imm.HideSoftInputFromInputMethod(_searchView.WindowToken, 0);
             }
         }
 
@@ -151,21 +183,6 @@ namespace AirMedia.Platform.UI.Search
             _tracksAdapter.SetItems(items);
 
             SetInProgress(false);
-        }
-
-        public override string GetTitle()
-        {
-            return GetString(Resource.String.title_search);
-        }
-
-        public override void OnGenericPlaybackRequested()
-        {
-            // TODO: generic playback
-        }
-
-        public override bool HasDisplayedContent()
-        {
-            return _listView.Count > 0;
         }
     }
 }
