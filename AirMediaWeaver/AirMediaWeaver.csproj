@@ -435,12 +435,6 @@
     <AndroidResource Include="Resources\Drawable-xhdpi\ic_action_download.png" />
     <AndroidResource Include="Resources\Drawable-xxhdpi\ic_action_download.png" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\libs\ViewPagerIndicator\ViewPagerIndicator.csproj">
-      <Project>{10be6857-6a09-448a-a52e-c0ac31cafd9d}</Project>
-      <Name>ViewPagerIndicator</Name>
-    </ProjectReference>
-  </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
