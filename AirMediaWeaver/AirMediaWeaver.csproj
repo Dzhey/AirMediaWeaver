@@ -119,6 +119,8 @@
     <Compile Include="Core\Requests\Impl\LoadRecommendationsRequest.cs" />
     <Compile Include="Core\Requests\Impl\LoadRemoteTrackDownloadsRequest.cs" />
     <Compile Include="Core\Requests\Impl\LoadRemoteTracksRequest.cs" />
+    <Compile Include="Core\Requests\Impl\PerformTracksSearchRequest.cs" />
+    <Compile Include="Core\Requests\Model\TrackSearchCriteria.cs" />
     <Compile Include="Platform\Controller\DownloadManager\AmwDownloadManager.cs" />
     <Compile Include="Platform\Controller\PlaybackSource\MixedPlaybackSourceParcel.cs" />
     <Compile Include="Platform\Controller\PlaybackSource\MixedPlaybackSource.cs" />
@@ -313,6 +315,9 @@
     </AndroidResource>
     <AndroidResource Include="Resources\Layout\View_DownloadTrackItem.axml" />
     <AndroidResource Include="Resources\Layout\Fragment_Recommendations.axml">
+      <SubType>AndroidResource</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\Layout\Fragment_Search.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
   </ItemGroup>

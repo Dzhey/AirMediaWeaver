@@ -6,6 +6,7 @@ using AirMedia.Platform.UI.Player;
 using AirMedia.Platform.UI.Playlists;
 using AirMedia.Platform.UI.Publications;
 using AirMedia.Platform.UI.Recommendations;
+using AirMedia.Platform.UI.Search;
 using Android.App;
 using Android.Content;
 using Android.Content.Res;
@@ -53,6 +54,10 @@ namespace AirMedia.Platform.UI.MainView
                     new DrawerNavigationItem
                         {
                             StringResourceId = Resource.String.title_navigation_item_recommendations
+                        },
+                    new DrawerNavigationItem
+                        {
+                            StringResourceId = Resource.String.title_navigation_item_search
                         }
                 };
         }
@@ -226,6 +231,10 @@ namespace AirMedia.Platform.UI.MainView
 
                 case Resource.String.title_navigation_item_recommendations:
                     contentFragment = typeof(RecommendationsFragment);
+                    break;
+
+                case Resource.String.title_navigation_item_search:
+                    contentFragment = typeof(SearchFragment);
                     break;
 
                 default:

@@ -17,6 +17,7 @@
   <string name="title_navigation_item_playlists">Плейлисты</string>
   <string name="title_navigation_item_publications">Публикации</string>
   <string name="title_navigation_item_recommendations">Рекомендации</string>
+  <string name="title_navigation_item_search">Поиск</string>
   <string name="hint_open_main_drawer">Показать панель навигации</string>
   <string name="hint_close_main_drawer">Скрыть панель навигации</string>
   <string name="title_audio_library">Моя фонотека</string>
@@ -27,6 +28,7 @@
   <string name="title_my_publications">Мои</string>
   <string name="title_publications">Публикации</string>
   <string name="title_recommendations">Рекомендации</string>
+  <string name="title_search">Поиск</string>
   <string name="hint_create_playlist">Создать плейлист</string>
   <string name="hint_edit_pulications">Изменить список публикаций</string>
   <string name="hint_remove_playlist">Удалить плейлист</string>
@@ -61,6 +63,12 @@
   <string name="error_cant_start_playback_no_publications_found">Не найдено доступных публикаций для воспроизвдения</string>
   <string name="error_cant_load_recommendations">Не удалось загрузить данные</string>
   <string name="error_cant_play_recommendations_list_empty">Нет треков для воспроизведения</string>
+  <string name="error_cant_load_search_results">Ошибка при поиске треков</string>
+  <string name="hint_empty_search_input">Пожалуйста, введите поисковый запрос</string>
+  <string name="filter_item_all">Все</string>
+  <string name="filter_item_artist">Исполнители</string>
+  <string name="filter_item_album">Альбомы</string>
+  <string name="filter_item_genre">Жанры</string>
   
   <!-- Logger strings -->
   <string name="title_log_level">Уровень</string>
@@ -79,6 +87,13 @@
   <string-array name="publications_navigation_items">
     <item>@string/title_publications</item>
     <item>@string/title_my_publications</item>
+  </string-array>
+
+  <string-array name="filter_items">
+    <item>@string/filter_item_all</item>
+    <item>@string/filter_item_artist</item>
+    <item>@string/filter_item_album</item>
+    <item>@string/filter_item_genre</item>
   </string-array>
   
 </resources>

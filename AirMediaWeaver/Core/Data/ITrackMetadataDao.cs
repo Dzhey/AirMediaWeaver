@@ -9,6 +9,7 @@ namespace AirMedia.Core.Data
         ITrackMetadata GetTrackMetadata(string trackGuid);
         IRemoteTrackMetadata[] GetRemoteTracksMetadata();
         IRemoteTrackMetadata GetRemoteTrackMetadata(string trackGuid);
+        ITrackMetadata[] QueryLocalForArtistNameLike(string artistName);
 
         /// <summary>
         /// </summary>

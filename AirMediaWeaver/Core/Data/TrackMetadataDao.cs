@@ -19,7 +19,17 @@ namespace AirMedia.Core.Data
 {
     public class TrackMetadataDao : ITrackMetadataDao
     {
-        public static readonly string LogTag = typeof (TrackMetadataDao).Name;
+        public static readonly string LogTag = typeof(TrackMetadataDao).Name;
+
+        private static readonly string[] PlaylistTrackMetadataQueryProjection = new[]
+            {
+                MediaStore.Audio.Media.InterfaceConsts.Id,
+                MediaStore.Audio.Media.InterfaceConsts.Title,
+                MediaStore.Audio.Media.InterfaceConsts.Artist,
+                MediaStore.Audio.Media.InterfaceConsts.Album,
+                MediaStore.Audio.Media.InterfaceConsts.Duration,
+                MediaStore.Audio.Media.InterfaceConsts.Data
+            };
 
         private readonly IAmwContentProvider _amwContentProvider;
         private readonly ITrackPublicationsDao _localPubDao;
@@ -31,6 +41,52 @@ namespace AirMedia.Core.Data
             _amwContentProvider = amwContentProvider;
             _pubDao = (RemoteTrackPublicationsDao) DatabaseHelper.Instance
                       .GetDao<RemoteTrackPublicationRecord>();
+        }
+
+        public ITrackMetadata[] QueryLocalForArtistNameLike(string artistName)
+        {
+            if (string.IsNullOrWhiteSpace(artistName))
+            {
+                return new ITrackMetadata[0];
+            }
+
+            var resolver = App.Instance.ContentResolver;
+
+            string selection = "{cArtistName} LIKE ?".HaackFormat(new
+                {
+                    cArtistName = MediaStore.Audio.Media.InterfaceConsts.Artist
+                });
+
+            var cursor = resolver.Query(MediaStore.Audio.Media.ExternalContentUri,
+                                        PlaylistTrackMetadataQueryProjection,
+                                        selection,
+                                        new[] { string.Format("%{0}%", artistName.Replace(" ", "%")) },
+                                        PlaylistDao.DefaultTrackSortOrder);
+            var result = new ITrackMetadata[cursor.Count];
+            using (cursor)
+            {
+                try
+                {
+                    while (cursor.MoveToNext())
+                    {
+                        result[cursor.Position] = new TrackMetadata
+                            {
+                                TrackId = cursor.GetLong(0),
+                                Artist = cursor.GetString(1),
+                                TrackTitle = cursor.GetString(2),
+                                Album = cursor.GetString(3),
+                                TrackDurationMillis = cursor.GetInt(4),
+                                Data = cursor.GetString(5)
+                            };
+                    }
+                }
+                finally
+                {
+                    cursor.Close();
+                }
+            }
+
+            return result;
         }
 
         public static long[] GetLocalLibraryTrackIds()
