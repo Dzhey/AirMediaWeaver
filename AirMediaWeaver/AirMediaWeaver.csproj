@@ -126,6 +126,7 @@
     <Compile Include="Platform\Controller\PlaybackSource\MixedPlaybackSource.cs" />
     <Compile Include="Platform\Controller\Receivers\RemoteTrackPublicationsUpdateReceiver.cs" />
     <Compile Include="Platform\Data\Dao\AndroidPlayCountDao.cs" />
+    <Compile Include="Platform\Data\Model\GenreModel.cs" />
     <Compile Include="Platform\Data\Sql\Dao\TrackDownloadsDao.cs" />
     <Compile Include="Platform\Data\Sql\Model\TrackDownloadRecord.cs" />
     <Compile Include="Core\Data\Sql\Model\TrackPublicationRecord.cs" />

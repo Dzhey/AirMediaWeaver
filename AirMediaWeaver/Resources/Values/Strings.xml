@@ -65,7 +65,10 @@
   <string name="error_cant_play_recommendations_list_empty">Нет треков для воспроизведения</string>
   <string name="error_cant_load_search_results">Ошибка при поиске треков</string>
   <string name="hint_empty_search_input">Пожалуйста, введите поисковый запрос</string>
+  <string name="hint_empty_search_results">Не найдено треков</string>
+  <string name="hint_no_started_search">Результаты поиска появятся здесь</string>
   <string name="filter_item_all">Все</string>
+  <string name="filter_item_title">Названия треков</string>
   <string name="filter_item_artist">Исполнители</string>
   <string name="filter_item_album">Альбомы</string>
   <string name="filter_item_genre">Жанры</string>
@@ -91,6 +94,7 @@
 
   <string-array name="filter_items">
     <item>@string/filter_item_all</item>
+    <item>@string/filter_item_title</item>
     <item>@string/filter_item_artist</item>
     <item>@string/filter_item_album</item>
     <item>@string/filter_item_genre</item>

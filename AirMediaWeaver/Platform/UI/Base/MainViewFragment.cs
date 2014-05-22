@@ -67,5 +67,10 @@ namespace AirMedia.Platform.UI.Base
         {
             _progressBarManager.SetIsInProgress(isInProgress);
         }
+
+        protected void SetEmptyContentMessage(string message)
+        {
+            _progressBarManager.EmptyString = message;
+        }
     }
 }

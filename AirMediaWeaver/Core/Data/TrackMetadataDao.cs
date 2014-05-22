@@ -12,6 +12,7 @@ using AirMedia.Core.Utils.StringUtils;
 using AirMedia.Platform;
 using AirMedia.Platform.Controller;
 using AirMedia.Platform.Data;
+using AirMedia.Platform.Data.Model;
 using AirMedia.Platform.Data.Sql;
 using Android.Provider;
 
@@ -20,6 +21,12 @@ namespace AirMedia.Core.Data
     public class TrackMetadataDao : ITrackMetadataDao
     {
         public static readonly string LogTag = typeof(TrackMetadataDao).Name;
+
+        private static readonly string[] GenresQueryProjection = new[]
+            {
+                MediaStore.Audio.Genres.InterfaceConsts.Id,
+                MediaStore.Audio.Genres.InterfaceConsts.Name
+            };
 
         private static readonly string[] PlaylistTrackMetadataQueryProjection = new[]
             {
@@ -40,53 +47,82 @@ namespace AirMedia.Core.Data
             _localPubDao = localPubDao;
             _amwContentProvider = amwContentProvider;
             _pubDao = (RemoteTrackPublicationsDao) DatabaseHelper.Instance
-                      .GetDao<RemoteTrackPublicationRecord>();
+                                                                 .GetDao<RemoteTrackPublicationRecord>();
+
         }
 
-        public ITrackMetadata[] QueryLocalForArtistNameLike(string artistName)
+        public IRemoteTrackMetadata[] QueryRemoteTracksForTitleLike(string trackTitle)
         {
-            if (string.IsNullOrWhiteSpace(artistName))
-            {
-                return new ITrackMetadata[0];
-            }
+            return QueryRemoteTracksForColumnLike(RemoteTrackPublicationRecord.ColumnTitle, trackTitle);
+        }
+
+        public IRemoteTrackMetadata[] QueryRemoteTracksForGenreNameLike(string genreName)
+        {
+            return QueryRemoteTracksForColumnLike(RemoteTrackPublicationRecord.ColumnGenre, genreName);
+        }
+
+        public IRemoteTrackMetadata[] QueryRemoteTracksForAlbumNameLike(string albumName)
+        {
+            return QueryRemoteTracksForColumnLike(RemoteTrackPublicationRecord.ColumnAlbum, albumName);
+        }
+
+        public IRemoteTrackMetadata[] QueryRemoteTracksForArtistNameLike(string artistName)
+        {
+            return QueryRemoteTracksForColumnLike(RemoteTrackPublicationRecord.ColumnArtist, artistName);
+        }
+
+        public ITrackMetadata[] QueryLocalTracksForGenreNameLike(string genreName)
+        {
+            var matchedGenres = QueryLocalGenresForNameLike(genreName);
+
+            if (matchedGenres.Length == 0) return new ITrackMetadata[0];
 
             var resolver = App.Instance.ContentResolver;
-
-            string selection = "{cArtistName} LIKE ?".HaackFormat(new
-                {
-                    cArtistName = MediaStore.Audio.Media.InterfaceConsts.Artist
-                });
-
-            var cursor = resolver.Query(MediaStore.Audio.Media.ExternalContentUri,
-                                        PlaylistTrackMetadataQueryProjection,
-                                        selection,
-                                        new[] { string.Format("%{0}%", artistName.Replace(" ", "%")) },
-                                        PlaylistDao.DefaultTrackSortOrder);
-            var result = new ITrackMetadata[cursor.Count];
-            using (cursor)
+            var matchedAudios = new HashSet<ITrackMetadata>();
+            foreach (var genre in matchedGenres)
             {
-                try
+                var uri = MediaStore.Audio.Genres.Members.GetContentUri("external", genre.GenreId);
+                var cursor = resolver.Query(uri, PlaylistTrackMetadataQueryProjection, null, null, null);
+                using (cursor)
                 {
-                    while (cursor.MoveToNext())
+                    try
                     {
-                        result[cursor.Position] = new TrackMetadata
-                            {
-                                TrackId = cursor.GetLong(0),
-                                Artist = cursor.GetString(1),
-                                TrackTitle = cursor.GetString(2),
-                                Album = cursor.GetString(3),
-                                TrackDurationMillis = cursor.GetInt(4),
-                                Data = cursor.GetString(5)
-                            };
+                        while (cursor.MoveToNext())
+                        {
+                            matchedAudios.Add(new TrackMetadata
+                                {
+                                    TrackId = cursor.GetLong(0),
+                                    TrackTitle = cursor.GetString(1),
+                                    Artist = cursor.GetString(2),
+                                    Album = cursor.GetString(3),
+                                    TrackDurationMillis = cursor.GetInt(4),
+                                    Data = cursor.GetString(5)
+                                });
+                        }
                     }
-                }
-                finally
-                {
-                    cursor.Close();
+                    finally
+                    {
+                        cursor.Close();
+                    }
                 }
             }
 
-            return result;
+            return matchedAudios.ToArray();
+        }
+
+        public ITrackMetadata[] QueryLocalTracksForTitleLike(string trackTitle)
+        {
+            return QueryLocalTracksForColumnNameLike(MediaStore.Audio.Media.InterfaceConsts.Title, trackTitle);
+        }
+
+        public ITrackMetadata[] QueryLocalTracksForAlbumNameLike(string albumName)
+        {
+            return QueryLocalTracksForColumnNameLike(MediaStore.Audio.Media.InterfaceConsts.Album, albumName);
+        }
+
+        public ITrackMetadata[] QueryLocalTracksForArtistNameLike(string artistName)
+        {
+            return QueryLocalTracksForColumnNameLike(MediaStore.Audio.Media.InterfaceConsts.Artist, artistName);
         }
 
         public static long[] GetLocalLibraryTrackIds()
@@ -281,6 +317,114 @@ namespace AirMedia.Core.Data
                 watch.ElapsedMilliseconds / 1000));
 
             return remoteTracks.Concat(localTracks).ToArray();
+        }
+
+        protected IRemoteTrackMetadata[] QueryRemoteTracksForColumnLike(string columnName, string columnValue)
+        {
+            const string template = "select * " +
+                                    "from {tRemoteTracks} " +
+                                    "where {cColumnName} " +
+                                    "like ?";
+
+            if (string.IsNullOrWhiteSpace(columnValue))
+            {
+                return new IRemoteTrackMetadata[0];
+            }
+
+            string query = template.HaackFormat(new
+            {
+                tRemoteTracks = RemoteTrackPublicationRecord.TableName,
+                cColumnName = columnName
+            });
+            var args = new object[] { string.Format("%{0}%", columnName.Replace(" ", "%")) };
+
+            using (var holder = DatabaseHelper.Instance.GetConnectionHolder(this))
+            {
+                return holder.Connection.Query<RemoteTrackPublicationRecord>(query, args)
+                                        .ConvertAll(input => (IRemoteTrackMetadata)input)
+                                        .ToArray();
+            }
+        }
+
+        protected GenreModel[] QueryLocalGenresForNameLike(string genreName)
+        {
+            var resolver = App.Instance.ContentResolver;
+            var genresUri = MediaStore.Audio.Genres.ExternalContentUri;
+            string selection = "{cGenreName} LIKE ?".HaackFormat(new
+            {
+                cGenreName = MediaStore.Audio.Genres.InterfaceConsts.Name
+            });
+            var cursor = resolver.Query(genresUri, GenresQueryProjection,
+                selection, new[] { string.Format("%{0}%", genreName) }, null);
+
+            var matchedGenres = new GenreModel[cursor.Count];
+            using (cursor)
+            {
+                try
+                {
+                    while (cursor.MoveToNext())
+                    {
+                        var genreModel = new GenreModel
+                            {
+                                GenreId = cursor.GetInt(0),
+                                GenreName = cursor.GetString(1)
+                            };
+                        matchedGenres[cursor.Position] = genreModel;
+                    }
+                }
+                finally
+                {
+                    cursor.Close();
+                }
+            }
+
+            return matchedGenres;
+        }
+
+        protected ITrackMetadata[] QueryLocalTracksForColumnNameLike(string columnName, string columnValue)
+        {
+            if (string.IsNullOrWhiteSpace(columnValue))
+            {
+                return new ITrackMetadata[0];
+            }
+
+            var resolver = App.Instance.ContentResolver;
+
+            string selection = "{cColumnName} LIKE ?".HaackFormat(new
+            {
+                cColumnName = columnName
+            });
+
+            var cursor = resolver.Query(MediaStore.Audio.Media.ExternalContentUri,
+                                        PlaylistTrackMetadataQueryProjection,
+                                        selection,
+                                        new[] { string.Format("%{0}%", columnValue.Replace(" ", "%")) },
+                                        PlaylistDao.DefaultTrackSortOrder);
+            var result = new ITrackMetadata[cursor.Count];
+            using (cursor)
+            {
+                try
+                {
+                    while (cursor.MoveToNext())
+                    {
+                        result[cursor.Position] = new TrackMetadata
+                        {
+                            TrackId = cursor.GetLong(0),
+                            TrackTitle = cursor.GetString(1),
+                            Artist = cursor.GetString(2),
+                            Album = cursor.GetString(3),
+                            TrackDurationMillis = cursor.GetInt(4),
+                            Data = cursor.GetString(5)
+                        };
+                    }
+                }
+                finally
+                {
+                    cursor.Close();
+                }
+            }
+
+            return result;
         }
 
         private IReadOnlyCollection<IRemoteTrackMetadata> GetNotPlayedRemoteTracks()

@@ -9,15 +9,17 @@ using Android.OS;
 using Android.Views;
 using Android.Views.InputMethods;
 using Android.Widget;
+using Consts = AirMedia.Core.Consts;
 
 namespace AirMedia.Platform.UI.Search
 {
     public class SearchFragment : MainViewFragment
     {
-        public const int FilterAll = 0;
-        public const int FilterArtist = 1;
-        public const int FilterAlbum = 2;
-        public const int FilterGenre = 3;
+        public const int FilterAll = (int) TrackSearchCriteria.All;
+        public const int FilterTitle = (int) TrackSearchCriteria.Title;
+        public const int FilterArtist = (int)TrackSearchCriteria.Artist;
+        public const int FilterAlbum = (int)TrackSearchCriteria.Album;
+        public const int FilterGenre = (int)TrackSearchCriteria.Genre;
 
         private const string SearchRequestTag = "user_tracks_search";
 
@@ -52,6 +54,11 @@ namespace AirMedia.Platform.UI.Search
             
             _searchCriteriaSpinner = view.FindViewById<Spinner>(Resource.Id.spinner);
             _searchCriteriaSpinner.Adapter = _navigationAdapter;
+
+            var progressPanel = view.FindViewById<ViewGroup>(Resource.Id.progressPanel);
+            RegisterProgressPanel(progressPanel, Consts.DefaultProgressDelayMillis, 
+                Resource.String.hint_no_started_search);
+            SetInProgress(false);
 
             return view;
         }
@@ -88,7 +95,9 @@ namespace AirMedia.Platform.UI.Search
             }
 
             SetInProgress(true);
-            SubmitParallelRequest(new PerformTracksSearchRequest(TrackSearchCriteria.Artist, searchString)
+            SetEmptyContentMessage(GetString(Resource.String.hint_empty_search_results));
+            var criteria = (TrackSearchCriteria)_searchCriteriaSpinner.SelectedItemPosition;
+            SubmitParallelRequest(new PerformTracksSearchRequest(criteria, searchString)
                 {
                     ActionTag = SearchRequestTag
                 });
@@ -99,6 +108,9 @@ namespace AirMedia.Platform.UI.Search
             switch (args.Position)
             {
                 case FilterAll:
+                    break;
+
+                case FilterTitle:
                     break;
 
                 case FilterArtist:
@@ -153,7 +165,7 @@ namespace AirMedia.Platform.UI.Search
 
         public override bool HasDisplayedContent()
         {
-            return true;
+            return _listView.Count > 0;
         }
     }
 }
