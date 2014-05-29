@@ -1,11 +1,11 @@
 using System.Collections.Generic;
+using AirMedia.Core.Data.Model;
 using AirMedia.Core.Requests.Abs;
 using AirMedia.Core.Requests.Model;
-using AirMedia.Platform.Data;
 
 namespace AirMedia.Platform.Controller.Requests
 {
-    public class LoadPlaylistItemsRequest : BaseLoadRequest<List<TrackMetadata>>
+    public class LoadPlaylistItemsRequest : BaseLoadRequest<List<ITrackMetadata>>
     {
         public long PlaylistId { get; private set; }
 
@@ -14,13 +14,14 @@ namespace AirMedia.Platform.Controller.Requests
             PlaylistId = playlistId;
         }
 
-        protected override LoadRequestResult<List<TrackMetadata>> DoLoad(out RequestStatus status)
+        protected override LoadRequestResult<List<ITrackMetadata>> DoLoad(out RequestStatus status)
         {
             status = RequestStatus.Ok;
 
-            var metadata = PlaylistDao.GetPlaylistTracks(PlaylistId);
+            var metadata = PlaylistDao.GetPlaylistTracks(PlaylistId)
+                                      .ConvertAll(input => (ITrackMetadata) input);
 
-            return new LoadRequestResult<List<TrackMetadata>>(RequestResult.ResultCodeOk, metadata);
+            return new LoadRequestResult<List<ITrackMetadata>>(RequestResult.ResultCodeOk, metadata);
         }
     }
 }
