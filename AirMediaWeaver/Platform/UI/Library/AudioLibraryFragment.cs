@@ -170,7 +170,26 @@ namespace AirMedia.Platform.UI.Library
 
         public void OnLoadFinished(Loader loader, Object data)
         {
-            _adapter = new TrackListCursorAdapter(Activity, this, (ICursor) data);
+            var cursor = data as ICursor;
+
+            if (cursor == null)
+            {
+                // 'Release' build type cast problem workaround
+// ReSharper disable ExpressionIsAlwaysNull
+                cursor = data as CursorWrapper;
+// ReSharper restore ExpressionIsAlwaysNull
+            }
+
+            if (cursor == null)
+            {
+                AmwLog.Error(LogTag, string.Format(
+                    "failed to load audio library: can't cast cursor; cursor data: \"{0}\"", data));
+                ShowMessage(Resource.String.error_cant_load_audiolibrary);
+                SetInProgress(false);
+                return;
+            }
+
+            _adapter = new TrackListCursorAdapter(Activity, this, cursor);
             _adapter.ShouldDisplayCheckboxes = _isInPickMode;
 
             if (_listView != null)

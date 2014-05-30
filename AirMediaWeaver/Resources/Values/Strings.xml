@@ -42,6 +42,7 @@
   <string name="dialog_remove_playlists_title">Подтвердите удаление</string>
   <string name="dialog_remove_playlists_message">Удалить выбранные ({0}) плейлисты?</string>
   <string name="error_empty_playlist_name">Пожалуйста, введите название плейлиста</string>
+  <string name="error_cant_load_audiolibrary">Ошибка при загрузке библиотеки</string>
   <string name="error_cant_create_playlist">Ошибка при создании плейлиста</string>
   <string name="error_cant_rename_playlist">Ошибка при переименовании плейлиста</string>
   <string name="error_generic_cant_rename_playlist">Не удалось переименовать плейлист</string>
