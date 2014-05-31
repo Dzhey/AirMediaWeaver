@@ -35,6 +35,8 @@ namespace AirMedia.Core.Controller.WebService
 
         public MulticastUdpServer()
         {
+            _isStopped = true;
+
             int random = new Random().Next(int.MaxValue);
             string listenerTag = string.Format("{0}_{1}", typeof(HttpServer).Name, random);
             _requestResultListener = new RequestResultListener(listenerTag);
