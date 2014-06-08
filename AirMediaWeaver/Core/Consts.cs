@@ -11,6 +11,8 @@ namespace AirMedia.Core
 
         public const string UriPublicationsFragment = "publications";
         public const string UriTracksFragment = "tracks";
+        public const string UriPeersFragment = "peers";
+        public const string UriPeersUpdateFragment = "update";
 
         public const int SendMulticastAuthIntervalMillis = 10000;
         public const string DefaultMulticastAddress = "224.100.127.224";

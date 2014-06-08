@@ -123,12 +123,14 @@
     <Compile Include="Core\Requests\Impl\LoadRemoteTrackDownloadsRequest.cs" />
     <Compile Include="Core\Requests\Impl\LoadRemoteTracksRequest.cs" />
     <Compile Include="Core\Requests\Impl\PerformTracksSearchRequest.cs" />
+    <Compile Include="Core\Requests\Impl\SendHttpAuthPacketRequest.cs" />
     <Compile Include="Core\Requests\Model\TrackSearchCriteria.cs" />
     <Compile Include="Platform\Controller\DownloadManager\AmwDownloadManager.cs" />
     <Compile Include="Platform\Controller\NetworkUtils.cs" />
     <Compile Include="Platform\Controller\PlaybackSource\MixedPlaybackSourceParcel.cs" />
     <Compile Include="Platform\Controller\PlaybackSource\MixedPlaybackSource.cs" />
     <Compile Include="Platform\Controller\Receivers\RemoteTrackPublicationsUpdateReceiver.cs" />
+    <Compile Include="Platform\Controller\Requests\WatchWifiHotspotRequest.cs" />
     <Compile Include="Platform\Data\Dao\AndroidPlayCountDao.cs" />
     <Compile Include="Platform\Data\Model\GenreModel.cs" />
     <Compile Include="Platform\Data\Sql\Dao\TrackDownloadsDao.cs" />
@@ -279,7 +281,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="ClassDiagram1.cd" />
     <None Include="Resources\AboutResources.txt" />
     <None Include="Assets\AboutAssets.txt" />
     <AndroidResource Include="Resources\Layout\View_FragmentContainer.axml" />

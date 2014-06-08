@@ -8,6 +8,7 @@ using AirMedia.Core.Controller.WebService.Http;
 using AirMedia.Core.Controller.WebService.Model;
 using AirMedia.Core.Log;
 using Android.Content;
+using Newtonsoft.Json;
 using Uri = Android.Net.Uri;
 
 namespace AirMedia.Platform.Controller.WebService.Http
@@ -16,13 +17,19 @@ namespace AirMedia.Platform.Controller.WebService.Http
     {
         public static readonly string LogTag = typeof (HttpRequestHandler).Name;
 
+        public const int MaxRequestLength = 1024*16;
+
         public const int ErrorUndefinedRequest = -1;
         public const int ErrorInvalidRequest = -2;
         public const int ErrorInternal = -3;
+        public const int ErrorNoService = -4;
         public const int ErrorInvalidTrackGuid = 1;
+
+        public event EventHandler<AuthPacketReceivedEventArgs> AuthPacketReceived;
 
         private const int UriCodePublishedTracks = 1;
         private const int UriCodeTrackStream = 2;
+        private const int UriCodeUpdatePeer = 3;
 
         private static readonly UriMatcher UriMatcher;
 
@@ -39,6 +46,10 @@ namespace AirMedia.Platform.Controller.WebService.Http
             // Request track data stream
             UriMatcher.AddURI(Consts.UriPublicationsFragment,
                 Consts.UriTracksFragment + "/*", UriCodeTrackStream);
+
+            // Request peer update
+            UriMatcher.AddURI(Consts.UriPeersFragment,
+                Consts.UriPeersUpdateFragment, UriCodeUpdatePeer);
         }
 
         public HttpRequestHandler(IHttpContentProvider contentProvider)
@@ -123,10 +134,60 @@ namespace AirMedia.Platform.Controller.WebService.Http
                     }
                     break;
 
+                case UriCodeUpdatePeer:
+                    ProcessPeerUpdate(context);
+                    break;
+
                 default:
                     PerformResponse(contextResponse, null, ErrorUndefinedRequest, 
                         "can't determine request type");
                     break;
+            }
+        }
+
+        protected void ProcessPeerUpdate(HttpListenerContext context)
+        {
+            var input = context.Request.InputStream;
+            var buffer = new byte[1024 * 4];
+            int nRead = -1;
+            int length = 0;
+            var data = new MemoryStream();
+            try
+            {
+                while ((nRead = input.Read(buffer, 0, buffer.Length)) > 0)
+                {
+                    if (length >= MaxRequestLength)
+                    {
+                        PerformResponse(context.Response, null, ErrorInvalidRequest, "too large request");
+                        return;
+                    }
+
+                    data.Write(buffer, 0, nRead);
+                    length += nRead;
+                }
+
+                string json = Encoding.UTF8.GetString(data.GetBuffer());
+                var packet = JsonConvert.DeserializeObject(json, typeof(AuthPacket)) as AuthPacket;
+                if (packet == null)
+                {
+                    PerformResponse(context.Response, null, ErrorInvalidRequest, "invalid data");
+                    return;
+                }
+
+                if (AuthPacketReceived == null)
+                {
+                    PerformResponse(context.Response, null, ErrorNoService, "server refused to process request");
+                    return;
+                }
+                
+                AuthPacketReceived(this, new AuthPacketReceivedEventArgs {Packet = packet});
+                PerformResponse(context.Response, null, 0, "ok");
+            }
+            catch (Exception e)
+            {
+                AmwLog.Error(LogTag, e, "error processing peer update request: {0}", e.Message);
+                PerformResponse(context.Response, null, ErrorInternal,
+                                string.Format("can't process request: {0}", e.Message));
             }
         }
 

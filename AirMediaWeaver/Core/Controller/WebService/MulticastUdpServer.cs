@@ -7,7 +7,9 @@ using AirMedia.Core.Log;
 using AirMedia.Core.Requests.Impl;
 using AirMedia.Core.Requests.Model;
 using AirMedia.Platform;
+using AirMedia.Platform.Controller;
 using AirMedia.Platform.Logger;
+using Socket = System.Net.Sockets.Socket;
 
 namespace AirMedia.Core.Controller.WebService
 {
@@ -20,17 +22,28 @@ namespace AirMedia.Core.Controller.WebService
             get { return !_isStopped; }
         }
 
+        public bool HasMulticastCapability
+        {
+            get
+            {
+                if (_sendSocket != null && _sendSocket.Connected)
+                {
+                    return true;
+                }
+
+                return false;
+            }
+        }
+
         public event EventHandler<AuthPacketReceivedEventArgs> AuthPacketReceived;
 
-        public int ServiceAddress { get; private set; }
+        public IPAddress ServiceAddress { get; private set; }
 
         private Socket _sendSocket;
         private Socket _recvSocket;
-        private IPAddress _serverAddress;
-        private IPEndPoint _multicastIpEndPoint;
-        private IPEndPoint _recvIpEndPoint;
+        private IPAddress _multicastAddress;
         private bool _isDisposed;
-        private bool _isStopped; 
+        private bool _isStopped;
         private readonly RequestResultListener _requestResultListener;
 
         public MulticastUdpServer()
@@ -49,28 +62,22 @@ namespace AirMedia.Core.Controller.WebService
 
         public bool TryStart(int serviceAddress)
         {
-            ServiceAddress = serviceAddress;
-
+            ServiceAddress = new IPAddress(NetworkUtils.IpV4ToBytes(serviceAddress));
+            _multicastAddress = IPAddress.Parse(Consts.DefaultMulticastAddress);
             _sendSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
 
             try
             {
-                _serverAddress = IPAddress.Parse(Consts.DefaultMulticastAddress);
-                _sendSocket.SetSocketOption(SocketOptionLevel.IP,
-                                            SocketOptionName.AddMembership, new MulticastOption(_serverAddress));
+                _sendSocket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership,
+                                            new MulticastOption(_multicastAddress, ServiceAddress));
                 _sendSocket.SetSocketOption(SocketOptionLevel.IP,
                                             SocketOptionName.MulticastTimeToLive, Consts.DefaultMulticastTTL);
-                _sendSocket.SetSocketOption(SocketOptionLevel.IP,
-                                            SocketOptionName.MulticastLoopback, false);
-
-                _multicastIpEndPoint = new IPEndPoint(_serverAddress, Consts.DefaultMulticastPort);
-                _sendSocket.Connect(_multicastIpEndPoint);
+                _sendSocket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.MulticastLoopback, false);
 
                 _recvSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-                _recvIpEndPoint = new IPEndPoint(IPAddress.Any, Consts.DefaultMulticastPort);
-                _recvSocket.Bind(_recvIpEndPoint);
                 _recvSocket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership,
-                                            new MulticastOption(_serverAddress, IPAddress.Any));
+                                            new MulticastOption(_multicastAddress, ServiceAddress));
+                _recvSocket.Bind(new IPEndPoint(IPAddress.Any, Consts.DefaultMulticastPort));
             }
             catch (Exception e)
             {
@@ -142,7 +149,7 @@ namespace AirMedia.Core.Controller.WebService
                 return;
             }
 
-            string ipAddressString = new IPAddress(BitConverter.GetBytes(ServiceAddress)).ToString();
+            string ipAddressString = ServiceAddress.ToString();
             _requestResultListener.SubmitRequest(new SendMulticastAuthRequest(this, ipAddressString), true);
         }
 
@@ -150,8 +157,16 @@ namespace AirMedia.Core.Controller.WebService
         {
             if (_isStopped) return;
 
-            _sendSocket.Close();
-            _recvSocket.Close();
+            if (_sendSocket != null)
+            {
+                _sendSocket.Close();
+                _sendSocket = null;
+            }
+            if (_recvSocket != null)
+            {
+                _recvSocket.Close();
+                _recvSocket = null;
+            }
 
             _isStopped = true;
         }
@@ -173,6 +188,25 @@ namespace AirMedia.Core.Controller.WebService
             {
                 throw new MulticastUdpServerException("can't send data: multicast " +
                                                       "udp server is stopped");
+            }
+
+            try
+            {
+                if (_sendSocket.Connected == false)
+                {
+                    lock (_sendSocket)
+                    {
+                        if (_sendSocket.Connected == false)
+                        {
+                            _sendSocket.Connect(new IPEndPoint(_multicastAddress, Consts.DefaultMulticastPort));
+                        }
+                    }
+                }
+            }
+            catch (SocketException e)
+            {
+                AmwLog.Warn(LogTag, "Unable to setup client socket to send multicast request");
+                return 0;
             }
 
             return _sendSocket.Send(data, offset, length, SocketFlags.None);

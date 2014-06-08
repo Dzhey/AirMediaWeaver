@@ -8,5 +8,6 @@ namespace AirMedia.Core.Data
     {
         Uri CreateRemoteTrackUri(string address, string port, string trackGuid);
         Uri CreateTrackDownloadDestinationUri(IRemoteTrackMetadata metadata);
+        Uri CreatePutAuthPacketUri(string address, string port);
     }
 }

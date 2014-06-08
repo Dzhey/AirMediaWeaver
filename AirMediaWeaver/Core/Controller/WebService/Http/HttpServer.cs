@@ -15,7 +15,8 @@ namespace AirMedia.Core.Controller.WebService.Http
         private static readonly string[] ContentUris = new[]
             {
                 // Publications
-                Consts.UriPublicationsFragment
+                Consts.UriPublicationsFragment,
+                Consts.UriPeersFragment
             };
 
         public bool IsListening

@@ -136,6 +136,19 @@ namespace AirMedia.Platform.Controller.WebService.Http
             return result;
         }
 
+        public Uri CreatePutAuthPacketUri(string address, string port)
+        {
+            return new Uri("{scheme}://{address}:{port}/{content}/{update}/"
+                               .HaackFormat(new
+                               {
+                                   scheme = "http",
+                                   address,
+                                   port,
+                                   content = Consts.UriPeersFragment,
+                                   update = Consts.UriPeersUpdateFragment
+                               }));
+        }
+
         public Uri CreateRemoteTrackUri(string address, string port, string trackGuid)
         {
             return new Uri("{scheme}://{address}:{port}/{content}/{tracks}/{trackId}"
@@ -155,6 +168,7 @@ namespace AirMedia.Platform.Controller.WebService.Http
             string path = "file://" + Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath,
                                                    Android.OS.Environment.DirectoryMusic);
 
+            // TODO: create folders if needed
 //            if (string.IsNullOrWhiteSpace(metadata.Artist) == false)
 //            {
 //                path += "/" + metadata.Artist;
