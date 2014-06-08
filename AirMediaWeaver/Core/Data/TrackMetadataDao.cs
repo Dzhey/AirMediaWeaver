@@ -336,7 +336,7 @@ namespace AirMedia.Core.Data
                 tRemoteTracks = RemoteTrackPublicationRecord.TableName,
                 cColumnName = columnName
             });
-            var args = new object[] { string.Format("%{0}%", columnName.Replace(" ", "%")) };
+            var args = new object[] { string.Format("%{0}%", columnValue.Replace(" ", "%")) };
 
             using (var holder = DatabaseHelper.Instance.GetConnectionHolder(this))
             {

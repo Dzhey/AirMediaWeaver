@@ -149,12 +149,9 @@ namespace AirMedia.Platform.Controller.PlaybackSource
 
         private int? DecodeLocalResourcePosition(int position)
         {
-            if (position < 0 || position >= (_localTracksList.Count + _remoteTracksList.Count))
-            {
-                return null;
-            }
+            if (_localTracksList.Count < 1) return null;
 
-            if (position == 0 && _localTracksList.Count == 0 && _remoteTracksList.Count == 0)
+            if (position < 0 || position >= _localTracksList.Count)
             {
                 return null;
             }
@@ -164,14 +161,11 @@ namespace AirMedia.Platform.Controller.PlaybackSource
 
         private int? DecodeRemoteResourcePosition(int position)
         {
+            if (_remoteTracksList.Count < 1) return null;
+
             int pos =  position - _localTracksList.Count;
 
-            if (pos < 0 || pos >= (_localTracksList.Count + _remoteTracksList.Count))
-            {
-                return null;
-            }
-
-            if (pos == 0 && _localTracksList.Count == 0 && _remoteTracksList.Count == 0)
+            if (pos < -1 || pos >= (_localTracksList.Count + _remoteTracksList.Count))
             {
                 return null;
             }
