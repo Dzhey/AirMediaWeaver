@@ -50,20 +50,20 @@ namespace AirMedia.Core.Requests.Abs
             }
             catch (HttpListenerException e)
             {
-                AmwLog.Error(LogTag, string.Format("Cant obtain HttpListenerContext: " +
-                                                   "{0}; Error code: {1}", e.Message, e.ErrorCode), e);
+                AmwLog.Error(LogTag, e, string.Format("Cant obtain HttpListenerContext: " +
+                                                      "{0}; Error code: {1}", e.Message, e.ErrorCode));
                 risenException = e;
             }
             catch (ObjectDisposedException e)
             {
-                AmwLog.Error(LogTag, string.Format("Cant obtain HttpListenerContext; " +
-                                                   "HttpListener is disposed."), e);
+                AmwLog.Error(LogTag, e, string.Format("Cant obtain HttpListenerContext; " +
+                                                      "HttpListener is disposed."));
                 risenException = e;
             }
             catch (InvalidOperationException e)
             {
-                AmwLog.Error(LogTag, string.Format("Cant obtain HttpListenerContext; Usually indicates " +
-                                                   "that HttpListener is stopped."), e);
+                AmwLog.Error(LogTag, e, string.Format("Cant obtain HttpListenerContext; Usually indicates " +
+                                                      "that HttpListener is stopped."));
                 risenException = e;
             }
 

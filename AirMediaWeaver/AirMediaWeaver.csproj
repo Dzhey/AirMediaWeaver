@@ -46,6 +46,9 @@
     <WarningLevel>4</WarningLevel>
     <AndroidUseSharedRuntime>False</AndroidUseSharedRuntime>
     <AndroidLinkMode>SdkOnly</AndroidLinkMode>
+    <AndroidLinkSkip>System</AndroidLinkSkip>
+    <EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
+    <BundleAssemblies>False</BundleAssemblies>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Mono.Android" />
@@ -122,6 +125,7 @@
     <Compile Include="Core\Requests\Impl\PerformTracksSearchRequest.cs" />
     <Compile Include="Core\Requests\Model\TrackSearchCriteria.cs" />
     <Compile Include="Platform\Controller\DownloadManager\AmwDownloadManager.cs" />
+    <Compile Include="Platform\Controller\NetworkUtils.cs" />
     <Compile Include="Platform\Controller\PlaybackSource\MixedPlaybackSourceParcel.cs" />
     <Compile Include="Platform\Controller\PlaybackSource\MixedPlaybackSource.cs" />
     <Compile Include="Platform\Controller\Receivers\RemoteTrackPublicationsUpdateReceiver.cs" />
@@ -275,6 +279,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="ClassDiagram1.cd" />
     <None Include="Resources\AboutResources.txt" />
     <None Include="Assets\AboutAssets.txt" />
     <AndroidResource Include="Resources\Layout\View_FragmentContainer.axml" />

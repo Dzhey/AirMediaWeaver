@@ -38,10 +38,9 @@ namespace AirMedia.Platform.Controller.Requests
             {
                 if (Position < 0 || Position >= tracks.Length)
                 {
-                    AmwLog.Error(LogTag, string.Format(
-                        "Requested playback position \"{0}\" is out of " +
+                    AmwLog.Error(LogTag, "Requested playback position \"{0}\" is out of " +
                         "publish track list bounds ({1},{2}); using start position.",
-                        Position, 0, tracks.Length));
+                        Position, 0, tracks.Length);
                 }
                 else
                 {

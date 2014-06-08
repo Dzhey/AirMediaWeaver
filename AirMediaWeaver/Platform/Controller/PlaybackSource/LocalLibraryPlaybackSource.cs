@@ -111,8 +111,7 @@ namespace AirMedia.Platform.Controller.PlaybackSource
 
             if (metadata == null)
             {
-                AmwLog.Error(LogTag, string.Format("Can't retrieve track metadata " +
-                                                   "for track id ({0})", trackId));
+                AmwLog.Error(LogTag, "Can't retrieve track metadata for track id ({0})", trackId);
                 return null;
             }
 

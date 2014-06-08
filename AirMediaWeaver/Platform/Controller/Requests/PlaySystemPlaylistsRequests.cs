@@ -34,7 +34,7 @@ namespace AirMedia.Platform.Controller.Requests
 
             if (trackIds.Count < 1)
             {
-                AmwLog.Error(LogTag, "All playlists are empty; No available tracks to perform playback.");
+                AmwLog.Error(LogTag, "All playlists are empty; No available tracks to perform playback");
                 status = RequestStatus.Failed;
 
                 return new RequestResult(ResultCodeErrorNoTracksAvailable);

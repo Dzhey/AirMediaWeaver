@@ -153,7 +153,7 @@ namespace AirMedia.Platform.UI.Search
                     break;
 
                 default:
-                    AmwLog.Error(LogTag, string.Format("undefined filter item selected: {0}", args.Position));
+                    AmwLog.Error(LogTag, "undefined filter item selected: {0}", args.Position);
                     break;
             }
         }

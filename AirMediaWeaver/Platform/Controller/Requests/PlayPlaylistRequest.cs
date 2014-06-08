@@ -25,8 +25,7 @@ namespace AirMedia.Platform.Controller.Requests
 
             if (tracks.Count < 1)
             {
-                AmwLog.Error(LogTag, string.Format(
-                    "playlist \"{0}\" is empty; can't start playback", PlaylistId));
+                AmwLog.Error(LogTag, "playlist \"{0}\" is empty; can't start playback", PlaylistId);
                 status = RequestStatus.Failed;
 
                 return new RequestResult(ResultCodeErrorNoTracksAvailable);
@@ -39,10 +38,9 @@ namespace AirMedia.Platform.Controller.Requests
             {
                 if (Position < 0 || Position >= trackIds.Length)
                 {
-                    AmwLog.Error(LogTag, string.Format(
-                        "Requested playback position \"{0}\" is out of " +
-                        "playlist bounds ({1},{2}); using start position.",
-                        Position, 0, trackIds.Length));
+                    AmwLog.Error(LogTag, "Requested playback position \"{0}\" is out of " +
+                                         "playlist bounds ({1},{2}); using start position.",
+                                         Position, 0, trackIds.Length);
                 }
                 else
                 {

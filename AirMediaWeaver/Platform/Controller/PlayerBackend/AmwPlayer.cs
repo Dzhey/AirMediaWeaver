@@ -382,8 +382,7 @@ namespace AirMedia.Platform.Controller.PlayerBackend
                     break;
 
                 default:
-                    AmwLog.Error(LogTag, string.Format("undefined playback " +
-                                                       "status set \"{0}\"", _playbackStatus));
+                    AmwLog.Error(LogTag, "undefined playback status set \"{0}\"", _playbackStatus);
                     break;
             }
         }
@@ -392,7 +391,7 @@ namespace AirMedia.Platform.Controller.PlayerBackend
         {
             if (args.Request.Status != RequestStatus.Ok)
             {
-                AmwLog.Error(LogTag, string.Format("error retrieving track metadata"));
+                AmwLog.Error(LogTag, null, "error retrieving track metadata");
 
                 return;
             }
@@ -405,8 +404,8 @@ namespace AirMedia.Platform.Controller.PlayerBackend
                 return;
             }
 
-            AmwLog.Debug(LogTag, string.Format("track \"{0}\" metadata " +
-                                               "successfuly resolved", _trackMetadata.TrackTitle));
+            AmwLog.Debug(LogTag, string.Format("track \"{0}\" metadata successfuly resolved", 
+                _trackMetadata.TrackTitle));
 
             if (Callbacks != null)
             {

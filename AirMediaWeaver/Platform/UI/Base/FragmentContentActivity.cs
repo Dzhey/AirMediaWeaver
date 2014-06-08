@@ -52,15 +52,14 @@ namespace AirMedia.Platform.UI.Base
 
             if (fragmentType == null)
             {
-                AmwLog.Error(LogTag, string.Format("can't retrieve fragment for " +
-                                                   "specified type \"{0}\"", typeName));
+                AmwLog.Error(LogTag, "can't retrieve fragment for specified type \"{0}\"", typeName);
                 Finish();
                 return;
             }
 
             if (typeof (AmwFragment).IsAssignableFrom(fragmentType) == false)
             {
-                AmwLog.Error(LogTag, string.Format("invalid fragment type specified \"{0}\"", typeName));
+                AmwLog.Error(LogTag, "invalid fragment type specified \"{0}\"", typeName);
                 Finish();
                 return;
             }

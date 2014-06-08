@@ -108,8 +108,7 @@ namespace AirMedia.Platform.Controller.PlaybackSource
 
             if (uri == null)
             {
-                AmwLog.Error(LogTag, string.Format("Can't retrieve track uri for " +
-                                                   "track guid ({0})", trackGuid));
+                AmwLog.Error(LogTag, "Can't retrieve track uri for track guid ({0})", trackGuid);
                 return null;
             }
 

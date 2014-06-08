@@ -45,8 +45,8 @@ namespace AirMedia.Core.Controller.WebService.Http
             Type responseType;
             if (ResponseTypes.TryGetValue(model.ResponseType, out responseType) == false)
             {
-                AmwLog.Error(LogTag, string.Format("can't parse response model: undefined" +
-                                                    " response type \"{0}\"", model.ResponseType));
+                AmwLog.Error(LogTag, "can't parse response model: undefined " +
+                                     "response type \"{0}\"", model.ResponseType);
 
                 return null;
             }

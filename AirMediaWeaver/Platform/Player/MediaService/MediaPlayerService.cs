@@ -107,8 +107,7 @@ namespace AirMedia.Platform.Player.MediaService
                     break;
 
                 default:
-                    AmwLog.Error(LogTag, string.Format(
-                        "Unhandled intent received \"{0}\"", intent.Action));
+                    AmwLog.Error(LogTag, "Unhandled intent received \"{0}\"", intent.Action);
                     break;
             }
 
@@ -139,7 +138,7 @@ namespace AirMedia.Platform.Player.MediaService
 
             if (source == null) 
             {
-                AmwLog.Error(LogTag, string.Format("can't enqueue \"{0}\"", parcel.GetType()));
+                AmwLog.Error(LogTag, "can't enqueue \"{0}\"", parcel.GetType());
                 return;
             }
 

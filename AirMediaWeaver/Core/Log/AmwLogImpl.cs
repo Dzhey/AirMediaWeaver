@@ -17,7 +17,8 @@ namespace AirMedia.Core.Log
         private volatile bool _isRequestHandlerRegistered;
         private bool _isDisposed;
 
-        protected override void DispatchLogRequest(LogLevel level, string tag, string displayMessage, string details)
+        protected override void DispatchLogRequest(LogLevel level, string tag, 
+            string displayMessage, string details, params object[] args)
         {
             if (Consts.IsInAppLoggingEnabled && _isRequestHandlerRegistered == false)
             {
@@ -31,7 +32,7 @@ namespace AirMedia.Core.Log
                 }
             }
 
-            base.DispatchLogRequest(level, tag, displayMessage, details);
+            base.DispatchLogRequest(level, tag, displayMessage, details, args);
         }
 
         protected override void PerformEntryLog(LogEntry entry)
@@ -63,12 +64,10 @@ namespace AirMedia.Core.Log
 
         public void HandleRequestResult(object sender, ResultEventArgs args)
         {
-            if (args.Request is InsertLogEntriesRequest 
-                && args.Request.Status != RequestStatus.Ok)
+            if (args.Request is InsertLogEntriesRequest && args.Request.Status != RequestStatus.Ok)
             {
-                string msg = string.Format("Failed to save log entries (message:\"{0}\")", 
-                    args.Result.ErrorMessage);
-                Error(LogTag, msg, args.Result.ToString());
+                System.Diagnostics.Debug.WriteLine(
+                    "Failed to save log entries (message:\"{0}\")", args.Result.ErrorMessage);
             }
         }
 

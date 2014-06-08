@@ -52,13 +52,11 @@ namespace AirMedia.Platform.Controller
 
             if (downloadStatus == DownloadStatus.Unknown)
             {
-                AmwLog.Error(LogTag, string.Format("can't retrieve download status for " +
-                                                  "download id: \"{0}\"", downloadId));
+                AmwLog.Error(LogTag, "can't retrieve download status for download id: \"{0}\"", downloadId);
                 return;
             }
 
-            AmwLog.Info(LogTag, string.Format("download status: {0}", 
-                DownloadStatus.GetString(downloadStatus)));
+            AmwLog.Info(LogTag, "download status: {0}", DownloadStatus.GetString(downloadStatus));
         }
     }
 }

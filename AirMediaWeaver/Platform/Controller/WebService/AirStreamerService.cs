@@ -187,8 +187,7 @@ namespace AirMedia.Platform.Controller.WebService
                     break;
 
                 default:
-                    AmwLog.Error(LogTag, string.Format("unexpected intent " +
-                                                       "action received: \"{0}\"", intent.Action));
+                    AmwLog.Error(LogTag, "unexpected intent action received: \"{0}\"", intent.Action);
                     break;
             }
 

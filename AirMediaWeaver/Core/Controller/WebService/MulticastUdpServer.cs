@@ -52,22 +52,32 @@ namespace AirMedia.Core.Controller.WebService
             ServiceAddress = serviceAddress;
 
             _sendSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-            _serverAddress = IPAddress.Parse(Consts.DefaultMulticastAddress);
-            _sendSocket.SetSocketOption(SocketOptionLevel.IP,
-                SocketOptionName.AddMembership, new MulticastOption(_serverAddress));
-            _sendSocket.SetSocketOption(SocketOptionLevel.IP, 
-                SocketOptionName.MulticastTimeToLive, Consts.DefaultMulticastTTL);
-            _sendSocket.SetSocketOption(SocketOptionLevel.IP,
-                SocketOptionName.MulticastLoopback, false);
 
-            _multicastIpEndPoint = new IPEndPoint(_serverAddress, Consts.DefaultMulticastPort);
-            _sendSocket.Connect(_multicastIpEndPoint);
+            try
+            {
+                _serverAddress = IPAddress.Parse(Consts.DefaultMulticastAddress);
+                _sendSocket.SetSocketOption(SocketOptionLevel.IP,
+                                            SocketOptionName.AddMembership, new MulticastOption(_serverAddress));
+                _sendSocket.SetSocketOption(SocketOptionLevel.IP,
+                                            SocketOptionName.MulticastTimeToLive, Consts.DefaultMulticastTTL);
+                _sendSocket.SetSocketOption(SocketOptionLevel.IP,
+                                            SocketOptionName.MulticastLoopback, false);
 
-            _recvSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-            _recvIpEndPoint = new IPEndPoint(IPAddress.Any, Consts.DefaultMulticastPort);
-            _recvSocket.Bind(_recvIpEndPoint);
-            _recvSocket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership, 
-                new MulticastOption(_serverAddress, IPAddress.Any));
+                _multicastIpEndPoint = new IPEndPoint(_serverAddress, Consts.DefaultMulticastPort);
+                _sendSocket.Connect(_multicastIpEndPoint);
+
+                _recvSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+                _recvIpEndPoint = new IPEndPoint(IPAddress.Any, Consts.DefaultMulticastPort);
+                _recvSocket.Bind(_recvIpEndPoint);
+                _recvSocket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership,
+                                            new MulticastOption(_serverAddress, IPAddress.Any));
+            }
+            catch (Exception e)
+            {
+                AmwLog.Error(LogTag, e, "Unable to setup UDP server; Message: \"{0}\"", e.Message);
+
+                return false;
+            }
 
             _isStopped = false;
 

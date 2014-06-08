@@ -76,7 +76,7 @@ namespace AirMedia.Platform.Data
                 }
                 catch (InvalidCastException e)
                 {
-                    AmwLog.Error(LogTag, "can't decode stored log level", e);
+                    AmwLog.Error(LogTag, e, "can't decode stored log level");
                 }
 
                 return LogLevel.Verbose;
@@ -129,15 +129,13 @@ namespace AirMedia.Platform.Data
 
                 if (type == null)
                 {
-                    AmwLog.Error(LogTag, string.Format("Can't retrieve main view type from " +
-                                                       "preference; type name: \"{0}\"", typeName));
+                    AmwLog.Error(LogTag, "Can't retrieve main view type from preference; type name: \"{0}\"", typeName);
                     return null;
                 }
 
                 if (typeof (MainViewFragment).IsAssignableFrom(type) == false)
                 {
-                    AmwLog.Error(LogTag, string.Format("unexpected main view type " +
-                                                       "from preference; type: \"{0}\"", type));
+                    AmwLog.Error(LogTag, "unexpected main view type from preference; type: \"{0}\"", type);
 
                     return null;
                 }

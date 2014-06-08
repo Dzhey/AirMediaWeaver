@@ -83,7 +83,7 @@ namespace AirMedia.Core.Requests.Impl
                 var model = HttpResponseFactory.UnpackResponse(data);
                 if (model == null)
                 {
-                    AmwLog.Error(LogTag, string.Format("can't parse peer response; peer: {0}", peerInfo));
+                    AmwLog.Error(LogTag, "can't parse peer response; peer: {0}", peerInfo);
                     return new RemoteTrackMetadata[0];
                 }
 
@@ -91,8 +91,7 @@ namespace AirMedia.Core.Requests.Impl
                 var trackInfoResponse = response as HttpResponsePublishedTracks;
                 if (trackInfoResponse == null)
                 {
-                    AmwLog.Error(LogTag, string.Format("obtained invalid response; peer: {0}" +
-                                                       "; response: {1}", peerInfo, response));
+                    AmwLog.Error(LogTag, "obtained invalid response; peer: {0}; response: {1}", peerInfo, response);
                     return new RemoteTrackMetadata[0];
                 }
 

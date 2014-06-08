@@ -38,8 +38,8 @@ namespace AirMedia.Platform.Controller.Requests
             }
             else
             {
-                AmwLog.Error(LogTag, string.Format("can't resolve metadata for track id \"{0}\"; " +
-                                                   "guid: \"{1}\"", TrackId, TrackGuid));
+                AmwLog.Error(LogTag, "can't resolve metadata for track id \"{0}\"; " +
+                                     "guid: \"{1}\"", TrackId, TrackGuid);
                 status = RequestStatus.Failed;
             }
 

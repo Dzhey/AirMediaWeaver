@@ -73,9 +73,8 @@ namespace AirMedia.Core.Requests.Abs
                     ProtocolError = true;
                 }
 
-                AmwLog.Error(LogTag, string.Format(
-                    "Web exception caught. Status: \"{0}\". Response: \"{1}\". " +
-                    "Message: \"{2}\"", e.Status, e.Response, e.Message), e.ToString());
+                AmwLog.Error(LogTag, e, "Web exception caught. Status: \"{0}\". Response: \"{1}\". " +
+                    "Message: \"{2}\"", e.Status, e.Response, e.Message);
 
                 status = RequestStatus.Failed;
 

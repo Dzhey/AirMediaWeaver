@@ -95,7 +95,7 @@ namespace AirMedia.Core.Log
             }
             catch (Exception e)
             {
-                AmwLog.Error(LogTag, string.Format("Can't create file at \"{0}\"", filePath), e.ToString());
+                AmwLog.Error(LogTag, e, "Can't create file at \"{0}\"", filePath);
 
                 return new RequestResult(RequestResult.ResultCodeErrorCantCreateFile, e)
                     {

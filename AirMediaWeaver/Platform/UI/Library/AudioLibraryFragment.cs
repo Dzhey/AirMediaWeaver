@@ -157,7 +157,7 @@ namespace AirMedia.Platform.UI.Library
                     return new TrackListLoader(Activity);
 
                 default:
-                    AmwLog.Error(LogTag, string.Format("undefined loader \"{0}\" requested", id));
+                    AmwLog.Error(LogTag, "undefined loader \"{0}\" requested", id);
                     return null;
             }
         }
@@ -182,8 +182,8 @@ namespace AirMedia.Platform.UI.Library
 
             if (cursor == null)
             {
-                AmwLog.Error(LogTag, string.Format(
-                    "failed to load audio library: can't cast cursor; cursor data: \"{0}\"", data));
+                AmwLog.Error(LogTag, "failed to load audio library: " +
+                                     "can't cast cursor; cursor data: \"{0}\"", data);
                 ShowMessage(Resource.String.error_cant_load_audiolibrary);
                 SetInProgress(false);
                 return;

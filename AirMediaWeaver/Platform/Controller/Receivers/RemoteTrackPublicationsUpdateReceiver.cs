@@ -26,7 +26,7 @@ namespace AirMedia.Platform.Controller.Receivers
                     break;
 
                 default:
-                    AmwLog.Error(LogTag, string.Format("unexpected broadcast intent received: \"{0}\"", intent));
+                    AmwLog.Error(LogTag, "unexpected broadcast intent received: \"{0}\"", intent);
                     break;
             }
         }

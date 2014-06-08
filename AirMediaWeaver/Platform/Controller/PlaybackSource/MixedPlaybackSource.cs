@@ -101,8 +101,7 @@ namespace AirMedia.Platform.Controller.PlaybackSource
 
                 if (localTrackMetadata == null)
                 {
-                    AmwLog.Error(LogTag, string.Format("can't retrieve local track " +
-                                                       "metadata; position: \"{0}\"", encodedPosition));
+                    AmwLog.Error(LogTag, "can't retrieve local track metadata; position: \"{0}\"", encodedPosition);
 
                     return null;
                 }
@@ -117,8 +116,7 @@ namespace AirMedia.Platform.Controller.PlaybackSource
             pos = DecodeRemoteResourcePosition(encodedPosition);
             if (pos == null)
             {
-                AmwLog.Error(LogTag, string.Format("can't decode playback resource " +
-                                                   "position: \"{0}\"", encodedPosition));
+                AmwLog.Error(LogTag, "can't decode playback resource position: \"{0}\"", encodedPosition);
 
                 return null;
             }
@@ -127,8 +125,7 @@ namespace AirMedia.Platform.Controller.PlaybackSource
 
             if (metadata == null)
             {
-                AmwLog.Error(LogTag, string.Format("can't retrieve remote track " +
-                                                   "metadata; position: \"{0}\"", encodedPosition));
+                AmwLog.Error(LogTag, "can't retrieve remote track metadata; position: \"{0}\"", encodedPosition);
 
                 return null;
             }
@@ -137,9 +134,9 @@ namespace AirMedia.Platform.Controller.PlaybackSource
 
             if (uri == null)
             {
-                AmwLog.Error(LogTag, string.Format("Can't retrieve track uri for " +
+                AmwLog.Error(LogTag, (object)null, "Can't retrieve track uri for " +
                                                    "track guid ({0}); position: \"{1}\"", 
-                                                   metadata.TrackGuid, _encodedPosition));
+                                                   metadata.TrackGuid, _encodedPosition);
                 return null;
             }
 

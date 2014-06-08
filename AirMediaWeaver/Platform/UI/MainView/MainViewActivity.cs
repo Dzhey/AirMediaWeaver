@@ -316,12 +316,11 @@ namespace AirMedia.Platform.UI.MainView
                 return stateTyped;
             }
 
-            string details = string.Format("saved state: \"{0}\"; type: \"{1}\"", 
+            var details = (object)string.Format("saved state: \"{0}\"; type: \"{1}\"", 
                 savedState, savedState.GetType().FullName);
 
-            AmwLog.Error(LogTag, string.Format(
-                "Error retrieving fragment's state for fragment \"{0}\"", fragmentType.Name), 
-                details);
+            AmwLog.Error(LogTag, details, "Error retrieving fragment's state " +
+                                          "for fragment \"{0}\"", fragmentType.Name);
 
             return null;
         }
@@ -337,9 +336,8 @@ namespace AirMedia.Platform.UI.MainView
             }
             catch (Exception e)
             {
-                AmwLog.Error(LogTag, string.Format(
-                    "Can't save fragment state for \"{0}\". " +
-                    "Error: \"{1}\"", fragment.GetType().Name, e));
+                AmwLog.Error(LogTag, e, "Can't save fragment state for \"{0}\". " +
+                                        "Message: \"{1}\"", fragment.GetType().Name, e.Message);
             }
         }
 

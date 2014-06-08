@@ -140,8 +140,7 @@ namespace AirMedia.Core.Requests.Abs
             {
                 result = new RequestResult(RequestResult.ResultCodeFailed, e);
                 resultStatus = RequestStatus.Failed;
-                AmwLog.Error(LogTag, string.Format("Exception caught while " +
-                                                   "executing request: {0}; {1}", e, GetType().Name));
+                AmwLog.Error(LogTag, "Exception caught while executing request: {0}; {1}", e, GetType().Name);
             }
 
             switch (resultStatus)

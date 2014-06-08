@@ -105,8 +105,7 @@ namespace AirMedia.Platform.UI.Publications
                     break;
 
                 default:
-                    AmwLog.Error(LogTag, string.Format(
-                        "undefined navigation item selected: {0}", itemPosition));
+                    AmwLog.Error(LogTag, "undefined navigation item selected: {0}", itemPosition);
                     break;
             }
 

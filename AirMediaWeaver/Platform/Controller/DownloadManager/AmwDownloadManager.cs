@@ -72,8 +72,8 @@ namespace AirMedia.Platform.Controller.DownloadManager
             {
                 if (cursor.MoveToFirst() == false)
                 {
-                    AmwLog.Error(LogTag, string.Format("can't retrieve download status: download not " +
-                                                       "found; download id: \"{0}\"", downloadId));
+                    AmwLog.Error(LogTag, "can't retrieve download status: download not " +
+                                         "found; download id: \"{0}\"", downloadId);
 
                     return DownloadStatus.Unknown;
                 }
@@ -114,8 +114,8 @@ namespace AirMedia.Platform.Controller.DownloadManager
 
             if (uri == null || metadata == null)
             {
-                AmwLog.Error(LogTag, "can't begin track publication download: " +
-                                     "publication uri not found", trackGuid);
+                AmwLog.Error(LogTag, (object) trackGuid, "can't begin track publication " +
+                                                         "download: publication uri not found");
 
                 throw new ArgumentException("requested track publication not found");
             }
@@ -150,7 +150,7 @@ namespace AirMedia.Platform.Controller.DownloadManager
 
             if (ret < 1)
             {
-                AmwLog.Error(LogTag, "failed to register enqueued track download", trackGuid);
+                AmwLog.Error(LogTag, (object)trackGuid, "failed to register enqueued track download");
             }
             else
             {
@@ -178,8 +178,7 @@ namespace AirMedia.Platform.Controller.DownloadManager
                     return DownloadStatus.Failed;
 
                 default:
-                    AmwLog.Error(LogTag, string.Format(
-                        "can't translate download status: \"{0}\"", downloadStatus));
+                    AmwLog.Error(LogTag, "can't translate download status: \"{0}\"", downloadStatus);
                     return DownloadStatus.Unknown;
             }
         }

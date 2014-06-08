@@ -38,7 +38,7 @@ namespace AirMedia.Platform.Controller.Requests
 
             if (result == null)
             {
-                AmwLog.Error(LogTag, string.Format("obtained unexpected download track publications result"));
+                AmwLog.Error(LogTag, "obtained unexpected download track publications result");
 
                 return new IRemoteTrackMetadata[0];
             }

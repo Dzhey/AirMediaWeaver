@@ -79,8 +79,7 @@ namespace AirMedia.Core.Requests.Impl
                     break;
 
                 default:
-                    AmwLog.Error(LogTag, string.Format("undefined search criteria " +
-                                                       "requested: \"{0}\"", SearchCriteria));
+                    AmwLog.Error(LogTag, "undefined search criteria requested: \"{0}\"", SearchCriteria);
                     status = RequestStatus.Failed;
                     return new LoadRequestResult<List<ITrackMetadata>>(RequestResult.ResultCodeFailed, null);
             }
@@ -101,10 +100,8 @@ namespace AirMedia.Core.Requests.Impl
             }
             watch.Stop();
             searchWatch.Stop();
-            AmwLog.Debug(LogTag, string.Format("search results sorted in \"{0}\" " +
-                                               "millis", watch.ElapsedMilliseconds));
-            AmwLog.Debug(LogTag, string.Format("search results built in \"{0}\" " +
-                                               "millis", searchWatch.ElapsedMilliseconds));
+            AmwLog.Debug(LogTag, "search results sorted in \"{0}\" millis", watch.ElapsedMilliseconds);
+            AmwLog.Debug(LogTag, "search results built in \"{0}\" millis", searchWatch.ElapsedMilliseconds);
 
             return new LoadRequestResult<List<ITrackMetadata>>(RequestResult.ResultCodeOk, result);
         }

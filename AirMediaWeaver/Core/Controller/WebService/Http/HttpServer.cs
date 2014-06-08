@@ -76,14 +76,14 @@ namespace AirMedia.Core.Controller.WebService.Http
             }
             catch (HttpListenerException e)
             {
-                AmwLog.Error(LogTag, string.Format("can't setup http listener: {0}; error code: " +
-                                                   "{1}", e.Message, e.ErrorCode), e);
+                AmwLog.Error(LogTag, e, string.Format("can't setup http listener: {0}; error code: " +
+                                                      "{1}", e.Message, e.ErrorCode));
 
                 return false;
             }
             catch (ObjectDisposedException e)
             {
-                AmwLog.Error(LogTag, "can't setup http listener: object disposed", e);
+                AmwLog.Error(LogTag, e, "can't setup http listener: object disposed");
 
                 return false;
             }

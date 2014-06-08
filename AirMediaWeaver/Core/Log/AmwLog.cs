@@ -84,14 +84,24 @@ namespace AirMedia.Core.Log
             _timer.Elapsed += OnTimerElapsed;
         }
 
-        public static void Error(string tag, string displayMessage, object details)
+        public static void Error(string tag, object details, string displayMessage, params object[] args)
         {
-            Error(tag, displayMessage, details == null ? null : details.ToString());
+            ErrorImpl(tag, displayMessage, details == null ? null : details.ToString(), args);
         }
 
-        public static void Error(string tag, string displayMessage, string details = null)
+        public static void Error(string tag, string displayMessage, params object[] args)
         {
-            Instance.DispatchLogRequest(LogLevel.Error, tag, displayMessage, details);
+            ErrorImpl(tag, displayMessage, null, args);
+        }
+
+        public static void Error(string tag, string displayMessage, string arg1)
+        {
+            ErrorImpl(tag, displayMessage, null, arg1);
+        }
+
+        private static void ErrorImpl(string tag, string displayMessage, string details, params object[] args)
+        {
+            Instance.DispatchLogRequest(LogLevel.Error, tag, displayMessage, details, args);
         }
 
         public static void Warn(string tag, string displayMessage, string details = null)
@@ -139,8 +149,11 @@ namespace AirMedia.Core.Log
             };
         }
 
-        protected virtual void DispatchLogRequest(LogLevel level, string tag, string displayMessage, string details)
+        protected virtual void DispatchLogRequest(LogLevel level, string tag, string displayMessage, 
+            string details, params object[] args)
         {
+            if (Consts.IsInAppLoggingEnabled == false) return;
+
             if (tag == null)
             {
                 tag = "";
@@ -149,6 +162,17 @@ namespace AirMedia.Core.Log
             if (displayMessage == null)
             {
                 displayMessage = "null";
+            }
+            else if (args.Length > 0)
+            {
+                try
+                {
+                    displayMessage = string.Format(displayMessage, args);
+                }
+                catch (FormatException e)
+                {
+                    throw new FormatException("Inconsistent log display message parameters and arguments", e);
+                }
             }
 
             if (level < LogLevel) return;

@@ -256,8 +256,7 @@ namespace AirMedia.Platform.UI.Playlists
                 if (PlaylistDao.RenamePlaylist(playlistId, textTrimmed) == false)
                 {
                     ShowMessage(Resource.String.error_cant_rename_playlist);
-                    AmwLog.Error(LogTag, string.Format(
-                        "cant rename playlist (id:{0}) for name \"{1}\"", playlistId, textTrimmed));
+                    AmwLog.Error(LogTag, "cant rename playlist (id:{0}) for name \"{1}\"", playlistId, textTrimmed);
                 }
                 else
                 {

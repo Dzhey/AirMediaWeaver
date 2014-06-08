@@ -79,7 +79,7 @@ namespace AirMedia.Platform.Controller
 
                 if (request == null)
                 {
-                    AmwLog.Error(LogTag, string.Format("Request (id:{0}) not found", requestId));
+                    AmwLog.Error(LogTag, "Request (id:{0}) not found", requestId);
 
                     if (!HasPendingRequests()) StopSelf();
                 }

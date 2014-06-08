@@ -16,42 +16,42 @@ using AndroidDownloadManager = Android.App.DownloadManager;
 
 namespace AirMedia.Platform
 {
-	[Application(Theme = "@style/AppTheme")]
-	public sealed class App : Application
-	{
-	    public static string LogTag = typeof (App).Name;
+    [Application(Theme = "@style/AppTheme")]
+    public sealed class App : Application
+    {
+        public static string LogTag = typeof (App).Name;
 
-		public static App Instance { get; private set; }
-		public static Handler MainHandler { get; private set; }
+        public static App Instance { get; private set; }
+        public static Handler MainHandler { get; private set; }
         public static UserPreferences Preferences { get; private set; }
         public static WorkerRequestManager WorkerRequestManager { get; private set; }
         public static DatabaseHelper DatabaseHelper { get; private set; }
 
-	    private RequestResultListener _requestResultListener;
+        private RequestResultListener _requestResultListener;
 
-		public App(IntPtr handle, JniHandleOwnership transfer)
-			: base(handle,transfer)
-		{
-		}
+        public App(IntPtr handle, JniHandleOwnership transfer)
+            : base(handle,transfer)
+        {
+        }
 
-		public override void OnCreate ()
-		{
-			base.OnCreate ();
+        public override void OnCreate ()
+        {
+            base.OnCreate ();
 
             AmwLog.Init(new AndroidAmwLog());
 
-			MainHandler = new Handler();
+            MainHandler = new Handler();
             Instance = this;
             Preferences = new UserPreferences(this);
-		    WorkerRequestManager = new WorkerRequestManager(this);
-		    DatabaseHelper = new AndroidDatabaseHelper();
+            WorkerRequestManager = new WorkerRequestManager(this);
+            DatabaseHelper = new AndroidDatabaseHelper();
             DatabaseHelper.Init(DatabaseHelper);
 
             _requestResultListener = new RequestResultListener("application_request_listener");
             _requestResultListener.RegisterResultHandler(typeof(InitDatabaseRequest), OnDatabaseInitialized);
 
             _requestResultListener.SubmitRequest(new InitDatabaseRequest());
-		}
+        }
 
         private void OnDatabaseInitialized(object sender, ResultEventArgs args)
         {

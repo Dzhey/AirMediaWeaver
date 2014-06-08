@@ -138,7 +138,7 @@ namespace AirMedia.Platform.UI.Publications
             }
             catch (ArgumentException e)
             {
-                AmwLog.Error(LogTag, string.Format("cant start track download: {0}", e.Message), e.ToString());
+                AmwLog.Error(LogTag, e, "cant start track download: {0}", e.Message);
                 ShowMessage(Resource.String.error_cant_begin_track_download);
             }
         }

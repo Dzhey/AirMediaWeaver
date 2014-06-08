@@ -239,7 +239,7 @@ namespace AirMedia.Core.Requests.Controller
 
                         if (!isRemoved)
                         {
-                            AmwLog.Error(LogTag, string.Format("Can't remove event handler \"{0}\"", value));
+                            AmwLog.Error(LogTag, "Can't remove event handler \"{0}\"", value);
                         }
 
                         break;

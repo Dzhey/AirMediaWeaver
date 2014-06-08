@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using AirMedia.Core.Controller.WebService.Http;
@@ -93,8 +92,8 @@ namespace AirMedia.Platform.Controller.WebService.Http
 
             if (trackInfo == null)
             {
-                AmwLog.Error(LogTag, string.Format("unable to retrieve published track metadata for " +
-                                                   "track guid: \"{0}\"; Track not found", trackGuid));
+                AmwLog.Error(LogTag, "unable to retrieve published track metadata " +
+                                     "for track guid: \"{0}\"; Track not found", trackGuid);
 
                 return null;
             }
@@ -108,8 +107,8 @@ namespace AirMedia.Platform.Controller.WebService.Http
             {
                 if (cursor.MoveToFirst() == false)
                 {
-                    AmwLog.Error(LogTag, string.Format("can't retrieve http track content data; tack " +
-                                                       "not found; track-id: \"{0}\"", trackInfo.Value.TrackId));
+                    AmwLog.Error(LogTag, "can't retrieve http track content data; " +
+                                         "tack not found; track-id: \"{0}\"", trackInfo.Value.TrackId);
 
                     return null;
                 }

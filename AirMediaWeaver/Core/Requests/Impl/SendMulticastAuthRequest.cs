@@ -34,8 +34,7 @@ namespace AirMedia.Core.Requests.Impl
 
             if (_sender.IsStarted == false)
             {
-                AmwLog.Error(LogTag, "can't send multicast auth packet: " +
-                                     "multicast sender is not active");
+                AmwLog.Error(LogTag, "can't send multicast auth packet: multicast sender is not active");
 
                 status = RequestStatus.Failed;
 
@@ -46,8 +45,8 @@ namespace AirMedia.Core.Requests.Impl
 
             if (ret != data.Length)
             {
-                AmwLog.Error(LogTag, string.Format("Error sending multicast packet: " +
-                                                   "inconsistent sent data length ({0},{1})", data.Length, ret));
+                AmwLog.Error(LogTag, "Error sending multicast packet: " +
+                                     "inconsistent sent data length ({0},{1})", data.Length, ret);
 
                 status = RequestStatus.Failed;
 

@@ -141,8 +141,8 @@ namespace AirMedia.Platform.Controller.WebService.Http
             }
             catch (Exception e)
             {
-                AmwLog.Error(LogTag, string.Format(
-                    "Error trying to retrieve http track info; Message: \"{0}\"", e.Message), e);
+                AmwLog.Error(LogTag, e, string.Format(
+                    "Error trying to retrieve http track info; Message: \"{0}\"", e.Message));
 
                 errorCode = ErrorInternal;
             }

@@ -42,8 +42,7 @@ namespace AirMedia.Platform.UI.ViewUtils
 
             if (_progressPanel == null || _emptyIndicatorView == null)
             {
-                AmwLog.Error(LogTag, string.Format("{0} can't fetch progress " +
-                                                   "view components", GetType().Name));
+                AmwLog.Error(LogTag, "{0} can't fetch progress view components", GetType().Name);
             }
             else
             {
