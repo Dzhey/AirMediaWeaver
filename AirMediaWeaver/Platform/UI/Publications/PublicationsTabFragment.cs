@@ -45,6 +45,12 @@ namespace AirMedia.Platform.UI.Publications
             base.OnDetach();
 
             Activity.ActionBar.NavigationMode = ActionBarNavigationMode.Standard;
+
+            var fragment = GetContentFragment();
+            if (fragment != null)
+            {
+                FragmentManager.BeginTransaction().Remove(fragment).CommitAllowingStateLoss();
+            }
         }
 
         public override View OnCreateView(LayoutInflater inflater, 
