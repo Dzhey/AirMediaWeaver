@@ -15,7 +15,7 @@ namespace AirMedia.Core.Requests.Impl
         {
             public bool Equals(ITrackMetadata x, ITrackMetadata y)
             {
-                return x.TrackId == y.TrackId;
+                return x.TrackId == y.TrackId && x.TrackGuid == y.TrackGuid;
             }
 
             public int GetHashCode(ITrackMetadata obj)
