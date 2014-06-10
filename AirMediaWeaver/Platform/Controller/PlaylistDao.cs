@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using AirMedia.Core.Data;
 using AirMedia.Core.Log;
+using AirMedia.Core.Utils.StringUtils;
 using AirMedia.Platform.Data;
 using Android.Content;
 using Android.Database;
@@ -51,15 +52,21 @@ namespace AirMedia.Platform.Controller
                 MediaStore.Audio.Media.InterfaceConsts.Artist,
                 MediaStore.Audio.Media.InterfaceConsts.Album,
                 MediaStore.Audio.Media.InterfaceConsts.Duration,
-                MediaStore.Audio.Media.InterfaceConsts.Data
+                MediaStore.Audio.Media.InterfaceConsts.Data,
+                MediaStore.Audio.Media.InterfaceConsts.IsMusic
             };
 
         public static List<TrackMetadata> GetSystemTracks()
         {
+            const string selectionTemplate = "{cIsMusic}=1";
 
+            var selection = selectionTemplate.HaackFormat(new
+                {
+                    cIsMusic = MediaStore.Audio.Media.InterfaceConsts.IsMusic
+                });
             var resolver = App.Instance.ContentResolver;
             var cursor = resolver.Query(MediaStore.Audio.Media.ExternalContentUri,
-                                        TrackMetadataQueryProjection, null, null, DefaultTrackSortOrder);
+                                        TrackMetadataQueryProjection, selection, null, DefaultTrackSortOrder);
 
             var result = new List<TrackMetadata>(cursor.Count);
 

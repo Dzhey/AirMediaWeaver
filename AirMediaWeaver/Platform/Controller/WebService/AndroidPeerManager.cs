@@ -22,9 +22,9 @@ namespace AirMedia.Platform.Controller.WebService
                 OnPublicationsUpdateFinihsed);
         }
 
-        protected override void OnNewPeerDiscovered(PeerRecord peer)
+        protected override void OnNewPeerDiscovered(PeerRecord peer, bool isChangedAddress)
         {
-            base.OnNewPeerDiscovered(peer);
+            base.OnNewPeerDiscovered(peer, isChangedAddress);
 
             AmwLog.Debug(LogTag, "requesting track publications update");
             var request = new UpdateRemoteTrackPublicationsRequestImpl

@@ -52,8 +52,6 @@ namespace AirMedia.Core.Controller.WebService
                 AmwLog.Error(LogTag, "self peer guid specified in provided auth packet");
                 return false;
             }
-
-            bool isNewPeer = _discoveredPeers.Contains(packet.Guid) == false;
             var peer = (PeerRecord) FindPeer(packet.Guid);
 
             if (peer == null)
@@ -68,9 +66,11 @@ namespace AirMedia.Core.Controller.WebService
 
             _discoveredPeers.Add(peer.PeerGuid);
 
-            if (isNewPeer)
+            bool isNewPeer = _discoveredPeers.Contains(packet.Guid) == false;
+            bool isChangedAddress = peer.Address != packet.IpAddress;
+            if (isNewPeer || isChangedAddress)
             {
-                OnNewPeerDiscovered(peer);
+                OnNewPeerDiscovered(peer, isChangedAddress);
             }
             else
             {
@@ -101,7 +101,7 @@ namespace AirMedia.Core.Controller.WebService
             AmwLog.Debug(LogTag, string.Format("peer updated; peer: {0}", peer));
         }
 
-        protected virtual void OnNewPeerDiscovered(PeerRecord peer)
+        protected virtual void OnNewPeerDiscovered(PeerRecord peer, bool isChangedAddress)
         {
             AmwLog.Info(LogTag, string.Format("new peer discovered: \"{0}\"", peer));
         }

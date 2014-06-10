@@ -129,7 +129,13 @@ namespace AirMedia.Core.Data
         {
             var resolver = App.Instance.ContentResolver;
             var cursor = resolver.Query(MediaStore.Audio.Media.ExternalContentUri,
-                                        new[] { MediaStore.Audio.Media.InterfaceConsts.Id }, null, null, null);
+                                        new[]
+                                            {
+                                                MediaStore.Audio.Media.InterfaceConsts.Id,
+                                                MediaStore.Audio.Media.InterfaceConsts.IsMusic,
+                                            },
+                                        string.Format("{0}=1", MediaStore.Audio.Media.InterfaceConsts.IsMusic), 
+                                        null, null);
 
             var trackIds = new long[cursor.Count];
             using (cursor)

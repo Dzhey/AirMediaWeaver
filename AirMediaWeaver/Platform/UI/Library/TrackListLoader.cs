@@ -13,7 +13,8 @@ namespace AirMedia.Platform.UI.Library
             {
                 MediaStore.Audio.Media.InterfaceConsts.Id,
                 MediaStore.Audio.Media.InterfaceConsts.Title,
-                MediaStore.Audio.Media.InterfaceConsts.Artist
+                MediaStore.Audio.Media.InterfaceConsts.Artist,
+                MediaStore.Audio.Media.InterfaceConsts.IsMusic
             };
 
         private static readonly string TrackSortOrder;
@@ -25,8 +26,9 @@ namespace AirMedia.Platform.UI.Library
             TrackSortOrder = string.Join(",", sortByArtist, sortByTitle);
         }
 
-        public TrackListLoader(Context context) 
-            : this(context, ContentUri, Projection, null, null, TrackSortOrder)
+        public TrackListLoader(Context context)
+            : this(context, ContentUri, Projection, 
+            string.Format("{0}=1", MediaStore.Audio.Media.InterfaceConsts.IsMusic), null, TrackSortOrder)
         {
         }
 

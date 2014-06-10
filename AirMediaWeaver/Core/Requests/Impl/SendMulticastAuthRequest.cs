@@ -21,6 +21,13 @@ namespace AirMedia.Core.Requests.Impl
 
         protected override RequestResult ExecuteImpl(out RequestStatus status)
         {
+            if (_sender.IsClientInitialized == false)
+            {
+                AmwLog.Warn(LogTag, "unable to send multicast auth: multicast client is not initialized");
+                status = RequestStatus.Failed;
+                return RequestResult.ResultFailed;
+            }
+
             var packet = new AuthPacket
                 {
                     Guid = CoreUserPreferences.Instance.ClientGuid,

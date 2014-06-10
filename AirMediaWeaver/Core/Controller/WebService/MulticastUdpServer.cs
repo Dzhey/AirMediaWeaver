@@ -35,6 +35,8 @@ namespace AirMedia.Core.Controller.WebService
             }
         }
 
+        public bool IsClientInitialized { get; private set; }
+
         public event EventHandler<AuthPacketReceivedEventArgs> AuthPacketReceived;
 
         public IPAddress ServiceAddress { get; private set; }
@@ -60,8 +62,12 @@ namespace AirMedia.Core.Controller.WebService
                 OnReceiveAuthPacketRequestFinished);
         }
 
-        public bool TryStart(int serviceAddress)
+        public bool TryStart(int serviceAddress, bool initializeClientSocket)
         {
+            if (IsStarted) Stop();
+
+            IsClientInitialized = initializeClientSocket;
+
             ServiceAddress = new IPAddress(NetworkUtils.IpV4ToBytes(serviceAddress));
             _multicastAddress = IPAddress.Parse(Consts.DefaultMulticastAddress);
             _sendSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
@@ -149,6 +155,13 @@ namespace AirMedia.Core.Controller.WebService
                 return;
             }
 
+            if (IsClientInitialized == false)
+            {
+                AmwLog.Warn(LogTag, "can't request multicast auth packet send" +
+                                    ": client socket is not initialized");
+                return;
+            }
+
             string ipAddressString = ServiceAddress.ToString();
             _requestResultListener.SubmitRequest(new SendMulticastAuthRequest(this, ipAddressString), true);
         }
@@ -192,20 +205,27 @@ namespace AirMedia.Core.Controller.WebService
 
             try
             {
-                if (_sendSocket.Connected == false)
+                if (IsClientInitialized == false || _sendSocket.Connected == false)
                 {
                     lock (_sendSocket)
                     {
                         if (_sendSocket.Connected == false)
                         {
                             _sendSocket.Connect(new IPEndPoint(_multicastAddress, Consts.DefaultMulticastPort));
+                            AmwLog.Debug(LogTag, "client UDP socket initialized");
                         }
                     }
                 }
             }
             catch (SocketException e)
             {
-                AmwLog.Warn(LogTag, "Unable to setup client socket to send multicast request");
+                AmwLog.Warn(LogTag, "Unable to setup client socket to send multicast request", e.ToString());
+                return 0;
+            }
+
+            if (IsClientInitialized == false)
+            {
+                AmwLog.Warn(LogTag, "can't send requested multicast message: client socket is not initialized");
                 return 0;
             }
 

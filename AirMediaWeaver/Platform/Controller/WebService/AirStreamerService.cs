@@ -4,6 +4,7 @@ using AirMedia.Core.Controller.WebService.Http;
 using AirMedia.Core.Controller.WebService.Model;
 using AirMedia.Core.Data;
 using AirMedia.Core.Log;
+using AirMedia.Core.Requests.Controller;
 using AirMedia.Core.Requests.Impl;
 using AirMedia.Core.Requests.Model;
 using AirMedia.Platform.Controller.Requests;
@@ -43,6 +44,7 @@ namespace AirMedia.Platform.Controller.WebService
         private RequestResultListener _requestResultListener;
         private IHttpRequestHandler _httpRequestHandler;
         private bool _isStopped;
+        private bool _isWifiHotspotEnabled;
 
         public override void OnCreate()
         {
@@ -80,9 +82,17 @@ namespace AirMedia.Platform.Controller.WebService
         {
             if (_isStopped) return;
 
+            if (_isWifiHotspotEnabled)
+            {
+                AmwLog.Info(LogTag, "stopping Wi-Fi hotspot servers..");
+                _isWifiHotspotEnabled = false;
+                _httpServer.Stop();
+                _multicastUdpServer.Stop();
+            }
+
+            AmwLog.Debug(LogTag, "wifi connection established; starting servers..");
             if (_httpServer.IsListening == false)
             {
-                AmwLog.Debug(LogTag, "wifi connection established; starting http listener..");
                 TryStartHttpServer();
             }
 
@@ -98,7 +108,8 @@ namespace AirMedia.Platform.Controller.WebService
 
             if (_isStopped == false)
             {
-                if (_multicastUdpServer.HasMulticastCapability == false)
+                if (_multicastUdpServer.IsClientInitialized == false 
+                    || _multicastUdpServer.HasMulticastCapability == false)
                 {
                     var authPacket = new AuthPacket
                         {
@@ -136,6 +147,12 @@ namespace AirMedia.Platform.Controller.WebService
 
         private void TryStartHttpServer()
         {
+            if (_httpServer.IsListening)
+            {
+                AmwLog.Warn(LogTag, "unable to start http server: server is already started");
+                return;
+            }
+
             var inetAddress = (InetAddress)null;
             if (_connectivityReceiver.IsWifiConnected == false)
             {
@@ -144,7 +161,7 @@ namespace AirMedia.Platform.Controller.WebService
                 {
                     AmwLog.Warn(LogTag, "can't start http server: wifi is down, " +
                                         "and no suitable network interface found");
-                    _requestResultListener.SubmitDedicatedRequest(new WatchWifiHotspotRequest());
+                    LaunchWifiHotspotWatchdog();
 
                     return;
                 }
@@ -166,18 +183,25 @@ namespace AirMedia.Platform.Controller.WebService
 
         private void TryStartMulticastUdpServer()
         {
+            if (_multicastUdpServer.IsStarted)
+            {
+                AmwLog.Warn(LogTag, "unable to start http server: server is already started");
+                return;
+            }
+
             AmwLog.Debug(LogTag, "starting multicast udp server..");
             var inetAddress = (InetAddress) null;
+            bool hasWifiConnection = true;
             if (_connectivityReceiver.IsWifiConnected == false)
             {
+                hasWifiConnection = false;
                 inetAddress = NetworkUtils.GetLanIpV4Address();
                 if (inetAddress == null)
                 {
                     AmwLog.Warn(LogTag, "can't start udp multicast server: wifi is down, " +
                                         "and no suitable network interface found");
 
-                    _requestResultListener.SubmitDedicatedRequest(new WatchWifiHotspotRequest());
-
+                    LaunchWifiHotspotWatchdog();
                     return;
                 }
             }
@@ -189,7 +213,7 @@ namespace AirMedia.Platform.Controller.WebService
             _requestResultListener.SubmitRequest(new SimpleRequest<int>(ipAddress,
                     i =>
                     {
-                        bool isStarted = _multicastUdpServer.TryStart(ipAddress);
+                        bool isStarted = _multicastUdpServer.TryStart(ipAddress, hasWifiConnection);
                         if (!isStarted)
                         {
                             AmwLog.Error(LogTag, "unable to start multicast server");
@@ -223,6 +247,21 @@ namespace AirMedia.Platform.Controller.WebService
             AmwLog.Debug(LogTag, "AirStreamerService destroyed");
         }
 
+        private void LaunchWifiHotspotWatchdog()
+        {
+            var rq = RequestManager.Instance.FindRequest(WatchWifiHotspotRequest.ActionTagDefault);
+            if (rq != null 
+                && (rq.Status == RequestStatus.InProgress
+                    || rq.Status == RequestStatus.Pending))
+            {
+                AmwLog.Debug(LogTag, "Wi-Fi watchdog already launched");
+                return;
+            }
+
+            AmwLog.Info(LogTag, "launching wifi hotspot watchdog..");
+            _requestResultListener.SubmitDedicatedRequest(new WatchWifiHotspotRequest());
+        }
+
         private void OnWifiHotspotWatchFinished(object sender, ResultEventArgs args)
         {
             if (args.Request.Status != RequestStatus.Ok)
@@ -230,9 +269,12 @@ namespace AirMedia.Platform.Controller.WebService
                 AmwLog.Warn(LogTag, "Wi-Fi hotspot watch request finished with error");
                 return;
             }
+
             AmwLog.Info(LogTag, "Wi-Fi hotspot connectivity detected");
+            _isWifiHotspotEnabled = true;
             if (_isStopped == false)
             {
+                TryStartHttpServer();
                 TryStartMulticastUdpServer();
             }
         }

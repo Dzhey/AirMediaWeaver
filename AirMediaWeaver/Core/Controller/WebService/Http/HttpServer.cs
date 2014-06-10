@@ -21,7 +21,7 @@ namespace AirMedia.Core.Controller.WebService.Http
 
         public bool IsListening
         {
-            get { return _httpListener.IsListening; }
+            get { return _httpListener != null && _httpListener.IsListening; }
         }
 
         private HttpListener _httpListener;

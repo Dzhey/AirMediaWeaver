@@ -117,6 +117,30 @@ namespace AirMedia.Core.Requests.Controller
             }
         }
 
+        public bool HasRequest(int requestId)
+        {
+            lock (_requestQueue)
+            {
+                return _requestQueue.FirstOrDefault(request => request.RequestId == requestId) != null;
+            }
+        }
+
+        public AbsRequest FindRequest(string actionTag)
+        {
+            lock (_requestQueue)
+            {
+                return _requestQueue.FirstOrDefault(request => request.ActionTag == actionTag);
+            }
+        }
+
+        public bool HasRequest(string actionTag)
+        {
+            lock (_requestQueue)
+            {
+                return _requestQueue.FirstOrDefault(request => request.ActionTag == actionTag) != null;
+            }
+        }
+
         private void PerformRequestQueueCleanup()
         {
             if (_requestQueue.Count < RequestQueueSize + QueueFreeThreshold) return;

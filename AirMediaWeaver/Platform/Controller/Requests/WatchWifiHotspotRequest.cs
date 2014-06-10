@@ -8,10 +8,16 @@ namespace AirMedia.Platform.Controller.Requests
     public class WatchWifiHotspotRequest : AbsRequest
     {
         public const int WatchWifiHotspotIntervalMillis = 8000;
+        public const string ActionTagDefault = "WatchWifiHotspotRequest_Tag";
+
+        public WatchWifiHotspotRequest()
+        {
+            ActionTag = ActionTagDefault;
+        }
 
         protected override RequestResult ExecuteImpl(out RequestStatus status)
         {
-            AmwLog.Debug(LogTag, "watching for Wi-Fi hotspot status..");
+            AmwLog.Info(LogTag, "watching for Wi-Fi hotspot status..");
             while (true)
             {
                 Thread.Sleep(8000);
