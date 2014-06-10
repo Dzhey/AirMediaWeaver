@@ -259,7 +259,11 @@ namespace AirMedia.Platform.UI.MainView
 
             var currentFragment = GetContentFragment();
 
-            if (currentFragment != null && currentFragment.GetType() == fragmentType) return;
+            if (currentFragment != null && currentFragment.GetType() == fragmentType)
+            {
+                App.MainHandler.Post(AdjustActionBarToContent);
+                return;
+            }
 
             if (currentFragment != null) SaveFragmentState(currentFragment);
 

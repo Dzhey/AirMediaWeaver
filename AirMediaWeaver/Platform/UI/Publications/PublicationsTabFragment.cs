@@ -12,10 +12,14 @@ namespace AirMedia.Platform.UI.Publications
     public class PublicationsTabFragment : MainViewFragment, ActionBar.IOnNavigationListener
     {
         private const string ContentFragmentTag = "PublicationsTabFragment_content_fragment";
+        private const string ExtraSelectedNavigationItem = "PublicationsTabFragment_selected_navitem";
 
         private const int LanPublicationsIndex = 0;
         private const int MyPublicationsIndex = 1;
         private ISpinnerAdapter _navigationAdapter;
+        private bool _isRecreated;
+
+        private int _selectedNavigationItem = LanPublicationsIndex;
 
         public override void OnAttach(Activity activity)
         {
@@ -28,6 +32,13 @@ namespace AirMedia.Platform.UI.Publications
             _navigationAdapter = adapter;
         }
 
+        public override void OnCreate(Bundle savedInstanceState)
+        {
+            base.OnCreate(savedInstanceState);
+
+            _isRecreated = true;
+        }
+
         public override void UpdateNavigationItems(ActionBar actionBar)
         {
             if (_navigationAdapter == null)
@@ -38,6 +49,7 @@ namespace AirMedia.Platform.UI.Publications
 
             actionBar.NavigationMode = ActionBarNavigationMode.List;
             actionBar.SetListNavigationCallbacks(_navigationAdapter, this);
+            actionBar.SetSelectedNavigationItem(_selectedNavigationItem);
         }
 
         public override void OnDetach()
@@ -45,18 +57,22 @@ namespace AirMedia.Platform.UI.Publications
             base.OnDetach();
 
             Activity.ActionBar.NavigationMode = ActionBarNavigationMode.Standard;
-
-            var fragment = GetContentFragment();
-            if (fragment != null)
-            {
-                FragmentManager.BeginTransaction().Remove(fragment).CommitAllowingStateLoss();
-            }
         }
 
         public override View OnCreateView(LayoutInflater inflater, 
             ViewGroup container, Bundle savedInstanceState)
         {
             return inflater.Inflate(Resource.Layout.View_ChildFragmentContainer, container, false);
+        }
+
+        public override void OnActivityCreated(Bundle savedInstanceState)
+        {
+            base.OnActivityCreated(savedInstanceState);
+
+            if (savedInstanceState == null) return;
+
+            _selectedNavigationItem = savedInstanceState.GetInt(
+                ExtraSelectedNavigationItem, LanPublicationsIndex);
         }
 
         public override void OnActivityResult(int requestCode, Result resultCode, Intent data)
@@ -115,6 +131,8 @@ namespace AirMedia.Platform.UI.Publications
                     break;
             }
 
+            _selectedNavigationItem = itemPosition;
+
             return true;
         }
 
@@ -128,7 +146,11 @@ namespace AirMedia.Platform.UI.Publications
 
             var currentFragment = GetContentFragment();
 
-            if (currentFragment != null && currentFragment.GetType() == fragmentType) return;
+            if (_isRecreated == false 
+                && currentFragment != null 
+                && currentFragment.GetType() == fragmentType) return;
+
+            _isRecreated = false;
 
             if (currentFragment != null) SaveChildFragmentState(currentFragment);
 
@@ -149,6 +171,13 @@ namespace AirMedia.Platform.UI.Publications
         private MainViewFragment GetContentFragment()
         {
             return FragmentManager.FindFragmentByTag(ContentFragmentTag) as MainViewFragment;
+        }
+
+        public override void OnSaveInstanceState(Bundle outState)
+        {
+            base.OnSaveInstanceState(outState);
+
+            outState.PutInt(ExtraSelectedNavigationItem, _selectedNavigationItem);
         }
 
         private void SaveChildFragmentState(MainViewFragment fragment)

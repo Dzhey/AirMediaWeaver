@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using AirMedia.Core.Data;
+using AirMedia.Core.Log;
 using AirMedia.Platform.Data;
 using Android.Content;
 using Android.Database;
@@ -10,6 +11,8 @@ namespace AirMedia.Platform.Controller
 {
     public class PlaylistDao
     {
+        private static readonly string LogTag = typeof (PlaylistDao).Name;
+
         public const string SortByArtist = MediaStore.Audio.Media.InterfaceConsts.Artist + " ASC";
         public const string SortByTitle = MediaStore.Audio.Media.InterfaceConsts.Title + " ASC";
         public const string SortByAlbum = MediaStore.Audio.Media.InterfaceConsts.Album + " ASC";
@@ -62,9 +65,16 @@ namespace AirMedia.Platform.Controller
 
             using (cursor)
             {
-                while (cursor.MoveToNext())
+                try
                 {
-                    result.Add(CreateTrackMetadata(cursor));
+                    while (cursor.MoveToNext())
+                    {
+                        result.Add(CreateTrackMetadata(cursor));
+                    }
+                }
+                finally
+                {
+                    cursor.Close();
                 }
             }
 
@@ -73,17 +83,32 @@ namespace AirMedia.Platform.Controller
 
         public static TrackMetadata? GetTrackMetadata(long trackId)
         {
-            var resolver = App.Instance.ContentResolver;
-            var uri = ContentUris.WithAppendedId(MediaStore.Audio.Media.ExternalContentUri, trackId);
-
-            using (var cursor = resolver.Query(uri, TrackMetadataQueryProjection, null, null, null))
+            try
             {
-                if (cursor.MoveToFirst() == false) return null;
+                var resolver = App.Instance.ContentResolver;
+                var uri = ContentUris.WithAppendedId(MediaStore.Audio.Media.ExternalContentUri, trackId);
 
-                var metadata = CreateTrackMetadata(cursor);
-                metadata.Genre = TrackMetadataDao.QueryForAudioGenre((int) trackId);
+                using (var cursor = resolver.Query(uri, TrackMetadataQueryProjection, null, null, null))
+                {
+                    try
+                    {
+                        if (cursor.MoveToFirst() == false) return null;
 
-                return metadata;
+                        var metadata = CreateTrackMetadata(cursor);
+                        metadata.Genre = TrackMetadataDao.QueryForAudioGenre((int)trackId);
+
+                        return metadata;
+                    }
+                    finally
+                    {
+                        cursor.Close();
+                    }
+                } 
+            }
+            catch (Exception e)
+            {
+                AmwLog.Error(LogTag, e, "error retrieving track \"{0}\" metadata", trackId);
+                throw;
             }
         }
         
@@ -165,9 +190,16 @@ namespace AirMedia.Platform.Controller
 
             using (var cursor = resolver.Query(uri, PlaylistsQueryProjection, null, null, null))
             {
-                if (cursor.MoveToFirst())
+                try
                 {
-                    return CreatePlaylist(cursor);
+                    if (cursor.MoveToFirst())
+                    {
+                        return CreatePlaylist(cursor);
+                    }
+                }
+                finally
+                {
+                    cursor.Close();
                 }
             }
 
@@ -184,9 +216,16 @@ namespace AirMedia.Platform.Controller
 
             using (cursor)
             {
-                if (cursor.MoveToFirst() == false) return null;
+                try
+                {
+                    if (cursor.MoveToFirst() == false) return null;
 
-                return CreatePlaylist(cursor);
+                    return CreatePlaylist(cursor);
+                }
+                finally
+                {
+                    cursor.Close();
+                }
             }
         }
 
@@ -203,9 +242,16 @@ namespace AirMedia.Platform.Controller
 
             using (cursor)
             {
-                while (cursor.MoveToNext())
+                try
                 {
-                    metadata.Add(CreateTrackMetadata(cursor));
+                    while (cursor.MoveToNext())
+                    {
+                        metadata.Add(CreateTrackMetadata(cursor));
+                    }   
+                }
+                finally
+                {
+                    cursor.Close();
                 }
             }
 
@@ -224,9 +270,16 @@ namespace AirMedia.Platform.Controller
 
             using (cursor)
             {
-                while (cursor.MoveToNext())
+                try
                 {
-                    playlists.Add(CreatePlaylist(cursor));
+                    while (cursor.MoveToNext())
+                    {
+                        playlists.Add(CreatePlaylist(cursor));
+                    }
+                }
+                finally
+                {
+                    cursor.Close();
                 }
             }
 

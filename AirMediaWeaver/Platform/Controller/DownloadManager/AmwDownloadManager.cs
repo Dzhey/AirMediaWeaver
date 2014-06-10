@@ -70,18 +70,25 @@ namespace AirMedia.Platform.Controller.DownloadManager
 
             using (var cursor = _downloadManager.InvokeQuery(query))
             {
-                if (cursor.MoveToFirst() == false)
+                try
                 {
-                    AmwLog.Error(LogTag, "can't retrieve download status: download not " +
-                                         "found; download id: \"{0}\"", downloadId);
+                    if (cursor.MoveToFirst() == false)
+                    {
+                        AmwLog.Error(LogTag, "can't retrieve download status: download not " +
+                                             "found; download id: \"{0}\"", downloadId);
 
-                    return DownloadStatus.Unknown;
+                        return DownloadStatus.Unknown;
+                    }
+
+                    int idx = cursor.GetColumnIndex(AndroidDownloadManager.ColumnStatus);
+                    var status = (AndroidDownloadStatus) cursor.GetInt(idx);
+
+                    return TranslateDownloadStatus(status);
                 }
-
-                int idx = cursor.GetColumnIndex(AndroidDownloadManager.ColumnStatus);
-                var status = (AndroidDownloadStatus)cursor.GetInt(idx);
-
-                return TranslateDownloadStatus(status);
+                finally
+                {
+                    cursor.Close();
+                }
             }
         }
 

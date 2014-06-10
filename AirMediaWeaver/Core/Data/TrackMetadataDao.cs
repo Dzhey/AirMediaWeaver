@@ -200,9 +200,16 @@ namespace AirMedia.Core.Data
 
             using (cursor)
             {
-                while (cursor.MoveToNext())
+                try
                 {
-                    result[cursor.Position] = cursor.GetString(0);
+                    while (cursor.MoveToNext())
+                    {
+                        result[cursor.Position] = cursor.GetString(0);
+                    }
+                }
+                finally
+                {
+                    cursor.Close();
                 }
 
                 return result;
@@ -221,12 +228,19 @@ namespace AirMedia.Core.Data
 
             using (cursor)
             {
-                if (cursor.MoveToNext())
+                try
                 {
-                    return cursor.GetString(0);
-                }
+                    if (cursor.MoveToNext())
+                    {
+                        return cursor.GetString(0);
+                    }
 
-                return string.Empty;
+                    return string.Empty;
+                }
+                finally
+                {
+                    cursor.Close();
+                }
             }
         }
 

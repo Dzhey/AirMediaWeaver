@@ -105,31 +105,38 @@ namespace AirMedia.Platform.Controller.WebService.Http
 
             using (cursor)
             {
-                if (cursor.MoveToFirst() == false)
+                try
                 {
-                    AmwLog.Error(LogTag, "can't retrieve http track content data; " +
-                                         "tack not found; track-id: \"{0}\"", trackInfo.Value.TrackId);
+                    if (cursor.MoveToFirst() == false)
+                    {
+                        AmwLog.Error(LogTag, "can't retrieve http track content data; " +
+                                             "tack not found; track-id: \"{0}\"", trackInfo.Value.TrackId);
 
-                    return null;
+                        return null;
+                    }
+
+                    result.ContentType = cursor.GetString(0);
+                    result.ContentLength = cursor.GetLong(1);
+                    result.FilePath = cursor.GetString(2);
+                    result.FileName = cursor.GetString(3);
+
+                    if (string.IsNullOrWhiteSpace(result.FileName))
+                    {
+                        try
+                        {
+                            AmwLog.Debug(LogTag, "can't resolve display name for track; using content uri", trackGuid);
+                            result.FileName = Path.GetFileName(result.FilePath);
+                        }
+                        catch (ArgumentException e)
+                        {
+                            AmwLog.Warn(LogTag, "can't resolve track file name from content uri", e.ToString());
+                            result.FileName = trackGuid;
+                        }
+                    }
                 }
-
-                result.ContentType = cursor.GetString(0);
-                result.ContentLength = cursor.GetLong(1);
-                result.FilePath = cursor.GetString(2);
-                result.FileName = cursor.GetString(3);
-                
-                if (string.IsNullOrWhiteSpace(result.FileName))
+                finally
                 {
-                    try
-                    {
-                        AmwLog.Debug(LogTag, "can't resolve display name for track; using content uri", trackGuid);
-                        result.FileName = Path.GetFileName(result.FilePath);
-                    }
-                    catch (ArgumentException e)
-                    {
-                        AmwLog.Warn(LogTag, "can't resolve track file name from content uri", e.ToString());
-                        result.FileName = trackGuid;
-                    }
+                    cursor.Close();
                 }
             }
 

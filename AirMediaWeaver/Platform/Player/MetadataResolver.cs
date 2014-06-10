@@ -22,19 +22,26 @@ namespace AirMedia.Platform.Player
             var uri = ContentUris.WithAppendedId(MediaStore.Audio.Media.ExternalContentUri, trackId);
             using (var cursor = cr.Query(uri, Projection, null, null, null))
             {
-                if (cursor.MoveToFirst() == false) return null;
+                try
+                {
+                    if (cursor.MoveToFirst() == false) return null;
 
-                var result = new TrackMetadata
-                    {
-                        TrackId = cursor.GetLong(0),
-                        TrackTitle = cursor.GetString(1),
-                        Artist = cursor.GetString(2),
-                        Album = cursor.GetString(3),
-                        TrackDurationMillis = cursor.GetInt(4),
-                        Data = cursor.GetString(5)
-                    };
+                    var result = new TrackMetadata
+                        {
+                            TrackId = cursor.GetLong(0),
+                            TrackTitle = cursor.GetString(1),
+                            Artist = cursor.GetString(2),
+                            Album = cursor.GetString(3),
+                            TrackDurationMillis = cursor.GetInt(4),
+                            Data = cursor.GetString(5)
+                        };
 
-                return result;
+                    return result;
+                }
+                finally
+                {
+                    cursor.Close();
+                }
             }
         }
     }
