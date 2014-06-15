@@ -1,7 +1,6 @@
-using System.Collections.Generic;
 using AirMedia.Core;
-using AirMedia.Core.Data.Model;
 using AirMedia.Core.Log;
+using AirMedia.Core.Requests.Factory;
 using AirMedia.Core.Requests.Impl;
 using AirMedia.Core.Requests.Model;
 using AirMedia.Platform.Player;
@@ -17,12 +16,17 @@ namespace AirMedia.Platform.UI.Recommendations
     {
         private ListView _listView;
         private PlaylistTracksAdapter _adapter;
+        private RequestFactory _recsRequestFactory;
 
         public override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
 
             _adapter = new PlaylistTracksAdapter();
+            _recsRequestFactory = RequestFactory.Init(typeof (LoadRecommendationsRequest))
+                                                .SetActionTag(LoadRecommendationsRequest.ActionTagDefault)
+                                                .SetParallel(true)
+                                                .SetDistinct(true);
         }
 
         public override void OnCreateOptionsMenu(IMenu menu, MenuInflater inflater)
@@ -56,6 +60,7 @@ namespace AirMedia.Platform.UI.Recommendations
             base.OnResume();
 
             RegisterRequestResultHandler(typeof(LoadRecommendationsRequest), OnTrackListLoaded);
+            RegisterRequestUpdateHandler(typeof(LoadRecommendationsRequest), OnTrackListLoadUpdate);
 
             _listView.ItemClick += OnListItemClicked;
         }
@@ -65,6 +70,7 @@ namespace AirMedia.Platform.UI.Recommendations
             _listView.ItemClick += OnListItemClicked;
 
             RemoveRequestResultHandler(typeof(LoadRecommendationsRequest));
+            RemoveRequestUpdateHandler(typeof(LoadRecommendationsRequest));
 
             base.OnPause();
         }
@@ -72,7 +78,13 @@ namespace AirMedia.Platform.UI.Recommendations
         private void ReloadList()
         {
             SetInProgress(true);
-            SubmitParallelRequest(new LoadRecommendationsRequest());
+
+            var rq = _recsRequestFactory.Submit(App.MemoryRequestResultCache);
+            
+            if (rq.HasRequestId)
+            {
+                ResultListener.AddPendingRequest(rq.RequestId);
+            }
         }
 
         public override string GetTitle()
@@ -111,10 +123,32 @@ namespace AirMedia.Platform.UI.Recommendations
                 return;
             }
 
-            var data = ((LoadRequestResult<List<IRemoteTrackMetadata>>) args.Result).Data;
-            _adapter.SetItems(data);
-
             SetInProgress(false);
+        }
+
+        private void OnTrackListLoadUpdate(object sender, UpdateEventArgs args)
+        {
+            if (args.Request.Status != RequestStatus.Ok 
+                && args.Request.Status != RequestStatus.InProgress) return;
+
+            switch (args.UpdateData.UpdateCode)
+            {
+                case UpdateData.UpdateCodeCachedResultRetrieved:
+                    var cachedResult = ((CachedUpdateData)args.UpdateData).CachedResult;
+                    var cachedData = ((LoadRecommendationsRequestResult)cachedResult).Data;
+                    _adapter.SetItems(cachedData);
+                    if (cachedData.Count > 0)
+                        SetInProgress(false);
+                    break;
+
+                case UpdateData.UpdateCodeIntermediateResultObtained:
+                    var result = ((IntermediateResultUpdateData)args.UpdateData).RequestResult;
+                    var data = ((LoadRecommendationsRequestResult)result).Data;
+                    _adapter.SetItems(data);
+                    if (data.Count > 0)
+                        SetInProgress(false);
+                    break;
+            }
         }
     }
 }

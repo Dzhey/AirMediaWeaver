@@ -35,6 +35,8 @@ namespace AirMedia.Core.Requests.Abs
             }
         }
 
+        public bool HasRequestId { get { return _requestId.HasValue; } }
+
         public int RequestId
         {
             get

@@ -54,6 +54,12 @@
     <Reference Include="Mono.Android" />
     <Reference Include="Mono.Android.Export" />
     <Reference Include="Mono.Android.Support.v4" />
+    <Reference Include="MonoTorrent">
+      <HintPath>..\libs\MonoTorrent.dll</HintPath>
+    </Reference>
+    <Reference Include="MonoTorrent.Dht">
+      <HintPath>..\libs\MonoTorrent.Dht.dll</HintPath>
+    </Reference>
     <Reference Include="mscorlib" />
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\libs\Newtonsoft.Json.dll</HintPath>
@@ -69,6 +75,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Core\Controller\AmwWebClient.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -119,11 +126,23 @@
     <Compile Include="Core\Data\Sql\Model\ITrackDownloadRecord.cs" />
     <Compile Include="Core\Data\Sql\Model\PeerRecord.cs" />
     <Compile Include="Core\Data\Sql\Model\RemoteTrackPublicationRecord.cs" />
+    <Compile Include="Core\Json\RemoteTrackMetadataConverter.cs" />
+    <Compile Include="Core\Requests\Abs\AbsCachedRequest.cs" />
+    <Compile Include="Core\Requests\Abs\BaseLoadCachedRequest.cs" />
+    <Compile Include="Core\Requests\Controller\MemoryRequestResultCache.cs" />
+    <Compile Include="Core\Requests\Interfaces\ICachedRequestResult.cs" />
+    <Compile Include="Core\Requests\Interfaces\IRequestResultCache.cs" />
+    <Compile Include="Core\Requests\Factory\RequestFactory.cs" />
     <Compile Include="Core\Requests\Impl\LoadRecommendationsRequest.cs" />
     <Compile Include="Core\Requests\Impl\LoadRemoteTrackDownloadsRequest.cs" />
     <Compile Include="Core\Requests\Impl\LoadRemoteTracksRequest.cs" />
     <Compile Include="Core\Requests\Impl\PerformTracksSearchRequest.cs" />
     <Compile Include="Core\Requests\Impl\SendHttpAuthPacketRequest.cs" />
+    <Compile Include="Core\Requests\Model\CachedLoadRequestResult.cs" />
+    <Compile Include="Core\Requests\Model\CachedUpdateData.cs" />
+    <Compile Include="Core\Requests\Model\LoadRecommendationsRequestResult.cs" />
+    <Compile Include="Core\Requests\Model\RequestResultCacheEntry.cs" />
+    <Compile Include="Core\Requests\Model\IntermediateResultUpdateData.cs" />
     <Compile Include="Core\Requests\Model\TrackSearchCriteria.cs" />
     <Compile Include="Platform\Controller\DownloadManager\AmwDownloadManager.cs" />
     <Compile Include="Platform\Controller\NetworkUtils.cs" />
@@ -183,6 +202,7 @@
     <Compile Include="Platform\Data\Sql\Dao\TrackPublicationsDao.cs" />
     <Compile Include="Platform\Data\Sql\RemoteTrackMetadata.cs" />
     <Compile Include="Platform\Data\TrackMetadata.cs" />
+    <Compile Include="Core\Json\ConcreteTypeConverter.cs" />
     <Compile Include="Platform\Player\MediaService\IBinderCallbacks.cs" />
     <Compile Include="Platform\Player\IMediaPlayerCallbacks.cs" />
     <Compile Include="Platform\Player\IPlaybackProgressListener.cs" />
@@ -441,7 +461,9 @@
     <AndroidResource Include="Resources\Drawable-xhdpi\ic_action_download.png" />
     <AndroidResource Include="Resources\Drawable-xxhdpi\ic_action_download.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Platform\Json\" />
+  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
      Other similar extension points exist, see Microsoft.Common.targets.

@@ -6,15 +6,23 @@ using AirMedia.Core.Data.Model;
 using AirMedia.Core.Data.Sql;
 using AirMedia.Core.Log;
 using AirMedia.Core.Requests.Abs;
+using AirMedia.Core.Requests.Interfaces;
 using AirMedia.Core.Requests.Model;
 using AirMedia.Platform.Data.Dao;
 using SQLite;
 
 namespace AirMedia.Core.Requests.Impl
 {
-    public class LoadRecommendationsRequest : BaseLoadRequest<List<IRemoteTrackMetadata>>
+    public class LoadRecommendationsRequest : BaseLoadCachedRequest<List<IRemoteTrackMetadata>>
     {
-        protected override LoadRequestResult<List<IRemoteTrackMetadata>> DoLoad(out RequestStatus status)
+        public const string ActionTagDefault = "LoadRecommendationsRequest";
+        public const string CacheEntryKey = "LoadRecommendationsRequest_cache_key";
+
+        public LoadRecommendationsRequest(IRequestResultCache cache) : base(cache)
+        {
+        }
+
+        protected override CachedLoadRequestResult<List<IRemoteTrackMetadata>> DoLoad(out RequestStatus status)
         {
             status = RequestStatus.Ok;
 
@@ -32,7 +40,7 @@ namespace AirMedia.Core.Requests.Impl
             AmwLog.Debug(LogTag, string.Format("recommendations sorted in {0} seconds", 
                 watch.ElapsedMilliseconds / 1000));
 
-            return new LoadRequestResult<List<IRemoteTrackMetadata>>(RequestResult.ResultCodeOk, newTracks);
+            return new LoadRecommendationsRequestResult(RequestResult.ResultCodeOk, newTracks);
         }
 
         protected double GetRecommendationWeight(PlayCountDao dao, ITrackMetadata metadata)
@@ -56,6 +64,11 @@ namespace AirMedia.Core.Requests.Impl
         protected IRemoteTrackMetadata[] RetrieveNewTracks()
         {
             return DatabaseHelper.Instance.TrackMetadataDao.GetNotPlayedTracks();
+        }
+
+        protected override string GetCacheKey()
+        {
+            return CacheEntryKey;
         }
     }
 }

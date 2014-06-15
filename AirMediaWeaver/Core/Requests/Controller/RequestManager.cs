@@ -24,7 +24,7 @@ namespace AirMedia.Core.Requests.Controller
         private readonly LinkedList<WeakReference<IRequestResultListener>> _resultEventHandlers;
         private readonly LinkedList<WeakReference<IRequestUpdateListener>> _updateEventHandlers;
 
-        private static RequestManager _instance;
+        private static volatile RequestManager _instance;
 
         public static RequestManager Instance
         {
@@ -109,6 +109,12 @@ namespace AirMedia.Core.Requests.Controller
             }
         }
 
+        /// <summary>
+        /// Find first request with the specified id.
+        /// Request may have any status.
+        /// </summary>
+        /// <param name="requestId"></param>
+        /// <returns>request instance, if any; null otherwise</returns>
         public AbsRequest FindRequest(int requestId)
         {
             lock (_requestQueue)
@@ -117,30 +123,58 @@ namespace AirMedia.Core.Requests.Controller
             }
         }
 
-        public bool HasRequest(int requestId)
+        /// <summary>
+        /// </summary>
+        /// <param name="requestId"></param>
+        /// <returns>true if there any pending/progress request with specified id</returns>
+        public bool HasPendingRequest(int requestId)
         {
             lock (_requestQueue)
             {
-                return _requestQueue.FirstOrDefault(request => request.RequestId == requestId) != null;
+                var rq = FindRequest(requestId);
+
+                return rq != null
+                       && (rq.Status == RequestStatus.InProgress
+                           || rq.Status == RequestStatus.Pending);
             }
         }
 
+        /// <summary>
+        /// Find first request with the specified tag.
+        /// Request may have any status.
+        /// </summary>
+        /// <param name="actionTag"></param>
+        /// <returns>request instance, if any; null otherwise</returns>
         public AbsRequest FindRequest(string actionTag)
         {
+            if (actionTag == null) return null;
+
             lock (_requestQueue)
             {
                 return _requestQueue.FirstOrDefault(request => request.ActionTag == actionTag);
             }
         }
 
-        public bool HasRequest(string actionTag)
+        /// <summary>
+        /// </summary>
+        /// <param name="actionTag"></param>
+        /// <returns>true if there any pending/progress request with specified tag</returns>
+        public bool HasPendingRequest(string actionTag)
         {
             lock (_requestQueue)
             {
-                return _requestQueue.FirstOrDefault(request => request.ActionTag == actionTag) != null;
+                var rq = FindRequest(actionTag);
+
+                return rq != null
+                       && (rq.Status == RequestStatus.InProgress
+                           || rq.Status == RequestStatus.Pending);
             }
         }
 
+        /// <summary>
+        /// Perform request queue cleanup if queue size reached specified threshold.
+        /// Only finished requests are removed.
+        /// </summary>
         private void PerformRequestQueueCleanup()
         {
             if (_requestQueue.Count < RequestQueueSize + QueueFreeThreshold) return;
@@ -170,7 +204,23 @@ namespace AirMedia.Core.Requests.Controller
                 }
             }
         }
-
+        
+        /// <summary>
+        /// Submit request on execution.
+        /// Request execution order depend on the supplied parameters.
+        /// By default, all submitted requests are executed in serial order.
+        /// Appropriate parameters chagning execution order.
+        /// </summary>
+        /// <param name="request">request to enqueue</param>
+        /// <param name="isParallel">
+        /// If true then request will be executed in the fixed thread pool instead of common single thread. 
+        /// Requests with the same tag are executing in serial order in the same thread pool.
+        /// Requests with the null tag are executing asynchronously.
+        /// </param>
+        /// <param name="isDedicated">
+        /// If true then request will be asynchronously executed in the dedicated thread.
+        /// Request tag and parallel flag are not considered in that case.
+        /// </param>
         /// <returns>generated request id</returns>
         public int SubmitRequest(AbsRequest request, bool isParallel = false, bool isDedicated = false)
         {
@@ -194,6 +244,13 @@ namespace AirMedia.Core.Requests.Controller
             return requestId;
         }
 
+        /// <summary>
+        /// SubmitRequest implementation.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="requestId"></param>
+        /// <param name="isParallel"></param>
+        /// <param name="isDedicated"></param>
         protected abstract void SubmitRequestImpl(AbsRequest request, int requestId, 
             bool isParallel, bool isDedicated);
 
@@ -204,7 +261,6 @@ namespace AirMedia.Core.Requests.Controller
 
 		private void HandleRequestResult(object sender, ResultEventArgs args)
         {
-            Debug.WriteLine(string.Format("handle request result: {0}", args.Request), LogTag);
             lock (_resultEventHandlers)
             {
                 foreach (var resultRef in _resultEventHandlers.ToArray())
@@ -274,6 +330,11 @@ namespace AirMedia.Core.Requests.Controller
             DisposeDetachedListeners(_updateEventHandlers);
         }
 
+        /// <summary>
+        /// Remove weak references to disposed listeners.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="items"></param>
         private void DisposeDetachedListeners<T>(LinkedList<WeakReference<T>> items) where T : class, IRequestListener
         {
             if (items.Count < ListenersDisposeThreshold) return;

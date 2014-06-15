@@ -4,6 +4,9 @@ namespace AirMedia.Core.Requests.Model
 {
     public class UpdateData
     {
+        public const int UpdateCodeIntermediateResultObtained = 1000;
+        public const int UpdateCodeCachedResultRetrieved = 1100;
+
         public int UpdateCode
         {
             get

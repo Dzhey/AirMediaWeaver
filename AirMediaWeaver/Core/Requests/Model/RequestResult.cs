@@ -12,7 +12,7 @@ namespace AirMedia.Core.Requests.Model
         public const int ResultCodeFailed = -1;
         public const int ResultCodeCancelled = -2;
 
-        public Exception RisenException { get; private set; }
+        public Exception RisenException { get; protected set; }
         public string ErrorMessage { get; set; }
 
         static RequestResult()
@@ -20,6 +20,8 @@ namespace AirMedia.Core.Requests.Model
             ResultFailed = new RequestResult(ResultCodeFailed);
             ResultOk = new RequestResult(ResultCodeOk);
         }
+
+        public bool HasResultCode { get { return _resultCode.HasValue; } }
 
         public int ResultCode
         {
@@ -33,7 +35,7 @@ namespace AirMedia.Core.Requests.Model
                 return _resultCode.Value;
             }
 
-            private set
+            protected set
             {
                 if (_resultCode.HasValue)
                 {
@@ -45,6 +47,10 @@ namespace AirMedia.Core.Requests.Model
         }
 
         private int? _resultCode;
+
+        protected RequestResult()
+        {
+        }
 
         public RequestResult(int resultCode)
         {

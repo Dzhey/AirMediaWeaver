@@ -1,5 +1,6 @@
 using AirMedia.Core.Data.Sql;
 using AirMedia.Core.Log;
+using AirMedia.Core.Requests.Controller;
 using AirMedia.Core.Requests.Impl;
 using AirMedia.Core.Requests.Model;
 using AirMedia.Platform.Controller;
@@ -26,6 +27,7 @@ namespace AirMedia.Platform
         public static UserPreferences Preferences { get; private set; }
         public static WorkerRequestManager WorkerRequestManager { get; private set; }
         public static DatabaseHelper DatabaseHelper { get; private set; }
+        public static MemoryRequestResultCache MemoryRequestResultCache { get; private set; }
 
         private RequestResultListener _requestResultListener;
 
@@ -46,6 +48,8 @@ namespace AirMedia.Platform
             WorkerRequestManager = new WorkerRequestManager(this);
             DatabaseHelper = new AndroidDatabaseHelper();
             DatabaseHelper.Init(DatabaseHelper);
+
+            MemoryRequestResultCache = new MemoryRequestResultCache();
 
             _requestResultListener = new RequestResultListener("application_request_listener");
             _requestResultListener.RegisterResultHandler(typeof(InitDatabaseRequest), OnDatabaseInitialized);

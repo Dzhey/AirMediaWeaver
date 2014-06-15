@@ -6,6 +6,14 @@ namespace AirMedia.Core.Requests.Model
     {
         public TData Data { get; set; }
 
+        public LoadRequestResult()
+        {
+        }
+
+        public LoadRequestResult(int resultCode) : base(resultCode)
+        {
+        }
+
         public LoadRequestResult(int resultCode, TData resultData)
             : base(resultCode)
 	    {
