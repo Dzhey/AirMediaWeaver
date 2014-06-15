@@ -3,6 +3,7 @@ using AirMedia.Core.Log;
 using AirMedia.Core.Requests.Factory;
 using AirMedia.Core.Requests.Impl;
 using AirMedia.Core.Requests.Model;
+using AirMedia.Platform.Controller;
 using AirMedia.Platform.Player;
 using AirMedia.Platform.UI.Base;
 using Android.OS;
@@ -23,10 +24,10 @@ namespace AirMedia.Platform.UI.Recommendations
             base.OnCreate(savedInstanceState);
 
             _adapter = new PlaylistTracksAdapter();
-            _recsRequestFactory = RequestFactory.Init(typeof (LoadRecommendationsRequest))
-                                                .SetActionTag(LoadRecommendationsRequest.ActionTagDefault)
-                                                .SetParallel(true)
-                                                .SetDistinct(true);
+            _recsRequestFactory = AndroidRequestFactory.Init(typeof (LoadRecommendationsRequest), ResultListener)
+                                                       .SetActionTag(LoadRecommendationsRequest.ActionTagDefault)
+                                                       .SetParallel(true)
+                                                       .SetDistinct(true);
         }
 
         public override void OnCreateOptionsMenu(IMenu menu, MenuInflater inflater)
@@ -79,12 +80,7 @@ namespace AirMedia.Platform.UI.Recommendations
         {
             SetInProgress(true);
 
-            var rq = _recsRequestFactory.Submit(App.MemoryRequestResultCache);
-            
-            if (rq.HasRequestId)
-            {
-                ResultListener.AddPendingRequest(rq.RequestId);
-            }
+            _recsRequestFactory.Submit(App.MemoryRequestResultCache);
         }
 
         public override string GetTitle()

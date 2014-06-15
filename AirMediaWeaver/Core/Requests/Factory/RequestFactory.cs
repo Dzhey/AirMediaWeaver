@@ -28,13 +28,13 @@ namespace AirMedia.Core.Requests.Factory
             return new RequestFactory(requestType);
         }
 
-        private RequestFactory(string requestTypeName)
+        protected RequestFactory(string requestTypeName)
         {
             _requestTypeName = requestTypeName;
             _constructors = new Dictionary<string, ConstructorInfo>();
         }
 
-        private RequestFactory(Type requestType)
+        protected RequestFactory(Type requestType)
         {
             _requestType = requestType;
             _constructors = new Dictionary<string, ConstructorInfo>();
@@ -68,7 +68,7 @@ namespace AirMedia.Core.Requests.Factory
             return this;
         }
 
-        public AbsRequest Submit(params object[] args)
+        public virtual AbsRequest Submit(params object[] args)
         {
             var constructor = ResolveConstructor(args);
             var rq = (AbsRequest) constructor.Invoke(args);

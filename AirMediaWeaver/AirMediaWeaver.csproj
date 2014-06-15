@@ -144,6 +144,8 @@
     <Compile Include="Core\Requests\Model\RequestResultCacheEntry.cs" />
     <Compile Include="Core\Requests\Model\IntermediateResultUpdateData.cs" />
     <Compile Include="Core\Requests\Model\TrackSearchCriteria.cs" />
+    <Compile Include="Core\Utils\ZipUtils.cs" />
+    <Compile Include="Platform\Controller\AndroidRequestFactory.cs" />
     <Compile Include="Platform\Controller\DownloadManager\AmwDownloadManager.cs" />
     <Compile Include="Platform\Controller\NetworkUtils.cs" />
     <Compile Include="Platform\Controller\PlaybackSource\MixedPlaybackSourceParcel.cs" />

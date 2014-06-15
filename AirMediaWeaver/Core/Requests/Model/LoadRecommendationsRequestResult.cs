@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using AirMedia.Core.Data.Model;
 using AirMedia.Core.Json;
+using AirMedia.Core.Utils;
 using Newtonsoft.Json;
 
 namespace AirMedia.Core.Requests.Model
@@ -25,6 +26,18 @@ namespace AirMedia.Core.Requests.Model
             base.ApplyDeserializedParams(previousResult);
 
             Data = ((LoadRecommendationsRequestResult) previousResult).Data;
+        }
+
+        public override byte[] Serialize()
+        {
+            var bytes = base.Serialize();
+
+            return ZipUtils.Zip(bytes);
+        }
+
+        public override void Deserialize(byte[] data)
+        {
+            base.Deserialize(ZipUtils.Unzip(data));
         }
     }
 }
