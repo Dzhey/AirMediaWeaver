@@ -53,6 +53,7 @@ namespace AirMedia.Platform.UI.Recommendations
         {
             base.OnActivityCreated(savedInstanceState);
 
+            RegisterRequestUpdateHandler(typeof(LoadRecommendationsRequest), OnTrackListLoadUpdate);
             ReloadList();
         }
 
@@ -61,7 +62,6 @@ namespace AirMedia.Platform.UI.Recommendations
             base.OnResume();
 
             RegisterRequestResultHandler(typeof(LoadRecommendationsRequest), OnTrackListLoaded);
-            RegisterRequestUpdateHandler(typeof(LoadRecommendationsRequest), OnTrackListLoadUpdate);
 
             _listView.ItemClick += OnListItemClicked;
         }

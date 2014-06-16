@@ -97,8 +97,7 @@ namespace AirMedia.Platform.UI.Playlists
             }
         }
 
-        public override void OnActivityResult(int requestCode, 
-            Android.App.Result resultCode, Intent data)
+        public override void OnActivityResult(int requestCode, int resultCode, Intent data)
         {
             if (requestCode == RequestCodeEditPlaylist)
             {

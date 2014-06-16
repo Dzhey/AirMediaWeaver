@@ -16,13 +16,13 @@ namespace AirMedia.Platform.Logger
             SetContentView(Resource.Layout.View_FragmentContainer);
 
 
-            var fragment = FragmentManager.FindFragmentByTag(TagContentFragment);
+            var fragment = SupportFragmentManager.FindFragmentByTag(TagContentFragment);
             if (fragment == null)
             {
                 fragment = new InAppLoggingFragment();
-                FragmentManager.BeginTransaction()
-                               .Add(Resource.Id.contentView, fragment, TagContentFragment)
-                               .Commit();
+                SupportFragmentManager.BeginTransaction()
+                                      .Add(Resource.Id.contentView, fragment, TagContentFragment)
+                                      .Commit();
             }
         }
 

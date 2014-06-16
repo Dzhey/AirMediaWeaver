@@ -144,12 +144,12 @@ namespace AirMedia.Platform.UI.Playlists
             return base.OnOptionsItemSelected(item);
         }
 
-        public override void OnActivityResult(int requestCode, Result resultCode, Intent data)
+        public override void OnActivityResult(int requestCode, int resultCode, Intent data)
         {
             switch (requestCode)
             {
                 case RequestCodeEditPlaylist:
-                    if (resultCode == Result.Ok)
+                    if (resultCode == (int)Result.Ok)
                     {
                         var selectedTracks = data.GetLongArrayExtra(AudioLibraryFragment.ExtraCheckedTrackIds);
                         if (_playlistId == null || PlaylistDao.UpdatePlaylistContents(

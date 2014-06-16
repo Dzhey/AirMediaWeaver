@@ -75,7 +75,7 @@ namespace AirMedia.Platform.UI.Publications
                 ExtraSelectedNavigationItem, LanPublicationsIndex);
         }
 
-        public override void OnActivityResult(int requestCode, Result resultCode, Intent data)
+        public override void OnActivityResult(int requestCode, int resultCode, Intent data)
         {
             var fragment = GetContentFragment();
 

@@ -74,9 +74,9 @@ namespace AirMedia.Platform.UI.Base
             OverridePendingTransition(Resource.Animation.slide_in_right_to_left, 
                 Resource.Animation.slide_out_right_to_left);
 
-            FragmentManager.BeginTransaction()
-                           .Add(Resource.Id.contentView, displayFragment, TagContentFragment)
-                           .Commit();
+            SupportFragmentManager.BeginTransaction()
+                                  .Add(Resource.Id.contentView, displayFragment, TagContentFragment)
+                                  .Commit();
         }
 
         protected override void OnActivityResult(int requestCode, Result resultCode, Intent data)
@@ -85,7 +85,7 @@ namespace AirMedia.Platform.UI.Base
 
             if (fragment != null)
             {
-                fragment.OnActivityResult(requestCode, resultCode, data);
+                fragment.OnActivityResult(requestCode, (int)resultCode, data);
 
                 return;
             }
@@ -95,7 +95,7 @@ namespace AirMedia.Platform.UI.Base
 
         public AmwFragment GetContentFragment()
         {
-            return (AmwFragment) FragmentManager.FindFragmentByTag(TagContentFragment);
+            return (AmwFragment) SupportFragmentManager.FindFragmentByTag(TagContentFragment);
         }
 
         public override bool OnOptionsItemSelected(IMenuItem item)

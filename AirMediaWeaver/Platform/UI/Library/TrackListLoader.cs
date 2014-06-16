@@ -5,7 +5,7 @@ using Uri = Android.Net.Uri;
 
 namespace AirMedia.Platform.UI.Library
 {
-    public class TrackListLoader : CursorLoader
+    public class TrackListLoader : Android.Support.V4.Content.CursorLoader
     {
         private static readonly Uri ContentUri = MediaStore.Audio.Media.ExternalContentUri;
 

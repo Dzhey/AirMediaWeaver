@@ -3,9 +3,9 @@ using AirMedia.Core.Requests.Abs;
 using AirMedia.Core.Requests.Model;
 using AirMedia.Platform.Controller;
 using AirMedia.Platform.Logger;
-using Android.App;
 using Android.Content;
 using Android.OS;
+using Android.Support.V4.App;
 using Android.Widget;
 
 namespace AirMedia.Platform.UI.Base

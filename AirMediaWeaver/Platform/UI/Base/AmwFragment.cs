@@ -4,14 +4,14 @@ using AirMedia.Core.Requests.Abs;
 using AirMedia.Core.Requests.Model;
 using AirMedia.Platform.Controller;
 using AirMedia.Platform.Logger;
-using Android.App;
 using Android.OS;
 using Android.Util;
 using Android.Widget;
+using FragmentV4 = Android.Support.V4.App.Fragment;
 
 namespace AirMedia.Platform.UI.Base
 {
-    public abstract class AmwFragment : Fragment
+    public abstract class AmwFragment : FragmentV4
     {
         private const string ExtraRequestResultListenerState = "request_result_listener_state";
         private const string ExtraChildFragmentStates = "child_fragment_states";
@@ -218,7 +218,7 @@ namespace AirMedia.Platform.UI.Base
         /// </summary>
         /// <param name="fragment"></param>
         /// <param name="key"></param>
-        protected void RestoreChildFragmentState(Fragment fragment, string key)
+        protected void RestoreChildFragmentState(FragmentV4 fragment, string key)
         {
             var state = GetChildFragmentState(key);
 

@@ -5,7 +5,6 @@ using AirMedia.Core.Requests.Model;
 using AirMedia.Platform.Controller.Requests;
 using AirMedia.Platform.UI.Base;
 using AirMedia.Platform.UI.Library;
-using Android.App;
 using Android.Content;
 using Android.OS;
 using Android.Views;
@@ -107,7 +106,7 @@ namespace AirMedia.Platform.UI.Publications
             return true;
         }
 
-        public override void OnActivityResult(int requestCode, Result resultCode, Intent data)
+        public override void OnActivityResult(int requestCode, int resultCode, Intent data)
         {
             switch (requestCode)
             {

@@ -14,7 +14,7 @@ using Android.OS;
 using Android.Support.V4.Widget;
 using Android.Views;
 using Android.Widget;
-using Fragment = Android.App.Fragment;
+using Fragment = Android.Support.V4.App.Fragment;
 
 namespace AirMedia.Platform.UI.MainView
 {
@@ -103,14 +103,14 @@ namespace AirMedia.Platform.UI.MainView
 
             SetContentFragment(displayFragmentType);
 
-            var playerFacadeFragment = (PlayerFacadeFragment) FragmentManager.FindFragmentByTag(PlayerFacadeFragmentTag);
+            var playerFacadeFragment = (PlayerFacadeFragment) SupportFragmentManager.FindFragmentByTag(PlayerFacadeFragmentTag);
 
             if (playerFacadeFragment == null)
             {
                 playerFacadeFragment = new PlayerFacadeFragment();
-                FragmentManager.BeginTransaction()
-                               .Add(Resource.Id.playerView, playerFacadeFragment, PlayerFacadeFragmentTag)
-                               .Commit();
+                SupportFragmentManager.BeginTransaction()
+                                      .Add(Resource.Id.playerView, playerFacadeFragment, PlayerFacadeFragmentTag)
+                                      .Commit();
             }
         }
 
@@ -168,7 +168,7 @@ namespace AirMedia.Platform.UI.MainView
             var fragment = GetContentFragment();
             if (fragment != null)
             {
-                fragment.OnActivityResult(requestCode, resultCode, data);
+                fragment.OnActivityResult(requestCode, (int)resultCode, data);
 
                 return;
             }
@@ -276,9 +276,9 @@ namespace AirMedia.Platform.UI.MainView
                 currentFragment.SetInitialSavedState(savedState);
             }
 
-            FragmentManager.BeginTransaction()
-                           .Replace(Resource.Id.contentView, currentFragment, ContentFragmentTag)
-                           .CommitAllowingStateLoss();
+            SupportFragmentManager.BeginTransaction()
+                                  .Replace(Resource.Id.contentView, currentFragment, ContentFragmentTag)
+                                  .CommitAllowingStateLoss();
 
             App.MainHandler.Post(AdjustActionBarToContent);
 
@@ -303,7 +303,7 @@ namespace AirMedia.Platform.UI.MainView
 
         private MainViewFragment GetContentFragment()
         {
-            return FragmentManager.FindFragmentByTag(ContentFragmentTag) as MainViewFragment;
+            return SupportFragmentManager.FindFragmentByTag(ContentFragmentTag) as MainViewFragment;
         }
 
         private Fragment.SavedState GetSavedState(Type fragmentType)
@@ -335,7 +335,7 @@ namespace AirMedia.Platform.UI.MainView
 
             try
             {
-                var fragmentState = FragmentManager.SaveFragmentInstanceState(fragment);
+                var fragmentState = SupportFragmentManager.SaveFragmentInstanceState(fragment);
                 _fragmentStateBundle.PutParcelable(fragment.GetType().Name, fragmentState);
             }
             catch (Exception e)

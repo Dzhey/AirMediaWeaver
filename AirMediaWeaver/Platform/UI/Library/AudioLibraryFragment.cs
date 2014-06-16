@@ -12,6 +12,8 @@ using Android.Views;
 using Android.Widget;
 using Java.Lang;
 using Consts = AirMedia.Core.Consts;
+using Loader = Android.Support.V4.Content.Loader;
+using LoaderManager = Android.Support.V4.App.LoaderManager;
 
 namespace AirMedia.Platform.UI.Library
 {

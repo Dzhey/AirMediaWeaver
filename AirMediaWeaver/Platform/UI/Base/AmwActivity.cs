@@ -2,14 +2,14 @@ using AirMedia.Core.Requests.Abs;
 using AirMedia.Core.Requests.Model;
 using AirMedia.Platform.Controller;
 using AirMedia.Platform.Logger;
-using Android.App;
 using Android.OS;
+using Android.Support.V4.App;
 using Android.Views;
 using Android.Widget;
 
 namespace AirMedia.Platform.UI.Base
 {
-    public abstract class AmwActivity : Activity
+    public abstract class AmwActivity : FragmentActivity
     {
         private string _logTag;
 
@@ -101,10 +101,10 @@ namespace AirMedia.Platform.UI.Base
         {
             if (_isLogPanelDisplayed == false) return;
 
-            var fragment = FragmentManager.FindFragmentByTag(TagLogPanelFragment) as InAppLoggingPanelFragment;
+            var fragment = SupportFragmentManager.FindFragmentByTag(TagLogPanelFragment) as InAppLoggingPanelFragment;
             if (fragment != null)
             {
-                FragmentManager.BeginTransaction().Remove(fragment).CommitAllowingStateLoss();
+                SupportFragmentManager.BeginTransaction().Remove(fragment).CommitAllowingStateLoss();
             }
 
             _isLogPanelDisplayed = false;
@@ -118,13 +118,13 @@ namespace AirMedia.Platform.UI.Base
 
             if (container != null)
             {
-                var fragment = FragmentManager.FindFragmentByTag(TagLogPanelFragment) as InAppLoggingPanelFragment;
+                var fragment = SupportFragmentManager.FindFragmentByTag(TagLogPanelFragment) as InAppLoggingPanelFragment;
                 if (fragment == null)
                 {
                     fragment = new InAppLoggingPanelFragment();
-                    FragmentManager.BeginTransaction()
-                                   .Add(Resource.Id.logPanelContainer, fragment, TagLogPanelFragment)
-                                   .CommitAllowingStateLoss();
+                    SupportFragmentManager.BeginTransaction()
+                                          .Add(Resource.Id.logPanelContainer, fragment, TagLogPanelFragment)
+                                          .CommitAllowingStateLoss();
                 }
             }
 
