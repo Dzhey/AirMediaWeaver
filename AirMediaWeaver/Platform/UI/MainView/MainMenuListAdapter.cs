@@ -4,7 +4,7 @@ using Android.Widget;
 
 namespace AirMedia.Platform.UI.MainView
 {
-    public class DrawerListAdapter : BaseAdapter<DrawerNavigationItem>
+    public class MainMenuListAdapter : BaseAdapter<DrawerNavigationItem>
     {
         private readonly List<DrawerNavigationItem> _items;
 
@@ -18,7 +18,7 @@ namespace AirMedia.Platform.UI.MainView
             get { return _items[position]; }
         }
 
-        public DrawerListAdapter()
+        public MainMenuListAdapter()
         {
             _items = new List<DrawerNavigationItem>();
         }

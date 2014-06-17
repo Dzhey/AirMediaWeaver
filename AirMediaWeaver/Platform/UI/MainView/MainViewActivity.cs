@@ -9,11 +9,10 @@ using AirMedia.Platform.UI.Recommendations;
 using AirMedia.Platform.UI.Search;
 using Android.App;
 using Android.Content;
-using Android.Content.Res;
 using Android.OS;
-using Android.Support.V4.Widget;
 using Android.Views;
 using Android.Widget;
+using Com.Jeremyfeinstein.Slidingmenu.Lib;
 using Fragment = Android.Support.V4.App.Fragment;
 
 namespace AirMedia.Platform.UI.MainView
@@ -27,13 +26,14 @@ namespace AirMedia.Platform.UI.MainView
         private const string ContentFragmentTag = "content_fragment_tag";
         private const string PlayerFacadeFragmentTag = "player_facade_fragment_tag";
 
+        private const int ContentDisplayTransactionDelayMillis = 330;
+
         private static readonly DrawerNavigationItem[] NavigationItems;
 
         private Bundle _fragmentStateBundle;
-        private DrawerListAdapter _drawerListAdapter;
-        private DrawerLayout _drawerLayout;
-        private ListView _drawerList;
-        private MainViewDrawerToggle _drawerToggle;
+        private MainMenuListAdapter _mainMenuListAdapter;
+        private ListView _menuListView;
+        private SlidingMenu _slidingMenu;
 
         static MainViewActivity()
         {
@@ -67,21 +67,27 @@ namespace AirMedia.Platform.UI.MainView
             base.OnCreate(bundle);
             
             SetContentView(Resource.Layout.Activity_MainView);
-
-            _drawerListAdapter = new DrawerListAdapter();
-            _drawerListAdapter.SetItems(NavigationItems);
-            _drawerLayout = FindViewById<DrawerLayout>(Resource.Id.drawerLayout);
-            _drawerList = FindViewById<ListView>(Resource.Id.leftDrawer);
-            _drawerList.Adapter = _drawerListAdapter;
-
-            _drawerToggle = new MainViewDrawerToggle(this, _drawerLayout, Resource.Drawable.ic_drawer,
-                                                     Resource.String.hint_open_main_drawer,
-                                                     Resource.String.hint_close_main_drawer);
             
-            _drawerLayout.SetDrawerListener(_drawerToggle);
+            _mainMenuListAdapter = new MainMenuListAdapter();
+            _mainMenuListAdapter.SetItems(NavigationItems);
+
+            #region Prepare Sliding Menu
+            _slidingMenu = new SlidingMenu(this);
+            _slidingMenu.SetMenu(Resource.Layout.View_Main_Menu);
+            _slidingMenu.TouchModeAbove = SlidingMenu.TouchmodeFullscreen;
+            _slidingMenu.SetTouchModeBehind(SlidingMenu.TouchmodeMargin);
+            _slidingMenu.SetFadeEnabled(true);
+            _slidingMenu.SetFadeDegree(0.35f);
+            _slidingMenu.SetShadowDrawable(Resource.Drawable.main_menu_behind_shadow);
+            _slidingMenu.SetBehindOffsetRes(Resource.Dimension.main_menu_offset);
+            _slidingMenu.AttachToActivity(this, SlidingMenu.SlidingWindow);
+
+            _menuListView = FindViewById<ListView>(Android.Resource.Id.List);
+            _menuListView.Adapter = _mainMenuListAdapter;
+            #endregion
 
             ActionBar.SetHomeButtonEnabled(true);
-            ActionBar.SetDisplayHomeAsUpEnabled(true);
+            ActionBar.SetDisplayOptions(ActionBar.DisplayOptions, ActionBarDisplayOptions.ShowHome);
 
             Type displayFragmentType = null;
             if (bundle != null)
@@ -114,32 +120,25 @@ namespace AirMedia.Platform.UI.MainView
             }
         }
 
+        public void RequestNavigationTouchMode(MainMenuTouchMode mode)
+        {
+            if (_slidingMenu == null) return;
+
+            _slidingMenu.TouchModeAbove = (int)mode;
+        }
+
         protected override void OnResume()
         {
             base.OnResume();
 
-            _drawerToggle.DrawerOpened += OnDrawerOpened;
-            _drawerToggle.DrawerClosed += OnDrawerClosed;
-            _drawerList.ItemClick += OnNavigationItemClicked;
+            _menuListView.ItemClick += OnNavigationItemClicked;
         }
 
         protected override void OnPause()
         {
-            _drawerToggle.DrawerOpened -= OnDrawerOpened;
-            _drawerToggle.DrawerClosed -= OnDrawerClosed;
-            _drawerList.ItemClick -= OnNavigationItemClicked;
+            _menuListView.ItemClick -= OnNavigationItemClicked;
 
             base.OnPause();
-        }
-
-        private void OnDrawerOpened(object sender, EventArgs args)
-        {
-            AdjustActionBarToContent();
-        }
-
-        private void OnDrawerClosed(object sender, EventArgs args)
-        {
-            AdjustActionBarToContent();
         }
 
         protected override void OnSaveInstanceState(Bundle outState)
@@ -156,13 +155,6 @@ namespace AirMedia.Platform.UI.MainView
             }
         }
 
-        protected override void OnPostCreate(Bundle savedInstanceState)
-        {
-            base.OnPostCreate(savedInstanceState);
-
-            _drawerToggle.SyncState();
-        }
-
         protected override void OnActivityResult(int requestCode, Result resultCode, Intent data)
         {
             var fragment = GetContentFragment();
@@ -176,16 +168,18 @@ namespace AirMedia.Platform.UI.MainView
             base.OnActivityResult(requestCode, resultCode, data);
         }
 
-        public override void OnConfigurationChanged(Configuration newConfig)
-        {
-            base.OnConfigurationChanged(newConfig);
-
-            _drawerToggle.OnConfigurationChanged(newConfig);
-        }
-
         public override bool OnOptionsItemSelected(IMenuItem item)
         {
-            if (_drawerToggle.OnOptionsItemSelected(item)) return true;
+            switch (item.ItemId)
+            {
+                case Android.Resource.Id.Home:
+                    if (_slidingMenu.IsMenuShowing == false)
+                        _slidingMenu.Toggle(true);
+                    return true;
+
+                default:
+                    break;
+            }
 
             return base.OnOptionsItemSelected(item);
         }
@@ -194,14 +188,7 @@ namespace AirMedia.Platform.UI.MainView
         {
             if (keyCode == Keycode.Menu)
             {
-                if (!_drawerLayout.IsDrawerOpen(_drawerList))
-                {
-                    _drawerLayout.OpenDrawer(_drawerList);
-                }
-                else
-                {
-                    _drawerLayout.CloseDrawer(_drawerList);
-                }
+                _slidingMenu.Toggle(true);
 
                 return true;
             }
@@ -209,12 +196,23 @@ namespace AirMedia.Platform.UI.MainView
             return base.OnKeyDown(keyCode, e);
         }
 
+        public override void OnBackPressed()
+        {
+            if (_slidingMenu.IsMenuShowing == false)
+            {
+                _slidingMenu.Toggle(true);
+                return;
+            }
+
+            base.OnBackPressed();
+        }
+
         private void OnNavigationItemClicked(object sender, AdapterView.ItemClickEventArgs args)
         {
-            _drawerLayout.CloseDrawer(_drawerList);
+            _slidingMenu.Toggle(true);
 
             Type contentFragment = null;
-            var item = _drawerListAdapter[args.Position];
+            var item = _mainMenuListAdapter[args.Position];
             switch (item.StringResourceId)
             {
                 case Resource.String.title_navigation_item_media_library:
@@ -245,7 +243,8 @@ namespace AirMedia.Platform.UI.MainView
             if (contentFragment != null)
             {
                 // Delayed start to let finish animations
-                App.MainHandler.PostDelayed(() => SetContentFragment(contentFragment), 250);
+                App.MainHandler.PostDelayed(() => SetContentFragment(contentFragment), 
+                    ContentDisplayTransactionDelayMillis);
             }
         }
 
@@ -260,10 +259,7 @@ namespace AirMedia.Platform.UI.MainView
             var currentFragment = GetContentFragment();
 
             if (currentFragment != null && currentFragment.GetType() == fragmentType)
-            {
-                App.MainHandler.Post(AdjustActionBarToContent);
                 return;
-            }
 
             if (currentFragment != null) SaveFragmentState(currentFragment);
 
@@ -280,25 +276,7 @@ namespace AirMedia.Platform.UI.MainView
                                   .Replace(Resource.Id.contentView, currentFragment, ContentFragmentTag)
                                   .CommitAllowingStateLoss();
 
-            App.MainHandler.Post(AdjustActionBarToContent);
-
             App.Preferences.LastMainView = fragmentType;
-        }
-
-        private void AdjustActionBarToContent()
-        {
-            var fragment = GetContentFragment();
-            if (fragment == null || _drawerLayout.IsDrawerOpen(_drawerList))
-            {
-                ActionBar.SetTitle(Resource.String.title_main_view);
-                ActionBar.NavigationMode = ActionBarNavigationMode.Standard;
-            }
-            else
-            {
-                ActionBar.Title = fragment.GetTitle();
-                ActionBar.NavigationMode = fragment.GetNavigationMode();
-                fragment.UpdateNavigationItems(ActionBar);
-            }
         }
 
         private MainViewFragment GetContentFragment()

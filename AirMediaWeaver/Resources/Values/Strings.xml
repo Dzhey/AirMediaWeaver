@@ -18,8 +18,8 @@
   <string name="title_navigation_item_publications">Публикации</string>
   <string name="title_navigation_item_recommendations">Рекомендации</string>
   <string name="title_navigation_item_search">Поиск</string>
-  <string name="hint_open_main_drawer">Показать панель навигации</string>
-  <string name="hint_close_main_drawer">Скрыть панель навигации</string>
+  <string name="hint_open_main_menu">Показать панель навигации</string>
+  <string name="hint_close_main_menu">Скрыть панель навигации</string>
   <string name="title_tab_tracks">Треки</string>
   <string name="title_tab_albums">Альбомы</string>
   <string name="title_tab_artists">Исполнители</string>

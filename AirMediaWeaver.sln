@@ -5,6 +5,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AirMediaWeaver", "AirMediaW
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ViewPagerIndicator", "libs\ViewPagerIndicator\ViewPagerIndicator.csproj", "{10BE6857-6A09-448A-A52E-C0AC31CAFD9D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Android.Library.SlidingMenuBindings", "libs\Android.Library.SlidingMenuBindings\Android.Library.SlidingMenuBindings.csproj", "{2122E5E5-769B-4C9E-AE0A-4756927F0F28}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,6 +25,10 @@ Global
 		{10BE6857-6A09-448A-A52E-C0AC31CAFD9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{10BE6857-6A09-448A-A52E-C0AC31CAFD9D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{10BE6857-6A09-448A-A52E-C0AC31CAFD9D}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{2122E5E5-769B-4C9E-AE0A-4756927F0F28}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2122E5E5-769B-4C9E-AE0A-4756927F0F28}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2122E5E5-769B-4C9E-AE0A-4756927F0F28}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2122E5E5-769B-4C9E-AE0A-4756927F0F28}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

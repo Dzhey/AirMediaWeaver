@@ -228,7 +228,8 @@
     <Compile Include="Platform\UI\Library\TrackListCursorAdapter.cs" />
     <Compile Include="Platform\UI\Library\TrackListLoader.cs" />
     <Compile Include="Platform\UI\MainView\DrawerNavigationItem.cs" />
-    <Compile Include="Platform\UI\MainView\DrawerListAdapter.cs" />
+    <Compile Include="Platform\UI\MainView\MainMenuListAdapter.cs" />
+    <Compile Include="Platform\UI\MainView\MainMenuTouchMode.cs" />
     <Compile Include="Platform\UI\MainView\MainViewDrawerToggle.cs" />
     <Compile Include="Platform\UI\MainView\MainViewActivity.cs" />
     <Compile Include="Core\Consts.cs" />
@@ -366,6 +367,7 @@
       <SubType>Designer</SubType>
     </AndroidResource>
     <AndroidResource Include="Resources\Layout\View_Tab.axml" />
+    <AndroidResource Include="Resources\Layout\View_Main_Menu.axml" />
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\Values\Strings.xml">
@@ -466,9 +468,18 @@
     <AndroidResource Include="Resources\Drawable-xhdpi\ic_action_download.png" />
     <AndroidResource Include="Resources\Drawable-xxhdpi\ic_action_download.png" />
     <AndroidResource Include="Resources\Layout\vpi__tab.xml" />
+    <AndroidResource Include="Resources\Drawable\main_menu_shadow.xml" />
+    <AndroidResource Include="Resources\Drawable\main_menu_behind_shadow.xml" />
+    <AndroidResource Include="Resources\Values\Dimen.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Platform\Json\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\libs\Android.Library.SlidingMenuBindings\Android.Library.SlidingMenuBindings.csproj">
+      <Project>{2122e5e5-769b-4c9e-ae0a-4756927f0f28}</Project>
+      <Name>Android.Library.SlidingMenuBindings</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

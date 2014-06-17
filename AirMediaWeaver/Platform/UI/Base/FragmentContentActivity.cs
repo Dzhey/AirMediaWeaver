@@ -1,6 +1,7 @@
 
 using System;
 using AirMedia.Core.Log;
+using AirMedia.Platform.UI.MainView;
 using Android.App;
 using Android.Content;
 using Android.OS;
@@ -116,6 +117,10 @@ namespace AirMedia.Platform.UI.Base
 
             OverridePendingTransition(Resource.Animation.slide_in_left_to_right,
                 Resource.Animation.slide_out_left_to_right);
+        }
+
+        public void RequestNavigationTouchMode(MainMenuTouchMode mode)
+        {
         }
     }
 }

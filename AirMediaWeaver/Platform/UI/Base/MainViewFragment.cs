@@ -13,6 +13,7 @@ namespace AirMedia.Platform.UI.Base
         IPlayerFacadeFragmentCallbacks, 
         IProgressBarManagerCallbacks
     {
+        protected IMainViewFragmentCallbacks MainViewCallbacks { get { return _callbacks; } }
 
         private IMainViewFragmentCallbacks _callbacks;
         private ProgressBarManager _progressBarManager;

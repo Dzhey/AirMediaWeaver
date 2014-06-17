@@ -1,4 +1,6 @@
+using System;
 using AirMedia.Platform.UI.Base;
+using AirMedia.Platform.UI.MainView;
 using Android.OS;
 using Android.Support.V4.View;
 using Android.Views;
@@ -32,6 +34,45 @@ namespace AirMedia.Platform.UI.Library
             _pageIndicator.SetViewPager(_viewPager);
 
             return view;
+        }
+
+        public override void OnStart()
+        {
+            base.OnStart();
+
+            UpdateNavigationTouchMode();
+        }
+
+        public override void OnResume()
+        {
+            base.OnResume();
+
+            _pageIndicator.PageSelected += OnTabPageSelected;
+        }
+
+        public override void OnPause()
+        {
+            _pageIndicator.PageSelected -= OnTabPageSelected;
+
+            base.OnPause();
+        }
+
+        private void OnTabPageSelected(object sender, ViewPager.PageSelectedEventArgs args)
+        {
+            UpdateNavigationTouchMode();
+        }
+
+        protected void UpdateNavigationTouchMode()
+        {
+            int pos = _viewPager.CurrentItem;
+            if (pos > 0)
+            {
+                MainViewCallbacks.RequestNavigationTouchMode(MainMenuTouchMode.Margin);
+            }
+            else
+            {
+                MainViewCallbacks.RequestNavigationTouchMode(MainMenuTouchMode.Fullscreen);
+            }
         }
 
         protected virtual TabItem[] CreateTabs()
