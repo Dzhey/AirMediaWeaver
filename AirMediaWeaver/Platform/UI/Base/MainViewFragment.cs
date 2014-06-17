@@ -38,6 +38,13 @@ namespace AirMedia.Platform.UI.Base
             _progressBarManager = new ProgressBarManager(this);
         }
 
+        public override void OnStart()
+        {
+            base.OnStart();
+
+            UpdateContentTitle();
+        }
+
         public virtual void UpdateNavigationItems(ActionBar actionBar)
         {
         }
@@ -72,6 +79,15 @@ namespace AirMedia.Platform.UI.Base
         protected void SetEmptyContentMessage(string message)
         {
             _progressBarManager.EmptyString = message;
+        }
+
+        protected virtual void UpdateContentTitle()
+        {
+            string title = GetTitle();
+
+            if (title == null) return;
+
+            MainViewCallbacks.RequestContentTitleUpdate(title);
         }
     }
 }

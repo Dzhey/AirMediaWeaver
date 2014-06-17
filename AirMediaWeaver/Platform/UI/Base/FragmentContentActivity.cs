@@ -122,5 +122,10 @@ namespace AirMedia.Platform.UI.Base
         public void RequestNavigationTouchMode(MainMenuTouchMode mode)
         {
         }
+
+        public void RequestContentTitleUpdate(string contentTitle)
+        {
+            ActionBar.Title = contentTitle;
+        }
     }
 }

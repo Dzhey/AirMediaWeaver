@@ -17,7 +17,7 @@ using Fragment = Android.Support.V4.App.Fragment;
 
 namespace AirMedia.Platform.UI.MainView
 {
-    [Activity(Label = "Air Media", MainLauncher = true, Icon = "@drawable/icon")]
+    [Activity(Label = "@string/ApplicationNameShorten", MainLauncher = true, Icon = "@drawable/icon")]
     public class MainViewActivity : AmwActivity, IPlayerFacadeFragmentCallbacks, IMainViewFragmentCallbacks
     {
         public const string ExtraDisplayFragment = "display_fragment";
@@ -120,6 +120,11 @@ namespace AirMedia.Platform.UI.MainView
             }
         }
 
+        public void RequestContentTitleUpdate(string title)
+        {
+            ActionBar.Title = title;
+        }
+
         public void RequestNavigationTouchMode(MainMenuTouchMode mode)
         {
             if (_slidingMenu == null) return;
@@ -198,7 +203,7 @@ namespace AirMedia.Platform.UI.MainView
 
         public override void OnBackPressed()
         {
-            if (_slidingMenu.IsMenuShowing == false)
+            if (_slidingMenu.IsMenuShowing)
             {
                 _slidingMenu.Toggle(true);
                 return;

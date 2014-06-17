@@ -5,5 +5,6 @@ namespace AirMedia.Platform.UI.Base
     public interface IMainViewFragmentCallbacks
     {
         void RequestNavigationTouchMode(MainMenuTouchMode mode);
+        void RequestContentTitleUpdate(string contentTitle);
     }
 }

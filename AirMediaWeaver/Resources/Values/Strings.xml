@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
   <string name="Hello">Hello World, Click Me!</string>
-  <string name="ApplicationName">AirMediaWeaver</string>
+  <string name="ApplicationName">Air Media Weaver</string>
+  <string name="ApplicationNameShorten">Air Media</string>
 
   <string name="message_progress">Загрузка&#8230;</string>
   <string name="title_list_empty">Нет элементов для отображения</string>
