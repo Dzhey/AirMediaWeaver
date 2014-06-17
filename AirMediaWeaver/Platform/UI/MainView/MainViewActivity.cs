@@ -98,7 +98,7 @@ namespace AirMedia.Platform.UI.MainView
             }
             if (displayFragmentType == null)
             {
-                displayFragmentType = App.Preferences.LastMainView ?? typeof(AudioLibraryFragment);
+                displayFragmentType = App.Preferences.LastMainView ?? typeof(LibraryTabsFragment);
             }
 
             SetContentFragment(displayFragmentType);
@@ -218,7 +218,7 @@ namespace AirMedia.Platform.UI.MainView
             switch (item.StringResourceId)
             {
                 case Resource.String.title_navigation_item_media_library:
-                    contentFragment = typeof (AudioLibraryFragment);
+                    contentFragment = typeof (LibraryTabsFragment);
                     break;
 
                 case Resource.String.title_navigation_item_playlists:

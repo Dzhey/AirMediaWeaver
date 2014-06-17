@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using AirMedia.Core.Log;
 using AirMedia.Core.Requests.Abs;
 using AirMedia.Core.Requests.Interfaces;
 using AirMedia.Core.Requests.Model;
@@ -78,7 +79,8 @@ namespace AirMedia.Platform.Logger
 
             if (_resultDelegates.ContainsKey(requestType))
             {
-                throw new InvalidParameterException("specified type is already registered");
+                AmwLog.Warn(LogTag, "specified type is already registered", requestType.ToString());
+                return;
             }
 
             _resultDelegates.Add(requestType, handler);
@@ -95,7 +97,8 @@ namespace AirMedia.Platform.Logger
 
             if (_updateDelegates.ContainsKey(requestType))
             {
-                throw new InvalidParameterException("specified type is already registered");
+                AmwLog.Warn(LogTag, "specified type is already registered", requestType.ToString());
+                return;
             }
 
             _updateDelegates.Add(requestType, handler);

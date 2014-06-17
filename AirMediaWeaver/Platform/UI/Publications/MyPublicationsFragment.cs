@@ -92,10 +92,10 @@ namespace AirMedia.Platform.UI.Publications
             {
                 case Resource.Id.ActionEdit:
                     var args = new Bundle();
-                    args.PutBoolean(AudioLibraryFragment.ExtraStartInPickMode, true);
-                    args.PutLongArray(AudioLibraryFragment.ExtraCheckedTrackIds, _adapter.GetItemIds());
+                    args.PutBoolean(TrackListFragment.ExtraStartInPickMode, true);
+                    args.PutLongArray(TrackListFragment.ExtraCheckedTrackIds, _adapter.GetItemIds());
                     var intent = FragmentContentActivity.CreateStartIntent(
-                        Activity, typeof (AudioLibraryFragment), args);
+                        Activity, typeof (TrackListFragment), args);
                     Activity.StartActivityForResult(intent, RequestCodeEditPublications);
                     break;
 
@@ -111,7 +111,7 @@ namespace AirMedia.Platform.UI.Publications
             switch (requestCode)
             {
                 case RequestCodeEditPublications:
-                    var selectedTracks = data.GetLongArrayExtra(AudioLibraryFragment.ExtraCheckedTrackIds);
+                    var selectedTracks = data.GetLongArrayExtra(TrackListFragment.ExtraCheckedTrackIds);
                     SubmitRequest(new UpdatePublishedTracksRequest(selectedTracks));
                     break;
 

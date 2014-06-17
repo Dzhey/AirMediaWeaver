@@ -121,10 +121,10 @@ namespace AirMedia.Platform.UI.Playlists
 
                 case Resource.Id.ActionEdit:
                     var args = new Bundle();
-                    args.PutBoolean(AudioLibraryFragment.ExtraStartInPickMode, true);
-                    args.PutLongArray(AudioLibraryFragment.ExtraCheckedTrackIds, _adapter.GetItemIds());
+                    args.PutBoolean(TrackListFragment.ExtraStartInPickMode, true);
+                    args.PutLongArray(TrackListFragment.ExtraCheckedTrackIds, _adapter.GetItemIds());
                     var intent = FragmentContentActivity.CreateStartIntent(
-                        Activity, typeof (AudioLibraryFragment), args);
+                        Activity, typeof (TrackListFragment), args);
                     Activity.StartActivityForResult(intent, RequestCodeEditPlaylist);
                     return true;
 
@@ -151,7 +151,7 @@ namespace AirMedia.Platform.UI.Playlists
                 case RequestCodeEditPlaylist:
                     if (resultCode == (int)Result.Ok)
                     {
-                        var selectedTracks = data.GetLongArrayExtra(AudioLibraryFragment.ExtraCheckedTrackIds);
+                        var selectedTracks = data.GetLongArrayExtra(TrackListFragment.ExtraCheckedTrackIds);
                         if (_playlistId == null || PlaylistDao.UpdatePlaylistContents(
                             (long)_playlistId, selectedTracks) == false)
                         {

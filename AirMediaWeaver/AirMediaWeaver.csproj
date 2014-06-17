@@ -64,6 +64,9 @@
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\libs\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="PagerSlidingTabStrip">
+      <HintPath>..\libs\PagerSlidingTabStrip.dll</HintPath>
+    </Reference>
     <Reference Include="SQLite">
       <HintPath>..\libs\sqlite-net-1.0.1\lib\android\SQLite.dll</HintPath>
     </Reference>
@@ -217,7 +220,10 @@
     <Compile Include="Platform\UI\Base\IMainViewFragmentCallbacks.cs" />
     <Compile Include="Platform\UI\Base\InputTextDialog.cs" />
     <Compile Include="Platform\UI\Base\MainViewFragment.cs" />
-    <Compile Include="Platform\UI\Library\AudioLibraryFragment.cs" />
+    <Compile Include="Platform\UI\Library\LibraryTabsAdapter.cs" />
+    <Compile Include="Platform\UI\Library\LibraryTabsFragment.cs" />
+    <Compile Include="Platform\UI\Library\TabItem.cs" />
+    <Compile Include="Platform\UI\Library\TrackListFragment.cs" />
     <Compile Include="Platform\UI\Library\ITrackListAdapterCallbacks.cs" />
     <Compile Include="Platform\UI\Library\TrackListCursorAdapter.cs" />
     <Compile Include="Platform\UI\Library\TrackListLoader.cs" />
@@ -296,6 +302,11 @@
     <Compile Include="Platform\UI\Recommendations\RecommendationsFragment.cs" />
     <Compile Include="Platform\UI\Search\SearchFragment.cs" />
     <Compile Include="Platform\UI\Util\Util.cs" />
+    <Compile Include="Platform\UI\ViewExt\ViewPagerIndicator\CirclePageIndicator.cs" />
+    <Compile Include="Platform\UI\ViewExt\ViewPagerIndicator\PageIndicator.cs" />
+    <Compile Include="Platform\UI\ViewExt\ViewPagerIndicator\TabPageIndicator.cs" />
+    <Compile Include="Platform\UI\ViewExt\ViewPagerIndicator\TitlePageIndicator.cs" />
+    <Compile Include="Platform\UI\ViewExt\ViewPagerIndicator\ITitleProvider.cs" />
     <Compile Include="Platform\UI\ViewUtils\IProgressBarManagerCallbacks.cs" />
     <Compile Include="Platform\UI\ViewUtils\ProgressBarManager.cs" />
     <Compile Include="Platform\Util\ParcelableCreator.cs" />
@@ -317,7 +328,7 @@
     <AndroidResource Include="Resources\Layout\Activity_MainView.axml">
       <SubType>Designer</SubType>
     </AndroidResource>
-    <AndroidResource Include="Resources\Layout\Fragment_AudioLibrary.axml">
+    <AndroidResource Include="Resources\Layout\Fragment_TrackList.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
     <AndroidResource Include="Resources\Layout\View_TrackItem.axml" />
@@ -327,7 +338,9 @@
     <AndroidResource Include="Resources\Layout\Fragment_PlaylistsView.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
-    <AndroidResource Include="Resources\Layout\View_DrawerNavigationItem.axml" />
+    <AndroidResource Include="Resources\Layout\View_DrawerNavigationItem.axml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
     <AndroidResource Include="Resources\Layout\View_PlaylistItem.axml">
       <SubType>Designer</SubType>
     </AndroidResource>
@@ -349,6 +362,10 @@
     <AndroidResource Include="Resources\Layout\Fragment_Search.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
+    <AndroidResource Include="Resources\Layout\Fragment_LibraryTabs.axml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\Layout\View_Tab.axml" />
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\Values\Strings.xml">
@@ -360,12 +377,16 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Properties\AndroidManifest.xml" />
-    <AndroidResource Include="Resources\Values\Colors.xml" />
+    <AndroidResource Include="Resources\Values\Colors.xml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
     <AndroidResource Include="Resources\Values\Styles.xml">
       <SubType>Designer</SubType>
     </AndroidResource>
     <AndroidResource Include="Resources\Drawable-mdpi\ic_list.png" />
-    <AndroidResource Include="Resources\Values\Themes.xml" />
+    <AndroidResource Include="Resources\Values\Themes.xml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
     <AndroidResource Include="Resources\Drawable-hdpi\ic_share.png" />
     <AndroidResource Include="Resources\Drawable-hdpi\ic_floppy.png" />
     <AndroidResource Include="Resources\Drawable\toggle_log_refresh_selector.xml" />
@@ -376,36 +397,18 @@
     <AndroidResource Include="Resources\Values\vpi__defaults.xml" />
     <AndroidResource Include="Resources\Values\vpi__styles.xml" />
     <AndroidResource Include="Resources\Drawable\vpi__tab_indicator.xml" />
-    <AndroidResource Include="Resources\Drawable-hdpi\custom_tab_indicator_focused.9.png" />
-    <AndroidResource Include="Resources\Drawable-hdpi\custom_tab_indicator_selected.9.png" />
-    <AndroidResource Include="Resources\Drawable-hdpi\custom_tab_indicator_selected_pressed.9.png" />
-    <AndroidResource Include="Resources\Drawable-hdpi\custom_tab_indicator_unselected.9.png" />
-    <AndroidResource Include="Resources\Drawable-hdpi\custom_tab_indicator_unselected_focused.9.png" />
-    <AndroidResource Include="Resources\Drawable-hdpi\custom_tab_indicator_unselected_pressed.9.png" />
     <AndroidResource Include="Resources\Drawable-hdpi\vpi__tab_selected_focused_holo.9.png" />
     <AndroidResource Include="Resources\Drawable-hdpi\vpi__tab_selected_holo.9.png" />
     <AndroidResource Include="Resources\Drawable-hdpi\vpi__tab_selected_pressed_holo.9.png" />
     <AndroidResource Include="Resources\Drawable-hdpi\vpi__tab_unselected_focused_holo.9.png" />
     <AndroidResource Include="Resources\Drawable-hdpi\vpi__tab_unselected_holo.9.png" />
     <AndroidResource Include="Resources\Drawable-hdpi\vpi__tab_unselected_pressed_holo.9.png" />
-    <AndroidResource Include="Resources\Drawable-mdpi\custom_tab_indicator_selected.9.png" />
-    <AndroidResource Include="Resources\Drawable-mdpi\custom_tab_indicator_selected_focused.9.png" />
-    <AndroidResource Include="Resources\Drawable-mdpi\custom_tab_indicator_selected_pressed.9.png" />
-    <AndroidResource Include="Resources\Drawable-mdpi\custom_tab_indicator_unselected.9.png" />
-    <AndroidResource Include="Resources\Drawable-mdpi\custom_tab_indicator_unselected_focused.9.png" />
-    <AndroidResource Include="Resources\Drawable-mdpi\custom_tab_indicator_unselected_pressed.9.png" />
     <AndroidResource Include="Resources\Drawable-mdpi\vpi__tab_selected_focused_holo.9.png" />
     <AndroidResource Include="Resources\Drawable-mdpi\vpi__tab_selected_holo.9.png" />
     <AndroidResource Include="Resources\Drawable-mdpi\vpi__tab_selected_pressed_holo.9.png" />
     <AndroidResource Include="Resources\Drawable-mdpi\vpi__tab_unselected_focused_holo.9.png" />
     <AndroidResource Include="Resources\Drawable-mdpi\vpi__tab_unselected_holo.9.png" />
     <AndroidResource Include="Resources\Drawable-mdpi\vpi__tab_unselected_pressed_holo.9.png" />
-    <AndroidResource Include="Resources\Drawable-xhdpi\custom_tab_indicator_selected.9.png" />
-    <AndroidResource Include="Resources\Drawable-xhdpi\custom_tab_indicator_selected_focused.9.png" />
-    <AndroidResource Include="Resources\Drawable-xhdpi\custom_tab_indicator_selected_pressed.9.png" />
-    <AndroidResource Include="Resources\Drawable-xhdpi\custom_tab_indicator_unselected.9.png" />
-    <AndroidResource Include="Resources\Drawable-xhdpi\custom_tab_indicator_unselected_focused.9.png" />
-    <AndroidResource Include="Resources\Drawable-xhdpi\custom_tab_indicator_unselected_pressed.9.png" />
     <AndroidResource Include="Resources\Drawable-xhdpi\vpi__tab_selected_focused_holo.9.png" />
     <AndroidResource Include="Resources\Drawable-xhdpi\vpi__tab_selected_holo.9.png" />
     <AndroidResource Include="Resources\Drawable-xhdpi\vpi__tab_selected_pressed_holo.9.png" />
@@ -462,6 +465,7 @@
     <AndroidResource Include="Resources\Drawable-mdpi\ic_action_download.png" />
     <AndroidResource Include="Resources\Drawable-xhdpi\ic_action_download.png" />
     <AndroidResource Include="Resources\Drawable-xxhdpi\ic_action_download.png" />
+    <AndroidResource Include="Resources\Layout\vpi__tab.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Platform\Json\" />

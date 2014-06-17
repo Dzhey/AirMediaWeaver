@@ -20,6 +20,10 @@
   <string name="title_navigation_item_search">Поиск</string>
   <string name="hint_open_main_drawer">Показать панель навигации</string>
   <string name="hint_close_main_drawer">Скрыть панель навигации</string>
+  <string name="title_tab_tracks">Треки</string>
+  <string name="title_tab_albums">Альбомы</string>
+  <string name="title_tab_artists">Исполнители</string>
+  <string name="title_tab_folders">Папки</string>
   <string name="title_audio_library">Моя фонотека</string>
   <string name="title_playlists_view">Плейлисты</string>
   <string name="title_playlist_details">Треки</string>

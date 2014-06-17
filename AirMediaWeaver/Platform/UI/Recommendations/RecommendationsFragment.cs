@@ -49,6 +49,12 @@ namespace AirMedia.Platform.UI.Recommendations
             return view;
         }
 
+        public override void OnDestroyView()
+        {
+            RemoveRequestUpdateHandler(typeof(LoadRecommendationsRequest));
+            base.OnDestroyView();
+        }
+
         public override void OnActivityCreated(Bundle savedInstanceState)
         {
             base.OnActivityCreated(savedInstanceState);
@@ -71,7 +77,6 @@ namespace AirMedia.Platform.UI.Recommendations
             _listView.ItemClick += OnListItemClicked;
 
             RemoveRequestResultHandler(typeof(LoadRecommendationsRequest));
-            RemoveRequestUpdateHandler(typeof(LoadRecommendationsRequest));
 
             base.OnPause();
         }
