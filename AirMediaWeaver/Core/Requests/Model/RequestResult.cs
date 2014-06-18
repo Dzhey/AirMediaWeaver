@@ -6,6 +6,7 @@ namespace AirMedia.Core.Requests.Model
     {
         public static readonly RequestResult ResultFailed;
         public static readonly RequestResult ResultOk;
+        public static readonly RequestResult ResultCancelled;
 
         public const int ResultCodeOk = 1;
         public const int ResultCodeOkUpdate = 2;
@@ -19,6 +20,7 @@ namespace AirMedia.Core.Requests.Model
         {
             ResultFailed = new RequestResult(ResultCodeFailed);
             ResultOk = new RequestResult(ResultCodeOk);
+            ResultCancelled = new RequestResult(ResultCodeCancelled);
         }
 
         public bool HasResultCode { get { return _resultCode.HasValue; } }

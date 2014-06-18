@@ -110,6 +110,24 @@ namespace AirMedia.Core.Requests.Controller
         }
 
         /// <summary>
+        /// Cancel all requests with the specified tag.
+        /// </summary>
+        /// <param name="actionTag"></param>
+        public void CancelAll(string actionTag)
+        {
+            if (actionTag == null) return;
+
+            lock (_requestQueue)
+            {
+                foreach (var request in _requestQueue)
+                {
+                    if (request.ActionTag == actionTag)
+                        request.Cancel();
+                }
+            }
+        }
+
+        /// <summary>
         /// Find first request with the specified id.
         /// Request may have any status.
         /// </summary>

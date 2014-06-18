@@ -20,6 +20,13 @@ namespace AirMedia.Platform.Controller.Requests
             AmwLog.Info(LogTag, "watching for Wi-Fi hotspot status..");
             while (true)
             {
+                if (IsCancelled)
+                {
+                    AmwLog.Debug(LogTag, "finishing cancelled Wi-Fi hotspot watch request..");
+                    status = RequestStatus.Cancelled;
+                    return RequestResult.ResultCancelled;
+                }
+
                 Thread.Sleep(8000);
 
                 if (NetworkUtils.CheckIsWifiHotstopEnabled())

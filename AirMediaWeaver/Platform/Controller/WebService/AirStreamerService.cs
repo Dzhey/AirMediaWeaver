@@ -89,6 +89,7 @@ namespace AirMedia.Platform.Controller.WebService
                 _httpServer.Stop();
                 _multicastUdpServer.Stop();
             }
+            RequestManager.Instance.CancelAll(WatchWifiHotspotRequest.ActionTagDefault);
 
             AmwLog.Debug(LogTag, "wifi connection established; starting servers..");
             if (_httpServer.IsListening == false)
@@ -266,7 +267,8 @@ namespace AirMedia.Platform.Controller.WebService
         {
             if (args.Request.Status != RequestStatus.Ok)
             {
-                AmwLog.Warn(LogTag, "Wi-Fi hotspot watch request finished with error");
+                AmwLog.Warn(LogTag, string.Format("Wi-Fi hotspot watch request finished with " +
+                                                  "status \"{0}\"", args.Request.Status));
                 return;
             }
 
