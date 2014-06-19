@@ -6,7 +6,7 @@ using AirMedia.Core.Requests.Abs;
 using AirMedia.Core.Requests.Model;
 using AirMedia.Platform.Data.Sql.Dao;
 
-namespace AirMedia.Platform.Controller.Requests
+namespace AirMedia.Platform.Controller.Requests.Impl
 {
     public class LoadPublishedTracksRequest : BaseLoadRequest<List<ITrackMetadata>>
     {

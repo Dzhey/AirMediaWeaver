@@ -5,6 +5,7 @@ using AirMedia.Core.Controller.PlaybackSource;
 using AirMedia.Core.Data;
 using AirMedia.Core.Data.Model;
 using AirMedia.Core.Log;
+using AirMedia.Platform.Controller.Dao;
 using AirMedia.Platform.Data;
 
 namespace AirMedia.Platform.Controller.PlaybackSource

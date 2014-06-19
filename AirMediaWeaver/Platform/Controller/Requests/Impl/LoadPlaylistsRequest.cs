@@ -2,9 +2,10 @@ using System.Collections.Generic;
 using AirMedia.Core.Data;
 using AirMedia.Core.Requests.Abs;
 using AirMedia.Core.Requests.Model;
+using AirMedia.Platform.Controller.Dao;
 using Android.OS;
 
-namespace AirMedia.Platform.Controller.Requests
+namespace AirMedia.Platform.Controller.Requests.Impl
 {
     public class LoadPlaylistsRequest : BaseLoadRequest<List<PlaylistModel>>
     {

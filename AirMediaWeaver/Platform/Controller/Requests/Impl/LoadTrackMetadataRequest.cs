@@ -5,7 +5,7 @@ using AirMedia.Core.Requests.Abs;
 using AirMedia.Core.Requests.Model;
 using AirMedia.Platform.Player;
 
-namespace AirMedia.Platform.Controller.Requests
+namespace AirMedia.Platform.Controller.Requests.Impl
 {
     public class LoadTrackMetadataRequest : BaseLoadRequest<ITrackMetadata>
     {

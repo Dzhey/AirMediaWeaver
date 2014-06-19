@@ -7,7 +7,7 @@ using AirMedia.Core.Requests.Model;
 using AirMedia.Platform.Controller.Receivers;
 using Android.Content;
 
-namespace AirMedia.Platform.Controller.Requests
+namespace AirMedia.Platform.Controller.Requests.Impl
 {
     public class UpdateRemoteTrackPublicationsRequestImpl : UpdateRemoteTrackPublicationsRequest
     {

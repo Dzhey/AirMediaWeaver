@@ -1,6 +1,6 @@
 using AirMedia.Core.Data.Dao;
 using AirMedia.Core.Data.Model;
-using AirMedia.Platform.Controller;
+using AirMedia.Platform.Controller.Dao;
 
 namespace AirMedia.Platform.Data.Dao
 {

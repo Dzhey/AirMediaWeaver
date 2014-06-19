@@ -6,6 +6,7 @@ using AirMedia.Core.Data.Sql.Model;
 using AirMedia.Core.Log;
 using AirMedia.Core.Requests.Model;
 using AirMedia.Platform.Controller.Requests;
+using AirMedia.Platform.Controller.Requests.Impl;
 
 namespace AirMedia.Platform.Controller.WebService
 {

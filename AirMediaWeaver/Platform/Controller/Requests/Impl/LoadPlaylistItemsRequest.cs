@@ -2,8 +2,9 @@ using System.Collections.Generic;
 using AirMedia.Core.Data.Model;
 using AirMedia.Core.Requests.Abs;
 using AirMedia.Core.Requests.Model;
+using AirMedia.Platform.Controller.Dao;
 
-namespace AirMedia.Platform.Controller.Requests
+namespace AirMedia.Platform.Controller.Requests.Impl
 {
     public class LoadPlaylistItemsRequest : BaseLoadRequest<List<ITrackMetadata>>
     {

@@ -109,6 +109,9 @@
     <Compile Include="Core\Data\ITrackMetadataDao.cs" />
     <Compile Include="Core\Data\ITrackPublicationsDao.cs" />
     <Compile Include="Core\Data\ITrackSourceDefinition.cs" />
+    <Compile Include="Core\Data\Model\AlbumBaseModel.cs" />
+    <Compile Include="Core\Data\Model\ArtistAlbums.cs" />
+    <Compile Include="Core\Data\Model\ArtistBaseModel.cs" />
     <Compile Include="Core\Data\Model\IHttpTrackContentDescriptor.cs" />
     <Compile Include="Core\Data\Model\IPeerDescriptor.cs" />
     <Compile Include="Core\Data\Model\IRemoteTrackMetadata.cs" />
@@ -133,6 +136,7 @@
     <Compile Include="Core\Requests\Abs\AbsCachedRequest.cs" />
     <Compile Include="Core\Requests\Abs\BaseLoadCachedRequest.cs" />
     <Compile Include="Core\Requests\Controller\MemoryRequestResultCache.cs" />
+    <Compile Include="Core\Requests\Impl\AbsLoadLocalArtistAlbumsRequest.cs" />
     <Compile Include="Core\Requests\Interfaces\ICachedRequestResult.cs" />
     <Compile Include="Core\Requests\Interfaces\IRequestResultCache.cs" />
     <Compile Include="Core\Requests\Factory\RequestFactory.cs" />
@@ -147,14 +151,20 @@
     <Compile Include="Core\Requests\Model\RequestResultCacheEntry.cs" />
     <Compile Include="Core\Requests\Model\IntermediateResultUpdateData.cs" />
     <Compile Include="Core\Requests\Model\TrackSearchCriteria.cs" />
+    <Compile Include="Core\Utils\LinkedDictionary.cs" />
+    <Compile Include="Core\Utils\LruCache.cs" />
+    <Compile Include="Core\Utils\SyncLruCache.cs" />
     <Compile Include="Core\Utils\ZipUtils.cs" />
     <Compile Include="Platform\Controller\AndroidRequestFactory.cs" />
+    <Compile Include="Platform\Controller\Dao\AlbumsDao.cs" />
     <Compile Include="Platform\Controller\DownloadManager\AmwDownloadManager.cs" />
     <Compile Include="Platform\Controller\NetworkUtils.cs" />
     <Compile Include="Platform\Controller\PlaybackSource\MixedPlaybackSourceParcel.cs" />
     <Compile Include="Platform\Controller\PlaybackSource\MixedPlaybackSource.cs" />
     <Compile Include="Platform\Controller\Receivers\RemoteTrackPublicationsUpdateReceiver.cs" />
-    <Compile Include="Platform\Controller\Requests\WatchWifiHotspotRequest.cs" />
+    <Compile Include="Platform\Controller\Requests\Impl\AndroidLoadLocalArtistAlbumsRequest.cs" />
+    <Compile Include="Platform\Controller\Requests\Impl\LoadAlbumArtRequest.cs" />
+    <Compile Include="Platform\Controller\Requests\Impl\WatchWifiHotspotRequest.cs" />
     <Compile Include="Platform\Data\Dao\AndroidPlayCountDao.cs" />
     <Compile Include="Platform\Data\Model\GenreModel.cs" />
     <Compile Include="Platform\Data\Sql\Dao\TrackDownloadsDao.cs" />
@@ -179,19 +189,19 @@
     <Compile Include="Platform\Controller\PlayerBackend\AmwPlayer.cs" />
     <Compile Include="Platform\Controller\PlayerBackend\IAmwPlayerCallbacks.cs" />
     <Compile Include="Platform\Controller\PlayerBackend\PlayerCommandId.cs" />
-    <Compile Include="Platform\Controller\PlaylistDao.cs" />
-    <Compile Include="Platform\Controller\Requests\DownloadBaseTracksInfoRequestImpl.cs" />
-    <Compile Include="Platform\Controller\Requests\PlayMyPublicationsRequest.cs" />
-    <Compile Include="Platform\Controller\Requests\LoadPlaylistItemsRequest.cs" />
-    <Compile Include="Platform\Controller\Requests\LoadPlaylistsRequest.cs" />
-    <Compile Include="Platform\Controller\Requests\LoadPublishedTracksRequest.cs" />
-    <Compile Include="Platform\Controller\Requests\LoadTrackMetadataRequest.cs" />
-    <Compile Include="Platform\Controller\Requests\PlayAudioLibraryRequest.cs" />
-    <Compile Include="Platform\Controller\Requests\PlayPlaylistRequest.cs" />
-    <Compile Include="Platform\Controller\Requests\PlaySystemPlaylistsRequests.cs" />
-    <Compile Include="Platform\Controller\Requests\UpdatePublishedTracksRequest.cs" />
+    <Compile Include="Platform\Controller\Dao\PlaylistDao.cs" />
+    <Compile Include="Platform\Controller\Requests\Impl\DownloadBaseTracksInfoRequestImpl.cs" />
+    <Compile Include="Platform\Controller\Requests\Impl\PlayMyPublicationsRequest.cs" />
+    <Compile Include="Platform\Controller\Requests\Impl\LoadPlaylistItemsRequest.cs" />
+    <Compile Include="Platform\Controller\Requests\Impl\LoadPlaylistsRequest.cs" />
+    <Compile Include="Platform\Controller\Requests\Impl\LoadPublishedTracksRequest.cs" />
+    <Compile Include="Platform\Controller\Requests\Impl\LoadTrackMetadataRequest.cs" />
+    <Compile Include="Platform\Controller\Requests\Impl\PlayAudioLibraryRequest.cs" />
+    <Compile Include="Platform\Controller\Requests\Impl\PlayPlaylistRequest.cs" />
+    <Compile Include="Platform\Controller\Requests\Impl\PlaySystemPlaylistsRequests.cs" />
+    <Compile Include="Platform\Controller\Requests\Impl\UpdatePublishedTracksRequest.cs" />
     <Compile Include="Core\Requests\Abs\UpdateRemoteTrackPublicationsRequest.cs" />
-    <Compile Include="Platform\Controller\Requests\UpdateRemoteTrackPublicationsRequestImpl.cs" />
+    <Compile Include="Platform\Controller\Requests\Impl\UpdateRemoteTrackPublicationsRequestImpl.cs" />
     <Compile Include="Platform\Controller\WebService\AirStreamerBinder.cs" />
     <Compile Include="Platform\Controller\WebService\AirStreamerService.cs" />
     <Compile Include="Platform\Controller\WebService\AirStreamerServiceConnection.cs" />
@@ -220,8 +230,14 @@
     <Compile Include="Platform\UI\Base\IMainViewFragmentCallbacks.cs" />
     <Compile Include="Platform\UI\Base\InputTextDialog.cs" />
     <Compile Include="Platform\UI\Base\MainViewFragment.cs" />
+    <Compile Include="Platform\UI\Library\AlbumList\AlbumArtLoadedEventArgs.cs" />
+    <Compile Include="Platform\UI\Library\AlbumList\AlbumGridItem.cs" />
+    <Compile Include="Platform\UI\Library\AlbumList\AlbumGridItemsAdapter.cs" />
+    <Compile Include="Platform\UI\Library\AlbumList\AlbumListEntry.cs" />
+    <Compile Include="Platform\UI\Library\AlbumList\AlbumListGridAdapter.cs" />
     <Compile Include="Platform\UI\Library\LibraryTabsAdapter.cs" />
     <Compile Include="Platform\UI\Library\LibraryTabsFragment.cs" />
+    <Compile Include="Platform\UI\Library\AlbumList\AlbumListFragment.cs" />
     <Compile Include="Platform\UI\Library\TabItem.cs" />
     <Compile Include="Platform\UI\Library\TrackListFragment.cs" />
     <Compile Include="Platform\UI\Library\ITrackListAdapterCallbacks.cs" />
@@ -303,6 +319,8 @@
     <Compile Include="Platform\UI\Recommendations\RecommendationsFragment.cs" />
     <Compile Include="Platform\UI\Search\SearchFragment.cs" />
     <Compile Include="Platform\UI\Util\Util.cs" />
+    <Compile Include="Platform\UI\ViewExt\FixedGridView.cs" />
+    <Compile Include="Platform\UI\ViewExt\FixedListView.cs" />
     <Compile Include="Platform\UI\ViewExt\ViewPagerIndicator\CirclePageIndicator.cs" />
     <Compile Include="Platform\UI\ViewExt\ViewPagerIndicator\PageIndicator.cs" />
     <Compile Include="Platform\UI\ViewExt\ViewPagerIndicator\TabPageIndicator.cs" />
@@ -368,6 +386,11 @@
     </AndroidResource>
     <AndroidResource Include="Resources\Layout\View_Tab.axml" />
     <AndroidResource Include="Resources\Layout\View_Main_Menu.axml" />
+    <AndroidResource Include="Resources\Layout\Fragment_AlbumList.axml">
+      <SubType>AndroidResource</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\Layout\View_AlbumListBlockEntry.axml" />
+    <AndroidResource Include="Resources\Layout\View_AlbumGridItem.axml" />
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\Values\Strings.xml">
@@ -471,8 +494,13 @@
     <AndroidResource Include="Resources\Drawable\main_menu_shadow.xml" />
     <AndroidResource Include="Resources\Drawable\main_menu_behind_shadow.xml" />
     <AndroidResource Include="Resources\Values\Dimen.xml" />
+    <AndroidResource Include="Resources\Drawable\content_block_background.xml" />
+    <AndroidResource Include="Resources\Drawable\holo_line.xml" />
+    <AndroidResource Include="Resources\Drawable\image_frame.xml" />
+    <AndroidResource Include="Resources\Drawable\album_placeholder.png" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Platform\Controller\Requests\Model\" />
     <Folder Include="Platform\Json\" />
   </ItemGroup>
   <ItemGroup>

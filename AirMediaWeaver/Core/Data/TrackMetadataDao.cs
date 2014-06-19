@@ -11,6 +11,7 @@ using AirMedia.Core.Log;
 using AirMedia.Core.Utils.StringUtils;
 using AirMedia.Platform;
 using AirMedia.Platform.Controller;
+using AirMedia.Platform.Controller.Dao;
 using AirMedia.Platform.Data;
 using AirMedia.Platform.Data.Model;
 using AirMedia.Platform.Data.Sql;
@@ -26,6 +27,18 @@ namespace AirMedia.Core.Data
             {
                 MediaStore.Audio.Genres.InterfaceConsts.Id,
                 MediaStore.Audio.Genres.InterfaceConsts.Name
+            };
+
+        private static readonly string[] ArtistsBaseQueryProjection = new[]
+            {
+                MediaStore.Audio.Artists.InterfaceConsts.Id,
+                MediaStore.Audio.Artists.InterfaceConsts.Artist
+            };
+
+        private static readonly string[] AlbumsBaseQueryProjection = new[]
+            {
+                MediaStore.Audio.Albums.InterfaceConsts.Id,
+                MediaStore.Audio.Albums.InterfaceConsts.Album
             };
 
         private static readonly string[] PlaylistTrackMetadataQueryProjection = new[]
@@ -59,6 +72,63 @@ namespace AirMedia.Core.Data
         public IRemoteTrackMetadata[] QueryRemoteTracksForGenreNameLike(string genreName)
         {
             return QueryRemoteTracksForColumnLike(RemoteTrackPublicationRecord.ColumnGenre, genreName);
+        }
+
+        public ArtistBaseModel[] QueryForLocalArtists()
+        {
+            var resolver = App.Instance.ContentResolver;
+            var uri = MediaStore.Audio.Artists.ExternalContentUri;
+            var cursor = resolver.Query(uri, ArtistsBaseQueryProjection, null, null, PlaylistDao.SortByArtist);
+            var items = new ArtistBaseModel[cursor.Count];
+            using (cursor)
+            {
+                try
+                {
+                    while (cursor.MoveToNext())
+                    {
+                        items[cursor.Position] = new ArtistBaseModel
+                            {
+                                ArtistId = cursor.GetLong(0),
+                                ArtistName = cursor.GetString(1)
+                            };
+                    }
+                }
+                finally
+                {
+                    cursor.Close();
+                }
+            }
+
+            return items;
+        }
+
+        public AlbumBaseModel[] QueryForArtistAlbums(long artistId)
+        {
+            const string orderBy = MediaStore.Audio.Albums.InterfaceConsts.Album + " ASC";
+            var resolver = App.Instance.ContentResolver;
+            var uri = MediaStore.Audio.Artists.Albums.GetContentUri("external", artistId);
+            var cursor = resolver.Query(uri, AlbumsBaseQueryProjection, null, null, orderBy);
+            var items = new AlbumBaseModel[cursor.Count];
+            using (cursor)
+            {
+                try
+                {
+                    while (cursor.MoveToNext())
+                    {
+                        items[cursor.Position] = new AlbumBaseModel
+                        {
+                            AlbumId = cursor.GetLong(0),
+                            AlbumName = cursor.GetString(1)
+                        };
+                    }
+                }
+                finally
+                {
+                    cursor.Close();
+                }
+            }
+
+            return items;
         }
 
         public IRemoteTrackMetadata[] QueryRemoteTracksForAlbumNameLike(string albumName)

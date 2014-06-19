@@ -116,15 +116,13 @@ namespace AirMedia.Platform.UI.Recommendations
 
         private void OnTrackListLoaded(object sender, ResultEventArgs args)
         {
+            SetInProgress(false);
+
             if (args.Request.Status != RequestStatus.Ok)
             {
-                SetInProgress(false);
                 ShowMessage(Resource.String.error_cant_load_recommendations);
                 AmwLog.Error(LogTag, "Error loading recommdation track list");
-                return;
             }
-
-            SetInProgress(false);
         }
 
         private void OnTrackListLoadUpdate(object sender, UpdateEventArgs args)

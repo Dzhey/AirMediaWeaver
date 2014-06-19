@@ -38,6 +38,8 @@ namespace AirMedia.Platform.Controller
 
         public static readonly string LogTag = typeof(WorkerService).Name;
 
+        public static WorkerService Instance { get; private set; }
+
 
         public override void OnCreate()
         {
@@ -51,6 +53,7 @@ namespace AirMedia.Platform.Controller
             _executingRequestIds = new Dictionary<string, ISet<int>>();
             _requestManager = App.WorkerRequestManager;
 
+            Instance = this;
             Log.Verbose(LogTag, "WorkerService created");
         }
 
@@ -85,24 +88,9 @@ namespace AirMedia.Platform.Controller
                 }
                 else
                 {
+                    bool isParallelRequest = intent.GetBooleanExtra(ExtraIsParallelRequest, false);
                     bool isDedicatedRequest = intent.GetBooleanExtra(ExtraIsDedicatedRequest, false);
-                    if (isDedicatedRequest)
-                    {
-                        SubmitDedicatedRequest(request);
-                    }
-                    else
-                    {
-                        bool isParallelRequest = intent.GetBooleanExtra(ExtraIsParallelRequest, false);
-
-                        if (isParallelRequest)
-                        {
-                            SubmitParallelRequest(request);
-                        }
-                        else
-                        {
-                            SubmitRequest(request);
-                        }
-                    }
+                    SubmitRequest(request, isParallelRequest, isDedicatedRequest);
                 }
             }
 
@@ -111,6 +99,7 @@ namespace AirMedia.Platform.Controller
 
         public override void OnDestroy()
         {
+            Instance = null;
             base.OnDestroy();
             Log.Verbose(LogTag, "WorkerService destroyed");
         }
@@ -120,7 +109,25 @@ namespace AirMedia.Platform.Controller
             return null;
         }
 
-        private void SubmitRequest(AbsRequest request)
+        public void SubmitRequest(AbsRequest request, bool isParallel, bool isDedicated)
+        {
+            if (isDedicated)
+            {
+                SubmitDedicatedRequest(request);
+                return;
+            }
+
+            if (isParallel)
+            {
+                SubmitParallelRequest(request);
+            }
+            else
+            {
+                SubmitRequest(request);
+            }
+        }
+
+        public void SubmitRequest(AbsRequest request)
         {
             _serialTaskFactory.StartNew(() => request.Execute())
                 .ContinueWith(task => App.MainHandler.Post(() => FinishRequest(request, false)));

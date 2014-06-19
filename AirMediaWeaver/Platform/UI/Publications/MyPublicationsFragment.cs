@@ -3,6 +3,7 @@ using AirMedia.Core.Data.Model;
 using AirMedia.Core.Log;
 using AirMedia.Core.Requests.Model;
 using AirMedia.Platform.Controller.Requests;
+using AirMedia.Platform.Controller.Requests.Impl;
 using AirMedia.Platform.UI.Base;
 using AirMedia.Platform.UI.Library;
 using Android.Content;

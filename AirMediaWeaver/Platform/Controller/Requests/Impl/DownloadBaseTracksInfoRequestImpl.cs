@@ -6,7 +6,7 @@ using AirMedia.Core.Requests.Impl;
 using AirMedia.Platform.Controller.WebService;
 using Android.Content;
 
-namespace AirMedia.Platform.Controller.Requests
+namespace AirMedia.Platform.Controller.Requests.Impl
 {
     public class DownloadBaseTracksInfoRequestImpl : DownloadBaseTracksInfoRequest
     {

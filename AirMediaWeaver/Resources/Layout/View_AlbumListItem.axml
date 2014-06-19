@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp"
+    android:descendantFocusability="blocksDescendants">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp"
+        android:background="@drawable/content_block_background">
+        <TextView
+            style="@style/AppTheme.Text"
+            android:id="@android:id/title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxLines="2"
+            android:ellipsize="end"
+            android:text="@android:string/untitled" />
+        <View
+            android:id="@+id/titleUnderline"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@android:id/title"
+            android:layout_marginTop="1dp"
+            android:layout_marginBottom="3dp"
+            android:background="@drawable/holo_line" />
+        <GridView
+            android:id="@+id/albumsGrid"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/titleUnderline"
+            android:columnWidth="@dimen/album_grid_item_width"
+            android:numColumns="auto_fit"
+            android:stretchMode="spacingWidth"
+            android:gravity="center" />
+    </RelativeLayout>
+</FrameLayout>

@@ -1,4 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <resources>
   <dimen name="main_menu_offset">64dp</dimen>
+  <dimen name="album_grid_item_width">110dp</dimen>
 </resources>

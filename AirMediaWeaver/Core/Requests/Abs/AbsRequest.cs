@@ -63,6 +63,7 @@ namespace AirMedia.Core.Requests.Abs
         public RequestStatus Status { get; protected set; }
         public bool IsCancelled { get; private set; }
         public string ActionTag { get; set; }
+        public object Payload { get; set; }
 
         public Future<RequestResult> FutureResult
         {

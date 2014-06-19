@@ -2,11 +2,10 @@ using System.Linq;
 using AirMedia.Core.Log;
 using AirMedia.Core.Requests.Abs;
 using AirMedia.Core.Requests.Model;
+using AirMedia.Platform.Controller.Dao;
 using AirMedia.Platform.Player;
 
-using BaseRequestResult = AirMedia.Core.Requests.Model.RequestResult;
-
-namespace AirMedia.Platform.Controller.Requests
+namespace AirMedia.Platform.Controller.Requests.Impl
 {
     public class PlayAudioLibraryRequest : AbsRequest
     {

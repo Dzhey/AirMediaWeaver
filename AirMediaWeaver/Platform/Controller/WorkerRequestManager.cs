@@ -20,7 +20,16 @@ namespace AirMedia.Platform.Controller
         protected override void SubmitRequestImpl(AbsRequest request, int requestId, 
             bool isParallel, bool isDedicated)
         {
-            App.Instance.StartService(CreateIntent(Handler, requestId, isParallel, isDedicated, request));
+            var instance = WorkerService.Instance;
+            if (instance != null)
+            {
+                instance.SubmitRequest(request, isParallel, isDedicated);
+            }
+            else
+            {
+                App.Instance.StartService(CreateIntent(
+                    Handler, requestId, isParallel, isDedicated, request));
+            }
         }
 
         protected Intent CreateIntent(Handler handler, int requestId, bool isParallel, 

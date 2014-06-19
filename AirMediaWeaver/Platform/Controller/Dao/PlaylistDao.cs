@@ -8,7 +8,7 @@ using Android.Database;
 using Android.Provider;
 using Java.Lang;
 
-namespace AirMedia.Platform.Controller
+namespace AirMedia.Platform.Controller.Dao
 {
     public class PlaylistDao
     {

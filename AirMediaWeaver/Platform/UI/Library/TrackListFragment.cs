@@ -2,6 +2,7 @@ using System.Globalization;
 using AirMedia.Core.Log;
 using AirMedia.Core.Requests.Model;
 using AirMedia.Platform.Controller.Requests;
+using AirMedia.Platform.Controller.Requests.Impl;
 using AirMedia.Platform.Player;
 using AirMedia.Platform.UI.Base;
 using Android.App;

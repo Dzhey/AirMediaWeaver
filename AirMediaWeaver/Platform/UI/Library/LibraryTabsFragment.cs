@@ -1,4 +1,5 @@
 using AirMedia.Platform.UI.Base;
+using AirMedia.Platform.UI.Library.AlbumList;
 using AirMedia.Platform.UI.MainView;
 using Android.OS;
 using Android.Support.V4.View;
@@ -85,7 +86,7 @@ namespace AirMedia.Platform.UI.Library
                         },
                     new TabItem
                         {
-                            TabFragmentType = typeof(TrackListFragment),
+                            TabFragmentType = typeof(AlbumListFragment),
                             Title = GetString(Resource.String.title_tab_albums)
                         },
                     new TabItem
