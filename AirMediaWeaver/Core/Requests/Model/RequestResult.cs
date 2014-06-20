@@ -2,7 +2,7 @@
 
 namespace AirMedia.Core.Requests.Model
 {
-    public class RequestResult
+    public class RequestResult : IDisposable
     {
         public static readonly RequestResult ResultFailed;
         public static readonly RequestResult ResultOk;
@@ -49,6 +49,7 @@ namespace AirMedia.Core.Requests.Model
         }
 
         private int? _resultCode;
+        private bool _isDisposed;
 
         protected RequestResult()
         {
@@ -75,6 +76,25 @@ namespace AirMedia.Core.Requests.Model
                                  ResultCode, 
                                  ErrorMessage,
                                  RisenException);
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_isDisposed) return;
+
+            if (disposing)
+            {
+                RisenException = null;
+                ErrorMessage = null;
+            }
+
+            _isDisposed = true;
         }
     }
 }

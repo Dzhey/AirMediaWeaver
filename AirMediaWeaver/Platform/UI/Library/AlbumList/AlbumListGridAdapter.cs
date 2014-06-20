@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using AirMedia.Core.Log;
+using AirMedia.Core.Requests.Controller;
 using AirMedia.Core.Requests.Factory;
+using AirMedia.Core.Requests.Impl;
 using AirMedia.Core.Requests.Model;
 using AirMedia.Core.Utils;
 using AirMedia.Platform.Controller;
@@ -29,13 +31,16 @@ namespace AirMedia.Platform.UI.Library.AlbumList
 
         public const int MaxBitmapCacheSizeBytes = 1024 * 1024 * 8;
 
+        private const string BatchLoadArtsRequestTag = "load_album_arts_batch_request";
+
         public event EventHandler<AlbumArtLoadedEventArgs> AlbumArtLoaded;
 
         private LruCache<long, Bitmap> _artCache;
         private readonly List<AlbumListEntry> _items;
-        private readonly RequestFactory _loadArtRequestFactory;
+        private readonly IRequestFactory _loadArtRequestFactory;
         private readonly RequestResultListener _requestListener;
         private bool _isDisposed;
+        private RequestManager _albumArtsLoader;
 
         public override int Count
         {
@@ -50,11 +55,16 @@ namespace AirMedia.Platform.UI.Library.AlbumList
         public AlbumListGridAdapter()
         {
             _items = new List<AlbumListEntry>();
-            _requestListener = RequestResultListener.NewInstance(LogTag);
-            _loadArtRequestFactory = AndroidRequestFactory.Init(typeof(LoadAlbumArtRequest), _requestListener)
+            _albumArtsLoader = new ThreadPoolRequestManager(2);
+            _requestListener = RequestResultListener.NewInstance(LogTag, _albumArtsLoader);
+
+            var factory = BatchRequestFactory.Init(typeof (LoadAlbumArtRequest), typeof(LoadAlbumArtBatchRequest));
+            _loadArtRequestFactory = AndroidRequestFactory.Init(factory, _requestListener)
+                                                          .SetManager(_albumArtsLoader)
                                                           .SetParallel(true)
-                                                          .SetActionTag(LoadAlbumArtRequest.ActionTagDefault);
-            _requestListener.RegisterResultHandler(typeof(LoadAlbumArtRequest), OnAlbumArtLoaded);
+                                                          .SetActionTag(BatchLoadArtsRequestTag);
+
+            _requestListener.RegisterResultHandler(typeof(BatchRequest), OnAlbumArtLoaded);
             _artCache = new LruCache<long, Bitmap>(MaxBitmapCacheSizeBytes, this);
         }
 
@@ -112,27 +122,39 @@ namespace AirMedia.Platform.UI.Library.AlbumList
         {
             if (args.Request.Status != RequestStatus.Ok)
             {
-                AmwLog.Warn(LogTag, "Error loading album art");
+                AmwLog.Warn(LogTag, "Error loading album arts");
                 return;
             }
 
-            var bitmap = ((LoadRequestResult<Bitmap>)args.Result).Data;
-            if (bitmap == null)
-                return;
+            var results = ((BatchRequestResult) args.Result).Results;
 
-            var request = (LoadAlbumArtRequest) args.Request;
-            long albumId = request.AlbumId;
+            foreach (var result in results)
+            {
+                var rq = (LoadAlbumArtRequest) result.Key;
 
+                if (rq.Status != RequestStatus.Ok)
+                    continue;
+
+                long albumId = rq.AlbumId;
+                var bitmap = ((LoadRequestResult<Bitmap>)result.Value).Data;
+                OnAlbumArtLoaded(albumId, bitmap);       
+            }
+
+            _albumArtsLoader.TryDisposeRequest(args.Request.RequestId);
+        }
+
+        private void OnAlbumArtLoaded(long albumId, Bitmap albumArt)
+        {
             if (AlbumArtLoaded != null)
             {
                 AlbumArtLoaded(this, new AlbumArtLoadedEventArgs
-                    {
-                        AlbumId = albumId,
-                        AlbumArt = bitmap
-                    });
+                {
+                    AlbumId = albumId,
+                    AlbumArt = albumArt
+                });
             }
 
-            _artCache.Set(albumId, bitmap, false);
+            _artCache.Set(albumId, albumArt, false);
         }
 
         public Bitmap GetAlbumArt(long albumId)
@@ -154,25 +176,33 @@ namespace AirMedia.Platform.UI.Library.AlbumList
             return value.ByteCount;
         }
 
-        public void DisposeOfValue(long key, Bitmap value)
+        public void DisposeOfValue(long keyAlbumId, Bitmap albumArt)
         {
-            value.Dispose();
+            if (albumArt != null)
+                albumArt.Dispose();
 
             if (_isDisposed == false) return;
 
-            value.Recycle();
+            if (albumArt != null)
+                albumArt.Recycle();
         }
 
         protected override void Dispose(bool disposing)
         {
+            if (_isDisposed) return;
+
             base.Dispose(disposing);
 
             if (disposing)
             {
-                _isDisposed = true;
+                _requestListener.Dispose();
                 _artCache.Clear();
                 _artCache = null;
+                _albumArtsLoader.Dispose();
+                _albumArtsLoader = null;
             }
+
+            _isDisposed = true;
         }
     }
 }

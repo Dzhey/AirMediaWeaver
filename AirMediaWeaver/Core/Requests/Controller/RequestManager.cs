@@ -10,7 +10,7 @@ using System;
 
 namespace AirMedia.Core.Requests.Controller
 {
-    public abstract class RequestManager : IRequestManager
+    public abstract class RequestManager : IRequestManager, IDisposable
     {
         private static readonly string LogTag = typeof (RequestManager).Name;
         private static readonly object Mutex = new object();
@@ -23,6 +23,8 @@ namespace AirMedia.Core.Requests.Controller
         private readonly LinkedList<AbsRequest> _requestQueue;
         private readonly LinkedList<WeakReference<IRequestResultListener>> _resultEventHandlers;
         private readonly LinkedList<WeakReference<IRequestUpdateListener>> _updateEventHandlers;
+
+        private bool _isDisposed;
 
         private static volatile RequestManager _instance;
 
@@ -58,10 +60,13 @@ namespace AirMedia.Core.Requests.Controller
             }
         }
 
+        public static void Init(RequestManager requestManagerInstance)
+        {
+            Instance = requestManagerInstance;
+        }
+
         protected RequestManager()
         {
-            Instance = this;
-
             _requestQueue = new LinkedList<AbsRequest>();
             _resultEventHandlers = new LinkedList<WeakReference<IRequestResultListener>>();
             _updateEventHandlers = new LinkedList<WeakReference<IRequestUpdateListener>>();
@@ -125,6 +130,28 @@ namespace AirMedia.Core.Requests.Controller
                         request.Cancel();
                 }
             }
+        }
+
+        public bool TryDisposeRequest(int requestId)
+        {
+            var request = FindRequest(requestId);
+
+            return TryDisposeRequestImpl(request);
+        }
+
+        private bool TryDisposeRequestImpl(AbsRequest request)
+        {
+            if (request == null || request.IsFinished == false)
+                return false;
+
+            lock (_requestQueue)
+            {
+                _requestQueue.Remove(request);
+            }
+
+            request.Dispose();
+
+            return true;
         }
 
         /// <summary>
@@ -215,35 +242,12 @@ namespace AirMedia.Core.Requests.Controller
                 {
                     AmwLog.Warn(LogTag, string.Format("can't free request queue; too many retaining " +
                                                         "requests; queue size: \"{0}\"", _requestQueue.Count));
-                    foreach (var item in trash)
-                    {
-                        AmwLog.Warn(LogTag, string.Format("rataining request: \"{0}\"", item));
-                    }
                 }
             }
         }
         
-        /// <summary>
-        /// Submit request on execution.
-        /// Request execution order depend on the supplied parameters.
-        /// By default, all submitted requests are executed in serial order.
-        /// Appropriate parameters chagning execution order.
-        /// </summary>
-        /// <param name="request">request to enqueue</param>
-        /// <param name="isParallel">
-        /// If true then request will be executed in the fixed thread pool instead of common single thread. 
-        /// Requests with the same tag are executing in serial order in the same thread pool.
-        /// Requests with the null tag are executing asynchronously.
-        /// </param>
-        /// <param name="isDedicated">
-        /// If true then request will be asynchronously executed in the dedicated thread.
-        /// Request tag and parallel flag are not considered in that case.
-        /// </param>
-        /// <returns>generated request id</returns>
         public int SubmitRequest(AbsRequest request, bool isParallel = false, bool isDedicated = false)
         {
-//            Debug.WriteLine(string.Format("request submitted: {0}; parallel: {1}", request, isParallel), LogTag);
-
             int requestId = GenerateRequestId();
             request.RequestId = requestId;
 
@@ -374,6 +378,26 @@ namespace AirMedia.Core.Requests.Controller
             }
 
             Debug.WriteLine(string.Format("{0} request listeners disposed", count), LogTag);
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_isDisposed) return;
+
+            if (disposing)
+            {
+                _requestQueue.Clear();
+                _resultEventHandlers.Clear();
+                _updateEventHandlers.Clear();
+            }
+
+            _isDisposed = true;
         }
     }
 }

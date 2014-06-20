@@ -8,8 +8,9 @@ using AirMedia.Core.Requests.Controller;
 
 namespace AirMedia.Core.Requests.Factory
 {
-    public class RequestFactory
+    public class RequestFactory : IRequestFactory
     {
+        private bool _isDisposed;
         private bool _isParallel;
         private bool _isDedicated;
         private bool _isDistinct;
@@ -17,6 +18,9 @@ namespace AirMedia.Core.Requests.Factory
         private readonly string _requestTypeName;
         private Type _requestType;
         private readonly IDictionary<string, ConstructorInfo> _constructors;
+        private RequestManager _requestManager;
+
+        public event EventHandler<RequestSubmittedEventArgs> RequestSubmitted;
 
         public static RequestFactory Init(string requestTypeName)
         {
@@ -40,28 +44,35 @@ namespace AirMedia.Core.Requests.Factory
             _constructors = new Dictionary<string, ConstructorInfo>();
         }
 
-        public RequestFactory SetParallel(bool isParallel)
+        public IRequestFactory SetManager(RequestManager manager)
+        {
+            _requestManager = manager;
+
+            return this;
+        }
+
+        public IRequestFactory SetParallel(bool isParallel)
         {
             _isParallel = isParallel;
 
             return this;
         }
 
-        public RequestFactory SetDedicated(bool isDedicated)
+        public IRequestFactory SetDedicated(bool isDedicated)
         {
             _isDedicated = isDedicated;
 
             return this;
         }
 
-        public RequestFactory SetActionTag(string actionTag)
+        public IRequestFactory SetActionTag(string actionTag)
         {
             _actionTag = actionTag;
 
             return this;
         }
 
-        public RequestFactory SetDistinct(bool isDistinct)
+        public IRequestFactory SetDistinct(bool isDistinct)
         {
             _isDistinct = true;
 
@@ -70,46 +81,63 @@ namespace AirMedia.Core.Requests.Factory
 
         public virtual AbsRequest Submit(params object[] args)
         {
+            if (_isDisposed)
+                throw new ObjectDisposedException("factory is already disposed");
+
             var constructor = ResolveConstructor(args);
             var rq = (AbsRequest) constructor.Invoke(args);
 
             rq.ActionTag = _actionTag;
+
+            if (_requestManager == null)
+                _requestManager = RequestManager.Instance;
 
             if (_isDistinct)
             {
                 if (_actionTag == null) 
                     throw new ApplicationException("distinct request should have an appropriate action tag");
 
-                if (RequestManager.Instance.HasPendingRequest(_actionTag))
+                if (_requestManager.HasPendingRequest(_actionTag))
                     return rq;
             }
 
             if (_isDedicated == false)
             {
-                RequestManager.Instance.SubmitRequest(rq, _isParallel);
+                _requestManager.SubmitRequest(rq, _isParallel);
             }
             else
             {
-                RequestManager.Instance.SubmitRequest(rq, _isParallel, _isDedicated);
+                _requestManager.SubmitRequest(rq, _isParallel, _isDedicated);
+            }
+
+            if (RequestSubmitted != null)
+            {
+                RequestSubmitted(this, new RequestSubmittedEventArgs(rq));
             }
 
             return rq;
         }
 
-        private ConstructorInfo ResolveConstructor(object[] args)
+        protected ConstructorInfo ResolveConstructor(object[] args)
         {
             if (_requestType == null)
             {
                 _requestType = Type.GetType(_requestTypeName, true);
             }
+
+            return ResolveConstructorImpl(args, _requestType);
+        }
+
+        protected ConstructorInfo ResolveConstructorImpl(object[] args, Type requestType)
+        {
             var argTypes = RetrieveArgTypes(args);
             var argsHash = ComputeArgTypesHash(argTypes);
 
             if (_constructors.ContainsKey(argsHash))
                 return _constructors[argsHash];
 
-            var constructor = _requestType.GetConstructor(argTypes);
-            if (constructor == null) 
+            var constructor = requestType.GetConstructor(argTypes);
+            if (constructor == null)
                 throw new ArgumentException("can't define constructor for specified arguments");
 
             _constructors.Add(argsHash, constructor);
@@ -117,7 +145,7 @@ namespace AirMedia.Core.Requests.Factory
             return constructor;
         }
 
-        private Type[] RetrieveArgTypes(IEnumerable<object> args)
+        protected Type[] RetrieveArgTypes(IEnumerable<object> args)
         {
             return args.Select(o => o.GetType()).ToArray();
         }
@@ -131,6 +159,23 @@ namespace AirMedia.Core.Requests.Factory
             }
 
             return sb.ToString();
+        }
+
+        public void Dispose()
+        {
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_isDisposed) return;
+
+            if (disposing)
+            {
+                _requestManager = null;
+            }
+
+            _isDisposed = true;
         }
     }
 }

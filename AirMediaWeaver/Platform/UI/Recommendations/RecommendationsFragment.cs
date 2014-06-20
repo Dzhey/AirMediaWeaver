@@ -17,14 +17,15 @@ namespace AirMedia.Platform.UI.Recommendations
     {
         private ListView _listView;
         private PlaylistTracksAdapter _adapter;
-        private RequestFactory _recsRequestFactory;
+        private IRequestFactory _recsRequestFactory;
 
         public override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
 
             _adapter = new PlaylistTracksAdapter();
-            _recsRequestFactory = AndroidRequestFactory.Init(typeof (LoadRecommendationsRequest), ResultListener)
+            var factory = RequestFactory.Init(typeof (LoadRecommendationsRequest));
+            _recsRequestFactory = AndroidRequestFactory.Init(factory, ResultListener)
                                                        .SetActionTag(LoadRecommendationsRequest.ActionTagDefault)
                                                        .SetParallel(true)
                                                        .SetDistinct(true);

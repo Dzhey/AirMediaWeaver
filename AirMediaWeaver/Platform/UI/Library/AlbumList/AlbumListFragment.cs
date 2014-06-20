@@ -16,14 +16,15 @@ namespace AirMedia.Platform.UI.Library.AlbumList
     {
         private ListView _albumListView;
         private AlbumListGridAdapter _listAdapter;
-        private RequestFactory _loadRequestFactory;
+        private IRequestFactory _loadRequestFactory;
 
         public override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
 
             _listAdapter = new AlbumListGridAdapter();
-            _loadRequestFactory = AndroidRequestFactory.Init(typeof(AndroidLoadLocalArtistAlbumsRequest), ResultListener)
+            var factory = RequestFactory.Init(typeof (AndroidLoadLocalArtistAlbumsRequest));
+            _loadRequestFactory = AndroidRequestFactory.Init(factory, ResultListener)
                                                        .SetParallel(true)
                                                        .SetDistinct(true)
                                                        .SetActionTag(AndroidLoadLocalArtistAlbumsRequest.ActionTagDefault);

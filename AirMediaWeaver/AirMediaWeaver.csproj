@@ -135,8 +135,17 @@
     <Compile Include="Core\Json\RemoteTrackMetadataConverter.cs" />
     <Compile Include="Core\Requests\Abs\AbsCachedRequest.cs" />
     <Compile Include="Core\Requests\Abs\BaseLoadCachedRequest.cs" />
+    <Compile Include="Core\Requests\Controller\ExecutionFinishedEventArgs.cs" />
+    <Compile Include="Core\Requests\Controller\IWorker.cs" />
     <Compile Include="Core\Requests\Controller\MemoryRequestResultCache.cs" />
+    <Compile Include="Core\Requests\Controller\SingleThreadWorker.cs" />
+    <Compile Include="Core\Requests\Controller\ThreadPoolRequestManager.cs" />
+    <Compile Include="Core\Requests\Controller\ThreadPoolWorker.cs" />
+    <Compile Include="Core\Requests\Factory\BatchRequestFactory.cs" />
+    <Compile Include="Core\Requests\Factory\IRequestFactory.cs" />
+    <Compile Include="Core\Requests\Factory\RequestSubmittedEventArgs.cs" />
     <Compile Include="Core\Requests\Impl\AbsLoadLocalArtistAlbumsRequest.cs" />
+    <Compile Include="Core\Requests\Impl\BatchRequest.cs" />
     <Compile Include="Core\Requests\Interfaces\ICachedRequestResult.cs" />
     <Compile Include="Core\Requests\Interfaces\IRequestResultCache.cs" />
     <Compile Include="Core\Requests\Factory\RequestFactory.cs" />
@@ -145,6 +154,7 @@
     <Compile Include="Core\Requests\Impl\LoadRemoteTracksRequest.cs" />
     <Compile Include="Core\Requests\Impl\PerformTracksSearchRequest.cs" />
     <Compile Include="Core\Requests\Impl\SendHttpAuthPacketRequest.cs" />
+    <Compile Include="Core\Requests\Model\BatchRequestResult.cs" />
     <Compile Include="Core\Requests\Model\CachedLoadRequestResult.cs" />
     <Compile Include="Core\Requests\Model\CachedUpdateData.cs" />
     <Compile Include="Core\Requests\Model\LoadRecommendationsRequestResult.cs" />
@@ -163,6 +173,7 @@
     <Compile Include="Platform\Controller\PlaybackSource\MixedPlaybackSource.cs" />
     <Compile Include="Platform\Controller\Receivers\RemoteTrackPublicationsUpdateReceiver.cs" />
     <Compile Include="Platform\Controller\Requests\Impl\AndroidLoadLocalArtistAlbumsRequest.cs" />
+    <Compile Include="Platform\Controller\Requests\Impl\LoadAlbumArtBatchRequest.cs" />
     <Compile Include="Platform\Controller\Requests\Impl\LoadAlbumArtRequest.cs" />
     <Compile Include="Platform\Controller\Requests\Impl\WatchWifiHotspotRequest.cs" />
     <Compile Include="Platform\Data\Dao\AndroidPlayCountDao.cs" />

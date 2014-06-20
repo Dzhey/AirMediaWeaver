@@ -45,7 +45,10 @@ namespace AirMedia.Platform
             MainHandler = new Handler();
             Instance = this;
             Preferences = new UserPreferences(this);
+
             WorkerRequestManager = new WorkerRequestManager(this);
+            RequestManager.Init(WorkerRequestManager);
+
             DatabaseHelper = new AndroidDatabaseHelper();
             DatabaseHelper.Init(DatabaseHelper);
 

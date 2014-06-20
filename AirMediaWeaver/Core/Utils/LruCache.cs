@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using AirMedia.Core.Log;
 
 namespace AirMedia.Core.Utils
 {
@@ -99,7 +98,6 @@ namespace AirMedia.Core.Utils
             _currentSize -= node.SizeOfValue;
 
             _entryHandler.DisposeOfValue(node.Key, node.Value);
-            AmwLog.Info("LruCache", "node disposed; size, kb: " + _currentSize / 1024);
         }
 
         public void Set(TKey key, TValue value, bool replaceValue = true)
@@ -124,13 +122,7 @@ namespace AirMedia.Core.Utils
             MoveToHead(entry);
 
             if (_tail == null)
-            {
                 _tail = entry;
-                if (_entries.Count > 1)
-                {
-                    throw new ApplicationException("tail is missed");
-                }
-            }
 
             _currentSize += sizeofValue;
         }

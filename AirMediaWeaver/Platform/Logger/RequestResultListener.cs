@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using AirMedia.Core.Log;
 using AirMedia.Core.Requests.Abs;
+using AirMedia.Core.Requests.Controller;
 using AirMedia.Core.Requests.Interfaces;
 using AirMedia.Core.Requests.Model;
 using Android.OS;
@@ -24,6 +25,7 @@ namespace AirMedia.Platform.Logger
         private readonly ISet<int> _requestIds;
         private readonly IDictionary<Type, EventHandler<ResultEventArgs>> _resultDelegates; 
         private readonly IDictionary<Type, EventHandler<UpdateEventArgs>> _updateDelegates;
+        private readonly IRequestManager _requestManager;
         private bool _isDisposed;
 
         public event EventHandler<UpdateEventArgs> UpdateEventHandler;
@@ -47,22 +49,24 @@ namespace AirMedia.Platform.Logger
             get { return PendingRequestCount > 0; }
         }
 
-        public static RequestResultListener NewInstance(string tag)
+        public static RequestResultListener NewInstance(string tag, IRequestManager requestManager = null)
         {
             int random = new Random().Next(int.MaxValue);
             string listenerTag = string.Format("{0}_{1}", tag, random);
 
-            return new RequestResultListener(listenerTag);
+            return new RequestResultListener(listenerTag, requestManager);
         }
 
-        public RequestResultListener(string tag)
+        public RequestResultListener(string tag, IRequestManager requestManager = null)
         {
             Tag = tag;
             _requestIds = new HashSet<int>();
             _resultDelegates = new Dictionary<Type, EventHandler<ResultEventArgs>>();
             _updateDelegates = new Dictionary<Type, EventHandler<UpdateEventArgs>>();
-            App.WorkerRequestManager.RegisterEventHandler((IRequestResultListener) this);
-            App.WorkerRequestManager.RegisterEventHandler((IRequestUpdateListener) this);
+            _requestManager = requestManager ?? RequestManager.Instance;
+
+            _requestManager.RegisterEventHandler((IRequestResultListener)this);
+            _requestManager.RegisterEventHandler((IRequestUpdateListener)this);
         }
 
         public override string ToString()
@@ -116,7 +120,7 @@ namespace AirMedia.Platform.Logger
 
         public int SubmitDedicatedRequest(AbsRequest request)
         {
-            App.WorkerRequestManager.SubmitRequest(request, false, true);
+            _requestManager.SubmitRequest(request, false, true);
             RegisterRequest(request.RequestId);
 
             return request.RequestId;
@@ -124,7 +128,7 @@ namespace AirMedia.Platform.Logger
 
         public int SubmitRequest(AbsRequest request, bool isParallel = false)
         {
-            App.WorkerRequestManager.SubmitRequest(request, isParallel);
+            _requestManager.SubmitRequest(request, isParallel);
             RegisterRequest(request.RequestId);
 
             return request.RequestId;
@@ -134,7 +138,7 @@ namespace AirMedia.Platform.Logger
 		{
 			if (!HasPendingRequest (requestId))
 				return;
-			var request = App.WorkerRequestManager.FindRequest (requestId);
+            var request = _requestManager.FindRequest(requestId);
 			if (request != null) 
 			{
 				request.Cancel ();
@@ -167,7 +171,7 @@ namespace AirMedia.Platform.Logger
             
             foreach (int id in ids)
             {
-                var request = App.WorkerRequestManager.FindRequest(id);
+                var request = _requestManager.FindRequest(id);
                 if (request != null)
                 {
                     if (request.IsFinished)
@@ -266,8 +270,8 @@ namespace AirMedia.Platform.Logger
                 _updateDelegates.Clear();
                 ResultEventHandler = null;
                 UpdateEventHandler = null;
-                App.WorkerRequestManager.RemoveEventHandler((IRequestResultListener)this);
-                App.WorkerRequestManager.RemoveEventHandler((IRequestUpdateListener)this);
+                _requestManager.RemoveEventHandler((IRequestResultListener)this);
+                _requestManager.RemoveEventHandler((IRequestUpdateListener)this);
 
                 lock (_requestIds)
                 {

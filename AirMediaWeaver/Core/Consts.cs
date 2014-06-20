@@ -21,6 +21,12 @@ namespace AirMedia.Core
         public const int DefaultMulticastTTL = 3;
         public const int DefaultProgressDelayMillis = 1200;
 
+#if DEBUG
+        public const bool Debug = true;
+#else
+        public const bool Debug = false;
+#endif
+
         #region In-App Logging Settings
 
         public const int MaxInAppLoggingCacheEntries = 20000;
