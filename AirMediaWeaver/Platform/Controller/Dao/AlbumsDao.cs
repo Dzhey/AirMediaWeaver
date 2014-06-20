@@ -35,18 +35,10 @@ namespace AirMedia.Platform.Controller.Dao
                     if (string.IsNullOrEmpty(albumArt))
                         return null;
 
-                    try
-                    {
-                        var artUri = Uri.Parse(ContentResolver.SchemeFile + "://" + albumArt);
-                        pfd = resolver.OpenFileDescriptor(artUri, "r");
+                    var artUri = Uri.Parse(ContentResolver.SchemeFile + "://" + albumArt);
+                    pfd = resolver.OpenFileDescriptor(artUri, "r");
 
-                        return BitmapFactory.DecodeFileDescriptor(pfd.FileDescriptor);
-                    }
-                    catch (Exception e)
-                    {
-                        AmwLog.Warn(LogTag, string.Format("Error opening album art \"{0}\"", albumArt), e.ToString());
-                        return null;
-                    }
+                    return BitmapFactory.DecodeFileDescriptor(pfd.FileDescriptor);
                 }
                 finally
                 {

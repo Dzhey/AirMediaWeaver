@@ -6,6 +6,7 @@
 
   <string name="message_progress">Загрузка&#8230;</string>
   <string name="error_cant_load_data">Не удалось загрузить данные</string>
+  <string name="warning_out_of_memory">Недостаточно свободной памяти</string>
   <string name="title_list_empty">Нет элементов для отображения</string>
   <string name="title_unknown_artist">&lt;неизвестный исполнитель&gt;</string>
   <string name="title_unknown_track">&lt;без названия&gt;</string>

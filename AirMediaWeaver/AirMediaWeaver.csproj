@@ -176,6 +176,7 @@
     <Compile Include="Platform\Controller\Requests\Impl\LoadAlbumArtBatchRequest.cs" />
     <Compile Include="Platform\Controller\Requests\Impl\LoadAlbumArtRequest.cs" />
     <Compile Include="Platform\Controller\Requests\Impl\WatchWifiHotspotRequest.cs" />
+    <Compile Include="Platform\Controller\Requests\Model\LoadArtistAlbumsRequestResult.cs" />
     <Compile Include="Platform\Data\Dao\AndroidPlayCountDao.cs" />
     <Compile Include="Platform\Data\Model\GenreModel.cs" />
     <Compile Include="Platform\Data\Sql\Dao\TrackDownloadsDao.cs" />
@@ -511,7 +512,6 @@
     <AndroidResource Include="Resources\Drawable\album_placeholder.png" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Platform\Controller\Requests\Model\" />
     <Folder Include="Platform\Json\" />
   </ItemGroup>
   <ItemGroup>

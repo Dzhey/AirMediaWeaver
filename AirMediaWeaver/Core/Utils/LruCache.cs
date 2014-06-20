@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace AirMedia.Core.Utils
 {
@@ -49,14 +50,15 @@ namespace AirMedia.Core.Utils
 
         public void Clear()
         {
-            foreach (var entry in _entries.Values)
-            {
-                DisposeNode(entry);
-            }
+            var clearingItems = _entries.Values.ToArray();
+            _entries.Clear();
+            _currentSize = 0;
+            _head = null;
+            _tail = null;
 
-            if (_currentSize != 0)
+            foreach (var entry in clearingItems)
             {
-                throw new ApplicationException("cache is empty; size: " + _currentSize);
+                _entryHandler.DisposeOfValue(entry.Key, entry.Value);
             }
         }
 

@@ -9,7 +9,7 @@ namespace AirMedia.Core.Requests.Abs
         {
         }
 
-        protected override CachedLoadRequestResult<T> ExecuteCachedImpl(out RequestStatus status)
+        protected sealed override CachedLoadRequestResult<T> ExecuteCachedImpl(out RequestStatus status)
         {
             return DoLoad(out status);
         }

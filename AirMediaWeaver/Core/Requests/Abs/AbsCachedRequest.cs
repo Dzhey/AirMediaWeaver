@@ -45,21 +45,30 @@ namespace AirMedia.Core.Requests.Abs
             updateArgs = CreateUpdateEventArgs(new IntermediateResultUpdateData {RequestResult = result});
             NotifyRequestUpdate(updateArgs);
 
+            return result;
+        }
+
+        protected override void OnPostExecute(RequestResult result, RequestStatus status)
+        {
+            var typedResult = result as T;
+
+            if (status != RequestStatus.Ok || result == null)
+                return;
+
+            var key = GetCacheKey();
             try
             {
                 if (key != null && status == RequestStatus.Ok)
                 {
                     int expire = ExpireDeltaMillis == 0 ? CacheExpireDeltaMillisDefault : ExpireDeltaMillis;
 
-                    _cache.PerformCache(key, result, expire, DiscardOnExpire);
+                    _cache.PerformCache(key, typedResult, expire, DiscardOnExpire);
                 }
             }
             catch (Exception e)
             {
                 AmwLog.Warn(LogTag, "Error trying to cache request result", e.ToString());
             }
-
-            return result;
         }
 
         protected abstract T ExecuteCachedImpl(out RequestStatus status);

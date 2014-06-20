@@ -27,6 +27,11 @@ namespace AirMedia.Platform.UI.Library.AlbumList
             public GridView ItemsGrid { get; set; }
         }
 
+        public interface ICallbacks
+        {
+            void OnLowMemoryDetected();
+        }
+
         public static readonly string LogTag = typeof(AlbumListGridAdapter).Name;
 
         public const int MaxBitmapCacheSizeBytes = 1024 * 1024 * 8;
@@ -39,7 +44,9 @@ namespace AirMedia.Platform.UI.Library.AlbumList
         private readonly List<AlbumListEntry> _items;
         private readonly IRequestFactory _loadArtRequestFactory;
         private readonly RequestResultListener _requestListener;
+        private ICallbacks _callbacks;
         private bool _isDisposed;
+        private bool _isLowMemory;
         private RequestManager _albumArtsLoader;
 
         public override int Count
@@ -52,8 +59,9 @@ namespace AirMedia.Platform.UI.Library.AlbumList
             get { return _items[position]; }
         }
 
-        public AlbumListGridAdapter()
+        public AlbumListGridAdapter(ICallbacks callbacks)
         {
+            _callbacks = callbacks;
             _items = new List<AlbumListEntry>();
             _albumArtsLoader = new ThreadPoolRequestManager(2);
             _requestListener = RequestResultListener.NewInstance(LogTag, _albumArtsLoader);
@@ -74,6 +82,14 @@ namespace AirMedia.Platform.UI.Library.AlbumList
             _items.AddRange(items);
 
             App.MainHandler.Post(NotifyDataSetChanged);
+        }
+
+        public void AddAlbumArts(IEnumerable<KeyValuePair<long, Bitmap>> albumArts)
+        {
+            foreach (var entry in albumArts)
+            {
+                _artCache.Set(entry.Key, entry.Value);
+            }
         }
 
         public override long GetItemId(int position)
@@ -133,7 +149,20 @@ namespace AirMedia.Platform.UI.Library.AlbumList
                 var rq = (LoadAlbumArtRequest) result.Key;
 
                 if (rq.Status != RequestStatus.Ok)
+                {
+                    var ex = rq.Result.RisenException;
+                    if (ex != null
+                        && string.IsNullOrEmpty(ex.Message) == false
+                        && ex.Message.Contains("OutOfMemory"))
+                    {
+                        _artCache.Clear();
+                        _isLowMemory = true;
+                        AmwLog.Warn(LogTag, "Out of Memory detected");
+                        _callbacks.OnLowMemoryDetected();
+                        break;
+                    }
                     continue;
+                }
 
                 long albumId = rq.AlbumId;
                 var bitmap = ((LoadRequestResult<Bitmap>)result.Value).Data;
@@ -161,7 +190,7 @@ namespace AirMedia.Platform.UI.Library.AlbumList
         {
             Bitmap albumArt = null;
 
-            if (_artCache.TryGetValue(albumId, out albumArt) == false)
+            if (_isLowMemory == false && _artCache.TryGetValue(albumId, out albumArt) == false)
             {
                 _loadArtRequestFactory.Submit(albumId);
             }
@@ -200,6 +229,7 @@ namespace AirMedia.Platform.UI.Library.AlbumList
                 _artCache = null;
                 _albumArtsLoader.Dispose();
                 _albumArtsLoader = null;
+                _callbacks = null;
             }
 
             _isDisposed = true;

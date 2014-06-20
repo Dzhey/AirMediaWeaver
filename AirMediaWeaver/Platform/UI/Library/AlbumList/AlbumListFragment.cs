@@ -1,10 +1,11 @@
-using System.Collections.Generic;
 using AirMedia.Core;
 using AirMedia.Core.Log;
+using AirMedia.Core.Requests.Controller;
 using AirMedia.Core.Requests.Factory;
 using AirMedia.Core.Requests.Model;
 using AirMedia.Platform.Controller;
 using AirMedia.Platform.Controller.Requests.Impl;
+using AirMedia.Platform.Controller.Requests.Model;
 using AirMedia.Platform.UI.Base;
 using Android.OS;
 using Android.Views;
@@ -12,7 +13,7 @@ using Android.Widget;
 
 namespace AirMedia.Platform.UI.Library.AlbumList
 {
-    public class AlbumListFragment : MainViewFragment
+    public class AlbumListFragment : MainViewFragment, AlbumListGridAdapter.ICallbacks
     {
         private ListView _albumListView;
         private AlbumListGridAdapter _listAdapter;
@@ -22,7 +23,7 @@ namespace AirMedia.Platform.UI.Library.AlbumList
         {
             base.OnCreate(savedInstanceState);
 
-            _listAdapter = new AlbumListGridAdapter();
+            _listAdapter = new AlbumListGridAdapter(this);
             var factory = RequestFactory.Init(typeof (AndroidLoadLocalArtistAlbumsRequest));
             _loadRequestFactory = AndroidRequestFactory.Init(factory, ResultListener)
                                                        .SetParallel(true)
@@ -102,6 +103,8 @@ namespace AirMedia.Platform.UI.Library.AlbumList
                 ShowMessage(Resource.String.error_cant_load_data);
                 AmwLog.Error(LogTag, "Error loading local album list");
             }
+
+            RequestManager.Instance.TryDisposeRequest(args.Request.RequestId);
         }
 
         private void OnLoadRequestUpdate(object sender, UpdateEventArgs args)
@@ -113,20 +116,27 @@ namespace AirMedia.Platform.UI.Library.AlbumList
             {
                 case UpdateData.UpdateCodeCachedResultRetrieved:
                     var cachedResult = ((CachedUpdateData)args.UpdateData).CachedResult;
-                    var cachedData = ((CachedLoadRequestResult<List<AlbumListEntry>>)cachedResult).Data;
+                    var cachedData = ((LoadArtistAlbumsRequestResult)cachedResult).Data;
                     _listAdapter.SetItems(cachedData);
+                    
                     if (cachedData.Count > 0)
                         SetInProgress(false);
                     break;
 
                 case UpdateData.UpdateCodeIntermediateResultObtained:
-                    var result = ((IntermediateResultUpdateData)args.UpdateData).RequestResult;
-                    var data = ((CachedLoadRequestResult<List<AlbumListEntry>>)result).Data;
-                    _listAdapter.SetItems(data);
-                    if (data.Count > 0)
+                    var wrappedResult = (IntermediateResultUpdateData) args.UpdateData;
+                    var result = (LoadArtistAlbumsRequestResult) wrappedResult.RequestResult;
+                    _listAdapter.SetItems(result.Data);
+                    _listAdapter.AddAlbumArts(result.AlbumArts);
+                    if (result.Data.Count > 0)
                         SetInProgress(false);
                     break;
             }
+        }
+
+        public void OnLowMemoryDetected()
+        {
+            ShowMessage(Resource.String.warning_out_of_memory);
         }
     }
 }

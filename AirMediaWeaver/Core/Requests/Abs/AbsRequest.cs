@@ -137,7 +137,11 @@ namespace AirMedia.Core.Requests.Abs
 
             try
             {
+                OnPreExecute();
+
                 result = ExecuteImpl(out resultStatus);
+
+                OnPostExecute(result, resultStatus);
             } 
             catch (Exception e)
             {
@@ -146,10 +150,18 @@ namespace AirMedia.Core.Requests.Abs
                 AmwLog.Error(LogTag, "Exception caught while executing request: {0}; {1}", e, GetType().Name);
             }
 
+            if (result.HasResultCode == false)
+            {
+                AmwLog.Error(LogTag, result, "request result has no result code specified");
+                result = new RequestResult(RequestResult.ResultCodeFailed) {ErrorMessage = "no result code specified"};
+                resultStatus = RequestStatus.Failed;
+            }
+
             switch (resultStatus)
             {
                 case RequestStatus.Ok:
-                    if (result.ResultCode == RequestResult.ResultCodeFailed)
+                    if (result.ResultCode == RequestResult.ResultCodeFailed
+                        || result.ResultCode == RequestResult.ResultCodeCancelled)
                     {
                         throw new ApplicationException("inconsistent request status and result code detected");
                     }
@@ -185,6 +197,14 @@ namespace AirMedia.Core.Requests.Abs
         /// <param name="status">One of request finish statuses</param>
         /// <returns>Result to assing with this request</returns>
         protected abstract RequestResult ExecuteImpl(out RequestStatus status);
+
+        protected virtual void OnPreExecute()
+        {
+        }
+
+        protected virtual void OnPostExecute(RequestResult result, RequestStatus status)
+        {
+        }
 
         protected virtual void CancelRequestImpl()
         {
