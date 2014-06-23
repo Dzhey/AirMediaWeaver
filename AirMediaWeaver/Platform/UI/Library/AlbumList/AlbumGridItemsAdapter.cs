@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Android.Graphics;
 using Android.Views;
+using Android.Views.Animations;
 using Android.Widget;
 
 namespace AirMedia.Platform.UI.Library.AlbumList
@@ -75,6 +76,9 @@ namespace AirMedia.Platform.UI.Library.AlbumList
             if (holder != null)
             {
                 holder.AlbumImage.SetImageBitmap(args.AlbumArt);
+                var fadeInAnimation = AnimationUtils.LoadAnimation(App.Instance, Resource.Animation.fade_in);
+                fadeInAnimation.FillAfter = true;
+                holder.AlbumImage.StartAnimation(fadeInAnimation);
             }
         }
 

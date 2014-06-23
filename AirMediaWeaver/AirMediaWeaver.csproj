@@ -510,6 +510,7 @@
     <AndroidResource Include="Resources\Drawable\holo_line.xml" />
     <AndroidResource Include="Resources\Drawable\image_frame.xml" />
     <AndroidResource Include="Resources\Drawable\album_placeholder.png" />
+    <AndroidResource Include="Resources\Anim\fade_in.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Platform\Json\" />
