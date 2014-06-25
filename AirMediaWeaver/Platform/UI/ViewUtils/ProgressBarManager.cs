@@ -24,6 +24,8 @@ namespace AirMedia.Platform.UI.ViewUtils
             }
         }
 
+        public bool IsInProgress { get { return _isInProgress; } }
+
         private readonly IProgressBarManagerCallbacks _callbacks;
         private bool _isInProgress;
         private View _progressPanel;

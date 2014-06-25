@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using AirMedia.Core.Requests.Abs;
@@ -12,6 +13,19 @@ namespace AirMedia.Core.Requests.Impl
             public ConstructorInfo RequestConstructorInfo { get; set; }
             public object[] RequestConstructorArgs { get; set; }
         }
+
+        public IReadOnlyCollection<BatchRequestArgs> RequestArgs
+        {
+            get
+            {
+                if (_readOnlyArgs == null)
+                    _readOnlyArgs = Array.AsReadOnly(Args);
+
+                return _readOnlyArgs;
+            }
+        }
+
+        private IReadOnlyCollection<BatchRequestArgs> _readOnlyArgs;
 
         protected BatchRequestArgs[] Args { get; private set; }
 

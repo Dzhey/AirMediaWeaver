@@ -520,6 +520,11 @@
     <AndroidResource Include="Resources\Drawable-hdpi\context_menu_indicator.9.png" />
     <AndroidResource Include="Resources\Drawable-mdpi\context_menu_indicator.9.png" />
     <AndroidResource Include="Resources\Drawable-xhdpi\context_menu_indicator.9.png" />
+    <AndroidResource Include="Resources\Drawable\notes_gray.png" />
+    <AndroidResource Include="Resources\Drawable-hdpi\ic_side_menu.png" />
+    <AndroidResource Include="Resources\Drawable\ic_back_button_transparent.png" />
+    <AndroidResource Include="Resources\Drawable-xhdpi\ic_side_menu.png" />
+    <AndroidResource Include="Resources\Drawable-mdpi\ic_side_menu.png" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Platform\Json\" />

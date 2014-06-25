@@ -30,16 +30,33 @@ namespace AirMedia.Platform.UI.Library.AlbumList
         public interface ICallbacks
         {
             void OnLowMemoryDetected();
+            AbsListView GetListView();
         }
 
         public static readonly string LogTag = typeof(AlbumListGridAdapter).Name;
 
         public const int MaxBitmapCacheSizeBytes = 1024 * 1024 * 8;
+        private const int AlbumArtsLoaderBatchPeriodMillis = 100;
 
         private const string BatchLoadArtsRequestTag = "load_album_arts_batch_request";
 
         public event EventHandler<AlbumArtLoadedEventArgs> AlbumArtLoaded;
         public event EventHandler<AlbumGridItem> ItemClicked;
+
+        public bool IsAlbumArtsLoaderEnabled
+        {
+            get
+            {
+                return _isAlbumArtsLoaderEnabled;
+            }
+
+            set
+            {
+                _isAlbumArtsLoaderEnabled = value;
+                if (_isAlbumArtsLoaderEnabled)
+                    UpdateVisibleAlbumArts();
+            }
+        }
 
         private LruCache<long, Bitmap> _artCache;
         private readonly List<AlbumListEntry> _items;
@@ -48,7 +65,10 @@ namespace AirMedia.Platform.UI.Library.AlbumList
         private ICallbacks _callbacks;
         private bool _isDisposed;
         private bool _isLowMemory;
+        private bool _isAlbumArtsLoaderEnabled = true;
+        private bool _isAlbumArtsCacheReleased;
         private RequestManager _albumArtsLoader;
+        private readonly ISet<long> _requestedAlbumArts;
 
         public override int Count
         {
@@ -64,10 +84,13 @@ namespace AirMedia.Platform.UI.Library.AlbumList
         {
             _callbacks = callbacks;
             _items = new List<AlbumListEntry>();
+            _requestedAlbumArts = new HashSet<long>();
             _albumArtsLoader = new ThreadPoolRequestManager(2);
             _requestListener = RequestResultListener.NewInstance(LogTag, _albumArtsLoader);
 
             var factory = BatchRequestFactory.Init(typeof (LoadAlbumArtRequest), typeof(LoadAlbumArtBatchRequest));
+            factory.FlushTimeoutMillis = AlbumArtsLoaderBatchPeriodMillis;
+
             _loadArtRequestFactory = AndroidRequestFactory.Init(factory, _requestListener)
                                                           .SetManager(_albumArtsLoader)
                                                           .SetParallel(true)
@@ -79,6 +102,8 @@ namespace AirMedia.Platform.UI.Library.AlbumList
 
         public void SetItems(IEnumerable<AlbumListEntry> items)
         {
+            if (_isDisposed) return;
+
             _items.Clear();
             _items.AddRange(items);
 
@@ -87,6 +112,8 @@ namespace AirMedia.Platform.UI.Library.AlbumList
 
         public void AddAlbumArts(IEnumerable<KeyValuePair<long, Bitmap>> albumArts)
         {
+            if (_isDisposed) return;
+
             foreach (var entry in albumArts)
             {
                 _artCache.Set(entry.Key, entry.Value);
@@ -137,6 +164,24 @@ namespace AirMedia.Platform.UI.Library.AlbumList
             return convertView;
         }
 
+        private void UpdateVisibleAlbumArts()
+        {
+            var listView = _callbacks.GetListView();
+
+            if (listView == null)
+                return;
+
+            for (int i = listView.FirstVisiblePosition, pos = 0; i <= listView.LastVisiblePosition; i++, pos++)
+            {
+                var holder = listView.GetChildAt(pos).Tag as ViewHolder;
+
+                if (holder == null)
+                    continue;
+
+                holder.GridAdapter.UpdateVisibleAlbumArts();
+            }
+        }
+
         private void OnGridItemClicked(object sender, AdapterView.ItemClickEventArgs itemClickEventArgs)
         {
             if (ItemClicked == null) return;
@@ -149,6 +194,8 @@ namespace AirMedia.Platform.UI.Library.AlbumList
 
         private void OnAlbumArtLoaded(object sender, ResultEventArgs args)
         {
+            if (_isDisposed) return;
+
             if (args.Request.Status != RequestStatus.Ok)
             {
                 AmwLog.Warn(LogTag, "Error loading album arts");
@@ -205,7 +252,11 @@ namespace AirMedia.Platform.UI.Library.AlbumList
 
             if (_isLowMemory == false && _artCache.TryGetValue(albumId, out albumArt) == false)
             {
-                _loadArtRequestFactory.Submit(albumId);
+                if (_isAlbumArtsLoaderEnabled && _requestedAlbumArts.Contains(albumId) == false)
+                {
+                    _loadArtRequestFactory.Submit(albumId);
+                    _requestedAlbumArts.Add(albumId);
+                }
             }
 
             return albumArt;
@@ -220,13 +271,20 @@ namespace AirMedia.Platform.UI.Library.AlbumList
 
         public void DisposeOfValue(long keyAlbumId, Bitmap albumArt)
         {
-            if (albumArt != null)
-                albumArt.Dispose();
+            _requestedAlbumArts.Remove(keyAlbumId);
 
-            if (_isDisposed == false) return;
+            if (_isAlbumArtsCacheReleased == false)
+            {
+                if (albumArt != null)
+                    albumArt.Dispose();
+                return;
+            }
 
             if (albumArt != null)
+            {
                 albumArt.Recycle();
+                albumArt.Dispose();
+            }
         }
 
         protected override void Dispose(bool disposing)
@@ -237,8 +295,11 @@ namespace AirMedia.Platform.UI.Library.AlbumList
 
             if (disposing)
             {
-                _requestListener.Dispose();
+                _requestListener.RemoveResultHandler(typeof(BatchRequest));
+                _isAlbumArtsCacheReleased = true;
                 _artCache.Clear();
+                _requestedAlbumArts.Clear();
+                _requestListener.Dispose();
                 _artCache = null;
                 _albumArtsLoader.Dispose();
                 _albumArtsLoader = null;

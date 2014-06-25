@@ -86,8 +86,9 @@ namespace AirMedia.Platform.UI.MainView
             _menuListView.Adapter = _mainMenuListAdapter;
             #endregion
 
-            ActionBar.SetHomeButtonEnabled(true);
-            ActionBar.SetDisplayOptions(ActionBar.DisplayOptions, ActionBarDisplayOptions.ShowHome);
+            ActionBar.SetLogo(Resource.Drawable.ic_side_menu);
+            ActionBar.SetDisplayUseLogoEnabled(true);
+            ActionBar.SetDisplayHomeAsUpEnabled(true);
 
             Type displayFragmentType = null;
             if (bundle != null)
@@ -137,13 +138,25 @@ namespace AirMedia.Platform.UI.MainView
             base.OnResume();
 
             _menuListView.ItemClick += OnNavigationItemClicked;
+            _slidingMenu.Open += OnSideMenuOpened;
+            _slidingMenu.Close += OnSideMenuClosed;
         }
 
         protected override void OnPause()
         {
             _menuListView.ItemClick -= OnNavigationItemClicked;
+            _slidingMenu.Open -= OnSideMenuOpened;
+            _slidingMenu.Close -= OnSideMenuClosed;
 
             base.OnPause();
+        }
+
+        protected virtual void OnSideMenuOpened(object sender, EventArgs args)
+        {
+        }
+
+        protected virtual void OnSideMenuClosed(object sender, EventArgs args)
+        {
         }
 
         protected override void OnSaveInstanceState(Bundle outState)

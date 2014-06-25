@@ -13,7 +13,7 @@
         app:indicatorColor="@color/light_theme_accent_color"
         app:indicatorHeight="6dp"
         app:underlineColor="@color/light_theme_accent_color"
-        app:tabPaddingLeftRight="14dp"
+        app:tabPaddingLeftRight="18dp"
         app:shouldExpand="true"
         app:dividerColor="@android:color/transparent" />
     <android.support.v4.view.ViewPager

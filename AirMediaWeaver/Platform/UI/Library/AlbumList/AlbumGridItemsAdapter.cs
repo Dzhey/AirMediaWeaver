@@ -82,6 +82,20 @@ namespace AirMedia.Platform.UI.Library.AlbumList
             }
         }
 
+        public void UpdateVisibleAlbumArts()
+        {
+            for (int i = _listView.FirstVisiblePosition, pos = 0; i <= _listView.LastVisiblePosition; i++, pos++)
+            {
+                var holder = _listView.GetChildAt(pos).Tag as ViewHolder;
+
+                if (holder == null)
+                    continue;
+
+                var albumArt = _callbacks.GetAlbumArt(holder.Item.AlbumId);
+                holder.AlbumImage.SetImageBitmap(albumArt);
+            }
+        }
+
         public override View GetView(int position, View convertView, ViewGroup parent)
         {
             var item = this[position];
@@ -145,7 +159,7 @@ namespace AirMedia.Platform.UI.Library.AlbumList
         {
             for (int i = _listView.FirstVisiblePosition, pos = 0; i <= _listView.LastVisiblePosition; i++, pos++)
             {
-                var holder = _listView.GetChildAt(i).Tag as ViewHolder;
+                var holder = _listView.GetChildAt(pos).Tag as ViewHolder;
 
                 if (holder == null || holder.Item.AlbumId != albumId)
                     continue;

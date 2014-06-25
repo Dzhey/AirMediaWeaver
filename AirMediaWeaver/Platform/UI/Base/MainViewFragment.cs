@@ -13,10 +13,13 @@ namespace AirMedia.Platform.UI.Base
         IPlayerFacadeFragmentCallbacks, 
         IProgressBarManagerCallbacks
     {
+        private const string ExtraIsFirstTimeProgress = "is_first_time_progress";
+
         protected IMainViewFragmentCallbacks MainViewCallbacks { get { return _callbacks; } }
 
         private IMainViewFragmentCallbacks _callbacks;
         private ProgressBarManager _progressBarManager;
+        private bool _isFirstTimeProgress = true;
 
         public override void OnAttach(Activity activity)
         {
@@ -36,6 +39,12 @@ namespace AirMedia.Platform.UI.Base
             base.OnCreate(savedInstanceState);
 
             _progressBarManager = new ProgressBarManager(this);
+
+            if (savedInstanceState != null)
+            {
+                _isFirstTimeProgress = savedInstanceState.GetBoolean(
+                    ExtraIsFirstTimeProgress, _isFirstTimeProgress);
+            }
         }
 
         public override void OnStart()
@@ -43,6 +52,13 @@ namespace AirMedia.Platform.UI.Base
             base.OnStart();
 
             UpdateContentTitle();
+        }
+
+        public override void OnSaveInstanceState(Bundle outState)
+        {
+            base.OnSaveInstanceState(outState);
+
+            outState.PutBoolean(ExtraIsFirstTimeProgress, _isFirstTimeProgress);
         }
 
         public virtual void UpdateNavigationItems(ActionBar actionBar)
@@ -73,12 +89,26 @@ namespace AirMedia.Platform.UI.Base
 
         protected void SetInProgress(bool isInProgress)
         {
+            bool isChanged = _progressBarManager.IsInProgress != isInProgress;
+            if (isChanged == false)
+                return;
+
             _progressBarManager.SetIsInProgress(isInProgress);
+
+            if (!isInProgress && _isFirstTimeProgress)
+            {
+                OnProgressActionFinished(_isFirstTimeProgress);
+                _isFirstTimeProgress = false;
+            }
         }
 
         protected void SetEmptyContentMessage(string message)
         {
             _progressBarManager.EmptyString = message;
+        }
+
+        protected virtual void OnProgressActionFinished(bool isFirstTimeProgress)
+        {
         }
 
         protected virtual void UpdateContentTitle()
