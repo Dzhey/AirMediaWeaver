@@ -39,6 +39,7 @@ namespace AirMedia.Platform.UI.Library.AlbumList
         private const string BatchLoadArtsRequestTag = "load_album_arts_batch_request";
 
         public event EventHandler<AlbumArtLoadedEventArgs> AlbumArtLoaded;
+        public event EventHandler<AlbumGridItem> ItemClicked;
 
         private LruCache<long, Bitmap> _artCache;
         private readonly List<AlbumListEntry> _items;
@@ -111,6 +112,8 @@ namespace AirMedia.Platform.UI.Library.AlbumList
 
                 holder.TitleView = convertView.FindViewById<TextView>(Android.Resource.Id.Title);
                 holder.ItemsGrid = convertView.FindViewById<GridView>(Resource.Id.albumsGrid);
+                holder.ItemsGrid.ItemClick += OnGridItemClicked;
+
                 holder.GridAdapter = new AlbumGridItemsAdapter(holder.ItemsGrid, this);
 
                 convertView.Tag = holder;
@@ -132,6 +135,16 @@ namespace AirMedia.Platform.UI.Library.AlbumList
             holder.GridAdapter.SetItems(item.Albums);
 
             return convertView;
+        }
+
+        private void OnGridItemClicked(object sender, AdapterView.ItemClickEventArgs itemClickEventArgs)
+        {
+            if (ItemClicked == null) return;
+
+            var senderTyped = (GridView) sender;
+            var item = ((AlbumGridItemsAdapter) senderTyped.Adapter)[itemClickEventArgs.Position];
+
+            ItemClicked(this, item);
         }
 
         private void OnAlbumArtLoaded(object sender, ResultEventArgs args)

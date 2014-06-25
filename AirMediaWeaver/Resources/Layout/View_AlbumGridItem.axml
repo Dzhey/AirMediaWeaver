@@ -5,40 +5,58 @@
     android:descendantFocusability="blocksDescendants"
     android:background="@drawable/image_frame">
     <ImageView
+        android:id="@+id/imagePlaceholder"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
         android:layout_alignParentTop="true"
         android:adjustViewBounds="true"
-        android:focusable="false"
-        android:focusableInTouchMode="false"
         android:scaleType="centerCrop"
-        android:src="@drawable/album_placeholder" />
+        android:src="@drawable/album_cover_placeholder" />
     <ImageView
         android:id="@+id/image"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
         android:layout_alignParentTop="true"
         android:adjustViewBounds="true"
-        android:focusable="false"
-        android:focusableInTouchMode="false"
-        android:scaleType="centerCrop" />
-    <TextView
-        style="@style/AppTheme.Text.Small"
-        android:id="@android:id/title"
+        android:scaleType="centerCrop"
+        android:src="@drawable/album_cover_placeholder" />
+    <View
+        android:id="@+id/clickableView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/image"
-        android:paddingLeft="4dp"
-        android:paddingRight="4dp"
-        android:paddingTop="4dp"
-        android:paddingBottom="4dp"
-        android:maxLines="3"
-        android:lines="2"
-        android:background="@color/content_overlay"
-        android:textColor="@android:color/white"
-        android:ellipsize="end"
-        android:text="@android:string/untitled"
-        android:gravity="left|bottom" />
+        android:layout_alignParentTop="true"
+        android:layout_alignBottom="@+id/imagePlaceholder"
+        android:background="@drawable/image_highlight_selector"
+        android:clickable="true" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/imagePlaceholder"
+        android:background="@drawable/content_overlay_selector"
+        android:clickable="true">
+        <TextView
+            style="@style/AppTheme.Text.Small"
+            android:id="@android:id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_toLeftOf="@+id/contextMenuIndicator"
+            android:paddingLeft="4dp"
+            android:paddingRight="4dp"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
+            android:maxLines="3"
+            android:lines="2"
+            android:textColor="@android:color/white"
+            android:ellipsize="end"
+            android:text="@android:string/untitled"
+            android:gravity="left|bottom" />
+        <ImageView
+            android:id="@+id/contextMenuIndicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@android:id/title"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/context_menu_indicator" />
+    </RelativeLayout>
 </RelativeLayout>

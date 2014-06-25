@@ -118,7 +118,7 @@ namespace AirMedia.Platform.UI.Library.AlbumList
             Bitmap albumArt = _callbacks.GetAlbumArt(item.AlbumId);
             if (albumArt == null)
             {
-                holder.AlbumImage.SetImageResource(Resource.Drawable.album_placeholder);
+                holder.AlbumImage.SetImageResource(Resource.Drawable.album_cover_placeholder);
             }
             else
             {

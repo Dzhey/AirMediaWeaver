@@ -4,12 +4,14 @@
   <color name="light_theme_accent_color">@color/holo_blue_light</color>
   <color name="light_theme_back_dark_color">#424242</color>
   <color name="light_theme_back_light_color">#EEEEEE</color>
+  <color name="translucent_highlight">#33FFFFFF</color>
   <color name="image_stroke_light">#CCCCCC</color>
   <color name="holo_blue_light">#33b5e5</color>
   <color name="holo_blue_dark">#0099cc</color>
   <color name="holo_blue_bright">#00ddff</color>
   <color name="holo_blue_light_translucent">#8833b5e5</color>
   <color name="content_overlay">#50000000</color>
+  <color name="content_overlay_darken">#88000000</color>
   <!-- Logging colors -->
   <color name="log_color_error">#DD0202</color>
   <color name="log_color_warning">#FFAA00</color>

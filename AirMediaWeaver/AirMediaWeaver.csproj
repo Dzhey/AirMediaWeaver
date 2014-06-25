@@ -402,7 +402,9 @@
       <SubType>AndroidResource</SubType>
     </AndroidResource>
     <AndroidResource Include="Resources\Layout\View_AlbumListBlockEntry.axml" />
-    <AndroidResource Include="Resources\Layout\View_AlbumGridItem.axml" />
+    <AndroidResource Include="Resources\Layout\View_AlbumGridItem.axml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\Values\Strings.xml">
@@ -509,8 +511,13 @@
     <AndroidResource Include="Resources\Drawable\content_block_background.xml" />
     <AndroidResource Include="Resources\Drawable\holo_line.xml" />
     <AndroidResource Include="Resources\Drawable\image_frame.xml" />
-    <AndroidResource Include="Resources\Drawable\album_placeholder.png" />
     <AndroidResource Include="Resources\Anim\fade_in.xml" />
+    <AndroidResource Include="Resources\Drawable\image_highlight_selector.xml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\Drawable\content_overlay_selector.xml" />
+    <AndroidResource Include="Resources\Drawable\album_cover_placeholder.jpg" />
+    <AndroidResource Include="Resources\Drawable-hdpi\context_menu_indicator.9.png" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Platform\Json\" />
