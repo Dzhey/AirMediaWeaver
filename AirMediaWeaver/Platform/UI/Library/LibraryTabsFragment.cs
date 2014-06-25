@@ -27,7 +27,6 @@ namespace AirMedia.Platform.UI.Library
             ViewGroup container, Bundle savedInstanceState)
         {
             var view = inflater.Inflate(Resource.Layout.Fragment_LibraryTabs, container, false);
-
             _viewPager = view.FindViewById<ViewPager>(Resource.Id.pager);
             _viewPager.Adapter = _pagerAdapter;
             _pageIndicator = view.FindViewById<PagerSlidingTabStrip.PagerSlidingTabStrip>(Resource.Id.pageIndicator);

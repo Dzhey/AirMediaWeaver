@@ -25,15 +25,15 @@
             android:maxLines="2"
             android:ellipsize="end"
             android:gravity="top|left"
-            android:text="@android:string/untitled" />
+            android:text="@android:string/untitled"
+            android:textColor="@color/light_theme_accent_color"/>
         <View
             android:id="@+id/titleUnderline"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_below="@android:id/title"
-            android:layout_marginTop="1dp"
             android:layout_marginBottom="6dp"
-            android:background="@drawable/holo_line" />
+            android:background="@drawable/light_theme_line" />
         <airmedia.platform.ui.viewext.FixedGridView
             android:id="@+id/albumsGrid"
             android:layout_width="match_parent"

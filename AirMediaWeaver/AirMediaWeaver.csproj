@@ -509,7 +509,7 @@
     <AndroidResource Include="Resources\Drawable\main_menu_behind_shadow.xml" />
     <AndroidResource Include="Resources\Values\Dimen.xml" />
     <AndroidResource Include="Resources\Drawable\content_block_background.xml" />
-    <AndroidResource Include="Resources\Drawable\holo_line.xml" />
+    <AndroidResource Include="Resources\Drawable\light_theme_line.xml" />
     <AndroidResource Include="Resources\Drawable\image_frame.xml" />
     <AndroidResource Include="Resources\Anim\fade_in.xml" />
     <AndroidResource Include="Resources\Drawable\image_highlight_selector.xml">
@@ -518,6 +518,8 @@
     <AndroidResource Include="Resources\Drawable\content_overlay_selector.xml" />
     <AndroidResource Include="Resources\Drawable\album_cover_placeholder.jpg" />
     <AndroidResource Include="Resources\Drawable-hdpi\context_menu_indicator.9.png" />
+    <AndroidResource Include="Resources\Drawable-mdpi\context_menu_indicator.9.png" />
+    <AndroidResource Include="Resources\Drawable-xhdpi\context_menu_indicator.9.png" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Platform\Json\" />

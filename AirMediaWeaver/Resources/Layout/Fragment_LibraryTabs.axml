@@ -7,8 +7,15 @@
     <pagerslidingtabstrip.PagerSlidingTabStrip
         android:id="@+id/pageIndicator"
         android:layout_width="match_parent"
-        android:layout_height="48dip"
-        app:indicatorColor="@color/light_theme_back_dark_color"/>
+        android:layout_height="34dip"
+        android:textColor="@android:color/white"
+        android:background="@color/light_theme_back_darkest_color"
+        app:indicatorColor="@color/light_theme_accent_color"
+        app:indicatorHeight="6dp"
+        app:underlineColor="@color/light_theme_accent_color"
+        app:tabPaddingLeftRight="14dp"
+        app:shouldExpand="true"
+        app:dividerColor="@android:color/transparent" />
     <android.support.v4.view.ViewPager
         android:id="@+id/pager"
         android:layout_width="fill_parent"
