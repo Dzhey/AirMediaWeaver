@@ -42,6 +42,7 @@ namespace AirMedia.Platform.UI.Library.AlbumList
 
         public event EventHandler<AlbumArtLoadedEventArgs> AlbumArtLoaded;
         public event EventHandler<AlbumGridItem> ItemClicked;
+        public event EventHandler<AlbumGridItem> ItemMenuClicked;
 
         public bool IsAlbumArtsLoaderEnabled
         {
@@ -139,9 +140,10 @@ namespace AirMedia.Platform.UI.Library.AlbumList
 
                 holder.TitleView = convertView.FindViewById<TextView>(Android.Resource.Id.Title);
                 holder.ItemsGrid = convertView.FindViewById<GridView>(Resource.Id.albumsGrid);
-                holder.ItemsGrid.ItemClick += OnGridItemClicked;
 
                 holder.GridAdapter = new AlbumGridItemsAdapter(holder.ItemsGrid, this);
+                holder.GridAdapter.ItemMenuClicked += OnGridItemMenuClicked;
+                holder.GridAdapter.ItemClicked += OnGridItemClicked;
 
                 convertView.Tag = holder;
             }
@@ -182,14 +184,18 @@ namespace AirMedia.Platform.UI.Library.AlbumList
             }
         }
 
-        private void OnGridItemClicked(object sender, AdapterView.ItemClickEventArgs itemClickEventArgs)
+        private void OnGridItemClicked(object sender, AlbumGridItem item)
         {
             if (ItemClicked == null) return;
 
-            var senderTyped = (GridView) sender;
-            var item = ((AlbumGridItemsAdapter) senderTyped.Adapter)[itemClickEventArgs.Position];
-
             ItemClicked(this, item);
+        }
+
+        private void OnGridItemMenuClicked(object sender, AlbumGridItem item)
+        {
+            if (ItemMenuClicked == null) return;
+
+            ItemMenuClicked(this, item);
         }
 
         private void OnAlbumArtLoaded(object sender, ResultEventArgs args)

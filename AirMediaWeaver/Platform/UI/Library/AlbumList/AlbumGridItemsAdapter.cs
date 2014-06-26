@@ -14,6 +14,8 @@ namespace AirMedia.Platform.UI.Library.AlbumList
             public AlbumGridItem Item { get; set; }
             public TextView TitleView { get; set; }
             public ImageView AlbumImage { get; set; }
+            public ViewGroup ItemMenuPanel { get; set; }
+            public View ClickableView { get; set; }
         }
 
         public interface ICallbacks
@@ -23,6 +25,9 @@ namespace AirMedia.Platform.UI.Library.AlbumList
         }
 
         public static readonly string LogTag = typeof (AlbumGridItemsAdapter).Name;
+
+        public event EventHandler<AlbumGridItem> ItemMenuClicked;
+        public event EventHandler<AlbumGridItem> ItemClicked;
 
         private readonly List<AlbumGridItem> _items;
         private ICallbacks _callbacks;
@@ -112,6 +117,14 @@ namespace AirMedia.Platform.UI.Library.AlbumList
                 holder.AlbumImage = convertView.FindViewById<ImageView>(Resource.Id.image);
                 holder.TitleView = convertView.FindViewById<TextView>(Android.Resource.Id.Title);
 
+                holder.ClickableView = convertView.FindViewById(Resource.Id.clickableView);
+                holder.ClickableView.Click += OnItemClicked;
+                holder.ClickableView.Tag = holder;
+
+                holder.ItemMenuPanel = convertView.FindViewById<ViewGroup>(Resource.Id.itemMenuPanel);
+                holder.ItemMenuPanel.Click += OnItemMenuClicked;
+                holder.ItemMenuPanel.Tag = holder;
+
                 convertView.Tag = holder;
             }
             else
@@ -140,6 +153,24 @@ namespace AirMedia.Platform.UI.Library.AlbumList
             }
 
             return convertView;
+        }
+
+        private void OnItemClicked(object sender, EventArgs args)
+        {
+            if (ItemClicked == null) return;
+
+            var holder = (ViewHolder)((View)sender).Tag;
+
+            ItemClicked(this, holder.Item);
+        }
+
+        private void OnItemMenuClicked(object sender, EventArgs args)
+        {
+            if (ItemMenuClicked == null) return;
+
+            var holder = (ViewHolder) ((View) sender).Tag;
+
+            ItemMenuClicked(this, holder.Item);
         }
 
         protected override void Dispose(bool disposing)

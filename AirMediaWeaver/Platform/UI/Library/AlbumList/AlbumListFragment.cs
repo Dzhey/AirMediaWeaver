@@ -127,15 +127,31 @@ namespace AirMedia.Platform.UI.Library.AlbumList
             RegisterRequestResultHandler(typeof(AndroidLoadLocalArtistAlbumsRequest), OnLoadRequestFinished);
             _albumListView.Scroll += OnAlbumListScrollEvent;
             _albumListView.ScrollStateChanged += OnAlbumListScrollStateChanged;
+
+            _listAdapter.ItemClicked += OnAlbumItemClicked;
+            _listAdapter.ItemMenuClicked += OnAlbumItemMenuClicked;
         }
 
         public override void OnPause()
         {
+            _listAdapter.ItemMenuClicked -= OnAlbumItemMenuClicked;
+            _listAdapter.ItemClicked -= OnAlbumItemClicked;
+
             _albumListView.Scroll -= OnAlbumListScrollEvent;
             _albumListView.ScrollStateChanged -= OnAlbumListScrollStateChanged;
             RemoveRequestResultHandler(typeof(AndroidLoadLocalArtistAlbumsRequest));
 
             base.OnPause();
+        }
+
+        private void OnAlbumItemClicked(object sender, AlbumGridItem albumGridItem)
+        {
+            ShowMessage("item clicked: " + albumGridItem.AlbumName);
+        }
+
+        private void OnAlbumItemMenuClicked(object sender, AlbumGridItem albumGridItem)
+        {
+            ShowMessage("item menu clicked: " + albumGridItem.AlbumName);
         }
 
         public override string GetTitle()
