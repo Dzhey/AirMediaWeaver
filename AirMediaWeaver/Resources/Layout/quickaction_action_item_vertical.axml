@@ -1,13 +1,9 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:clickable="true"
-    android:focusable="true">
-
-  <LinearLayout
+  <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:clickable="true"
+    android:focusable="true"
     android:paddingTop="4dp"
     android:paddingBottom="4dp"
     android:paddingLeft="10dip"
@@ -33,6 +29,3 @@
       android:text="@android:string/untitled"/>
 
   </LinearLayout>
-
-
-</FrameLayout>

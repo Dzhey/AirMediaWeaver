@@ -346,6 +346,7 @@
     <Compile Include="Platform\UI\ViewExt\ViewPagerIndicator\ITitleProvider.cs" />
     <Compile Include="Platform\UI\ViewUtils\IProgressBarManagerCallbacks.cs" />
     <Compile Include="Platform\UI\ViewUtils\ProgressBarManager.cs" />
+    <Compile Include="Platform\UI\ViewUtils\QuickActionHelper\PopupActionHelper.cs" />
     <Compile Include="Platform\Util\ParcelableCreator.cs" />
     <AndroidResource Include="Resources\Drawable\accent_selection_transition.xml">
       <SubType>Designer</SubType>
@@ -423,6 +424,7 @@
     </AndroidResource>
     <AndroidResource Include="Resources\Layout\quickaction_horiz_separator.axml" />
     <AndroidResource Include="Resources\Layout\quickaction_popup_horizontal.axml" />
+    <AndroidResource Include="Resources\Layout\quickaction_vertical_separator.axml" />
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\Values\Strings.xml">
@@ -565,24 +567,32 @@
     <AndroidResource Include="Resources\Anim\quickaction_shrink_from_top.xml" />
     <AndroidResource Include="Resources\Anim\quickaction_shrink_from_topleft_to_bottomright.xml" />
     <AndroidResource Include="Resources\Drawable\quickaction_arrow_up.png" />
-    <AndroidResource Include="Resources\Drawable\quickaction_action_item_btn.xml" />
-    <AndroidResource Include="Resources\Drawable\quickaction_action_item_selected.9.png" />
+    <AndroidResource Include="Resources\Drawable\quickaction_action_item_btn.xml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
     <AndroidResource Include="Resources\Drawable\quickaction_arrow_down.png" />
-    <AndroidResource Include="Resources\Drawable\quickaction_popup.9.png" />
     <AndroidResource Include="Resources\Values\quickaction_styles.xml" />
     <AndroidResource Include="Resources\Drawable\quickaction_popup_themed.xml" />
     <AndroidResource Include="Resources\Drawable-xxhdpi\ic_action_play_light.png" />
     <AndroidResource Include="Resources\Drawable-xhdpi\ic_action_play_light.png" />
     <AndroidResource Include="Resources\Drawable-mdpi\ic_action_play_light.png" />
     <AndroidResource Include="Resources\Drawable-hdpi\ic_action_add_to_queue_light.png" />
-    <AndroidResource Include="Resources\Drawable-hdpi\ic_action_play_after_light.png" />
+    <AndroidResource Include="Resources\Drawable-hdpi\ic_action_add_to_playlist.png" />
     <Content Include="Resources\Drawable-hdpi\ic_action_play_light.png" />
     <AndroidResource Include="Resources\Drawable-xxhdpi\ic_action_add_to_queue_light.png" />
     <AndroidResource Include="Resources\Drawable-xhdpi\ic_action_add_to_queue_light.png" />
     <AndroidResource Include="Resources\Drawable-mdpi\ic_action_add_to_queue_light.png" />
     <AndroidResource Include="Resources\Drawable-xxhdpi\ic_action_play_after_light.png" />
-    <AndroidResource Include="Resources\Drawable-xhdpi\ic_action_play_after_light.png" />
-    <AndroidResource Include="Resources\Drawable-mdpi\ic_action_play_after_light.png" />
+    <AndroidResource Include="Resources\Drawable\quickaction_popup_light.xml" />
+    <AndroidResource Include="Resources\Drawable\popup_shadow_bottom.9.png" />
+    <AndroidResource Include="Resources\Drawable\quickaction_vertical_separator.xml" />
+    <AndroidResource Include="Resources\Drawable-hdpi\ic_action_share.png" />
+    <AndroidResource Include="Resources\Drawable-mdpi\ic_action_share.png" />
+    <AndroidResource Include="Resources\Drawable-xhdpi\ic_action_share.png" />
+    <AndroidResource Include="Resources\Drawable-xxhdpi\ic_action_share.png" />
+    <AndroidResource Include="Resources\Drawable\quickaction_action_item_selected.xml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Platform\Json\" />

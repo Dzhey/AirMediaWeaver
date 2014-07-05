@@ -9,6 +9,7 @@ using AirMedia.Platform.Controller.Requests.Model;
 using AirMedia.Platform.UI.Base;
 using AirMedia.Platform.UI.Library.AlbumList.Model;
 using AirMedia.Platform.UI.ViewExt.QuickAction;
+using AirMedia.Platform.UI.ViewUtils.QuickActionHelper;
 using Android.OS;
 using Android.Views;
 using Android.Widget;
@@ -155,19 +156,8 @@ namespace AirMedia.Platform.UI.Library.AlbumList
 
         private void OnAlbumItemMenuClicked(object sender, AlbumItemClickEventArgs args)
         {
-            var menu = new QuickAction(Activity, QuickActionLayout.Vertical);
-            var icActionPlay = Resources.GetDrawable(Resource.Drawable.ic_action_play_light);
-            var icActionPlayAfter = Resources.GetDrawable(Resource.Drawable.ic_action_play_after_light);
-            var icActionQueue = Resources.GetDrawable(Resource.Drawable.ic_action_add_to_queue_light);
-            menu.AddActionItem(new ActionItem(0,
-                GetString(Resource.String.album_menu_action_play), icActionPlay));
-            menu.AddActionItem(new ActionItem(0,
-                GetString(Resource.String.album_menu_action_play_after), icActionPlayAfter));
-            menu.AddActionItem(new ActionItem(0,
-                GetString(Resource.String.album_menu_action_add_to_queue), icActionQueue));
-            menu.AddActionItem(new ActionItem(0,
-                GetString(Resource.String.album_menu_action_add_to_playlist)));
-            menu.Show(args.ClickedView);
+            var popupHelper = new PopupActionHelper();
+            popupHelper.ShowAlbumItemMenu(args.ClickedView);
         }
 
         public override string GetTitle()

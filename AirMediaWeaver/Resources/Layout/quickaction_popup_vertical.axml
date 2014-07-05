@@ -8,8 +8,8 @@
     android:id="@+id/popupScrollerContainer"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_marginTop="16dp"
-    android:background="@color/content_overlay_darken"
+    android:layout_marginTop="18dp"
+    android:background="@drawable/quickaction_popup_light"
     android:padding="3dp">
     <ScrollView
       android:id="@+id/scroller"
@@ -34,7 +34,15 @@
         android:id="@+id/arrow_up"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/quickaction_arrow_up" />
+        android:src="@drawable/quickaction_arrow_up" />s
+
+  <View 
+      android:layout_width="wrap_content"
+      android:layout_height="6dp"
+    	android:layout_below="@+id/popupScrollerContainer"
+    	android:layout_alignLeft="@+id/popupScrollerContainer"
+      android:layout_alignRight="@+id/popupScrollerContainer"
+      android:background="@drawable/popup_shadow_bottom" />
 
   <ImageView
         android:id="@+id/arrow_down"

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Android.Content;
 using Android.Graphics;
 using Android.Graphics.Drawables;
+using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
@@ -16,12 +17,16 @@ namespace AirMedia.Platform.UI.ViewExt.QuickAction
 
     public class QuickAction : Object, PopupWindow.IOnDismissListener
     {
+        private const int SeparatorRightPaddingDipDefault = 4;
+        private const int SeparatorLeftPaddingDipDefault = 4;
+
         readonly List<ActionItem> _actionItems = new List<ActionItem>();
         readonly Context _context;
         readonly LayoutInflater _inflater;
         readonly QuickActionLayout _orientation;
         readonly PopupWindow _window;
         readonly IWindowManager _windowManager;
+        private readonly Handler _handler;
         ImageView _arrowDown;
         ImageView _arrowUp;
         int _childPos;
@@ -31,6 +36,8 @@ namespace AirMedia.Platform.UI.ViewExt.QuickAction
         int _rootWidth;
         ScrollView _scroller;
         ViewGroup _track;
+        private int _separatorLeftPadding;
+        private int _separatorRightPadding;
 
         public QuickAction(Context context) : this(context, QuickActionLayout.Vertical)
         {
@@ -38,6 +45,7 @@ namespace AirMedia.Platform.UI.ViewExt.QuickAction
 
         public QuickAction(Context context, QuickActionLayout orientation)
         {
+            _handler = App.MainHandler;
             _context = context;
             _window = new PopupWindow(context);
             _childPos = 0;
@@ -51,6 +59,10 @@ namespace AirMedia.Platform.UI.ViewExt.QuickAction
             SetRootViewId(orientation == QuickActionLayout.Horizontal
                               ? Resource.Layout.quickaction_popup_horizontal
                               : Resource.Layout.quickaction_popup_vertical);
+
+            var metrics = _context.Resources.DisplayMetrics;
+            _separatorRightPadding = (int) (metrics.Density* SeparatorRightPaddingDipDefault);
+            _separatorLeftPadding = (int) (metrics.Density* SeparatorLeftPaddingDipDefault);
         }
 
         public Drawable Background { get; set; }
@@ -126,33 +138,47 @@ namespace AirMedia.Platform.UI.ViewExt.QuickAction
             }
 
             var pos = _childPos;
-            container.Click += (sender, e) =>{
-                                   if (ActionItemClicked != null)
-                                   {
-                                       var arg = new ActionItemClickEventArgs(this, pos);
-                                       ActionItemClicked(container, arg);
-                                   }
+            container.Click += (sender, e) =>
+                {
+                    if (ActionItemClicked != null)
+                    {
+                        var arg = new ActionItemClickEventArgs(this, pos);
+                        ActionItemClicked(container, arg);
+                    }
 
-                                   if (GetActionItem(pos).IsSticky)
-                                   {
-                                       return;
-                                   }
-                                   _didAction = true;
-                                   Dismiss();
-                               };
+                    if (GetActionItem(pos).IsSticky)
+                    {
+                        return;
+                    }
+                    _didAction = true;
+                    _handler.Post(Dismiss);
+                };
 
             container.Focusable = true;
             container.Clickable = true;
 
-            if (_orientation == QuickActionLayout.Horizontal && _childPos != 0)
+            if (_childPos != 0)
             {
-                var separator = _inflater.Inflate(Resource.Layout.quickaction_horiz_separator, null);
-                var parms = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent);
+                View separator;
+                ViewGroup.LayoutParams parms;
+                if (_orientation == QuickActionLayout.Horizontal)
+                {
+                    separator = _inflater.Inflate(Resource.Layout.quickaction_horiz_separator, null);
+
+                    parms = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WrapContent,
+                                                       ViewGroup.LayoutParams.WrapContent);
+                }
+                else
+                {
+                    separator = _inflater.Inflate(Resource.Layout.quickaction_vertical_separator, null);
+
+                    parms = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent,
+                                                       ViewGroup.LayoutParams.WrapContent);
+                }
+
                 separator.LayoutParameters = parms;
-                separator.SetPadding(5, 0, 5, 0);
-
+                separator.SetPadding(_separatorLeftPadding, 0, _separatorRightPadding, 0);
                 _track.AddView(separator, _insertPos);
-
                 _insertPos++;
             }
 
@@ -173,6 +199,7 @@ namespace AirMedia.Platform.UI.ViewExt.QuickAction
         public void Show(View anchor, QuickActionAnimationStyle animationStyle = QuickActionAnimationStyle.Auto)
         {
             PreShow();
+
             var windowLocation = new Point();
             int arrowPos;
             _didAction = false;
@@ -222,12 +249,12 @@ namespace AirMedia.Platform.UI.ViewExt.QuickAction
                 }
                 else
                 {
-                    windowLocation.Y = anchorRect.Top - rootHeight;
+                    windowLocation.Y = (anchorRect.Top + anchorRect.Height() / 2) - rootHeight;
                 }
             }
             else
             {
-                windowLocation.Y = anchorRect.Bottom;
+                windowLocation.Y = anchorRect.Bottom - anchorRect.Height() / 2;
             }
 
             ShowArrow(onTop ? Resource.Id.arrow_down : Resource.Id.arrow_up, arrowPos);
