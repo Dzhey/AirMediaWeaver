@@ -19,7 +19,7 @@ namespace AirMedia.Core
         public const int DefaultMulticastPort = 6114;
         public const int DefaultHttpPort = 6116;
         public const int DefaultMulticastTTL = 3;
-        public const int DefaultProgressDelayMillis = 800;
+        public const int DefaultProgressDelayMillis = 500;
 
 #if DEBUG
         public const bool Debug = true;

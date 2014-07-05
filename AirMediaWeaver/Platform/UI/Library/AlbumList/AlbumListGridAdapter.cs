@@ -9,6 +9,7 @@ using AirMedia.Core.Utils;
 using AirMedia.Platform.Controller;
 using AirMedia.Platform.Controller.Requests.Impl;
 using AirMedia.Platform.Logger;
+using AirMedia.Platform.UI.Library.AlbumList.Model;
 using Android.Graphics;
 using Android.Views;
 using Android.Widget;
@@ -41,8 +42,8 @@ namespace AirMedia.Platform.UI.Library.AlbumList
         private const string BatchLoadArtsRequestTag = "load_album_arts_batch_request";
 
         public event EventHandler<AlbumArtLoadedEventArgs> AlbumArtLoaded;
-        public event EventHandler<AlbumGridItem> ItemClicked;
-        public event EventHandler<AlbumGridItem> ItemMenuClicked;
+        public event EventHandler<AlbumItemClickEventArgs> ItemClicked;
+        public event EventHandler<AlbumItemClickEventArgs> ItemMenuClicked;
 
         public bool IsAlbumArtsLoaderEnabled
         {
@@ -184,18 +185,18 @@ namespace AirMedia.Platform.UI.Library.AlbumList
             }
         }
 
-        private void OnGridItemClicked(object sender, AlbumGridItem item)
+        private void OnGridItemClicked(object sender, AlbumItemClickEventArgs args)
         {
             if (ItemClicked == null) return;
 
-            ItemClicked(this, item);
+            ItemClicked(this, args);
         }
 
-        private void OnGridItemMenuClicked(object sender, AlbumGridItem item)
+        private void OnGridItemMenuClicked(object sender, AlbumItemClickEventArgs args)
         {
             if (ItemMenuClicked == null) return;
 
-            ItemMenuClicked(this, item);
+            ItemMenuClicked(this, args);
         }
 
         private void OnAlbumArtLoaded(object sender, ResultEventArgs args)

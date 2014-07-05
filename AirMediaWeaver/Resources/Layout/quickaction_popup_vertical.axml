@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+  <FrameLayout
+    android:id="@+id/popupScrollerContainer"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="16dp"
+    android:background="@color/content_overlay_darken"
+    android:padding="3dp">
+    <ScrollView
+      android:id="@+id/scroller"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:background="@drawable/quickaction_popup_themed"
+      android:fadingEdgeLength="5dip"
+      android:scrollbars="none"
+      android:paddingTop="4dp"
+      android:paddingBottom="4dp">
+
+      <LinearLayout
+        android:id="@+id/tracks"
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"/>
+    </ScrollView >
+  </FrameLayout>
+
+  <ImageView
+        android:id="@+id/arrow_up"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/quickaction_arrow_up" />
+
+  <ImageView
+        android:id="@+id/arrow_down"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+    	  android:layout_below="@+id/popupScrollerContainer"
+      	android:layout_marginTop="-4dip"
+        android:src="@drawable/quickaction_arrow_down" />
+
+</RelativeLayout>

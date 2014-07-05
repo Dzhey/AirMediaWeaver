@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using AirMedia.Platform.UI.Library.AlbumList.Model;
 using Android.Graphics;
 using Android.Views;
 using Android.Views.Animations;
@@ -26,8 +27,8 @@ namespace AirMedia.Platform.UI.Library.AlbumList
 
         public static readonly string LogTag = typeof (AlbumGridItemsAdapter).Name;
 
-        public event EventHandler<AlbumGridItem> ItemMenuClicked;
-        public event EventHandler<AlbumGridItem> ItemClicked;
+        public event EventHandler<AlbumItemClickEventArgs> ItemMenuClicked;
+        public event EventHandler<AlbumItemClickEventArgs> ItemClicked;
 
         private readonly List<AlbumGridItem> _items;
         private ICallbacks _callbacks;
@@ -159,18 +160,20 @@ namespace AirMedia.Platform.UI.Library.AlbumList
         {
             if (ItemClicked == null) return;
 
-            var holder = (ViewHolder)((View)sender).Tag;
+            var senderView = (View) sender;
+            var holder = (ViewHolder) senderView.Tag;
 
-            ItemClicked(this, holder.Item);
+            ItemClicked(this, new AlbumItemClickEventArgs(senderView, holder.Item));
         }
 
         private void OnItemMenuClicked(object sender, EventArgs args)
         {
             if (ItemMenuClicked == null) return;
 
-            var holder = (ViewHolder) ((View) sender).Tag;
+            var senderView = (View)sender;
+            var holder = (ViewHolder)senderView.Tag;
 
-            ItemMenuClicked(this, holder.Item);
+            ItemMenuClicked(this, new AlbumItemClickEventArgs(senderView, holder.Item));
         }
 
         protected override void Dispose(bool disposing)

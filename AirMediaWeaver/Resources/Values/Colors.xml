@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <resources>
   <color name="light_theme_text_color">#242424</color>
+  <color name="light_theme_text_color_inverse">#FFFFFF</color>
   <color name="light_theme_accent_color">#77BB30</color>
   <color name="light_theme_back_dark_color">#303030</color>
   <color name="light_theme_back_darkest_color">#2B2B2B</color>

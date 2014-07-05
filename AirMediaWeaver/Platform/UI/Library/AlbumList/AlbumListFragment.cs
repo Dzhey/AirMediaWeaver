@@ -7,6 +7,8 @@ using AirMedia.Platform.Controller;
 using AirMedia.Platform.Controller.Requests.Impl;
 using AirMedia.Platform.Controller.Requests.Model;
 using AirMedia.Platform.UI.Base;
+using AirMedia.Platform.UI.Library.AlbumList.Model;
+using AirMedia.Platform.UI.ViewExt.QuickAction;
 using Android.OS;
 using Android.Views;
 using Android.Widget;
@@ -17,7 +19,7 @@ namespace AirMedia.Platform.UI.Library.AlbumList
     public class AlbumListFragment : MainViewFragment, AlbumListGridAdapter.ICallbacks
     {
         /// <summary>
-        /// 3 items per second thresold to temporarilly disable album arts loader
+        /// 3 items per second thresold to temporarily disable album arts loader
         /// </summary>
         private const int AlbumArtsLoaderDisableThreshold = 3;
 
@@ -36,12 +38,11 @@ namespace AirMedia.Platform.UI.Library.AlbumList
             {
                 return base.UserVisibleHint;
             }
-
             set
             {
                 base.UserVisibleHint = value;
 
-                if (UserVisibleHint && !_isContentReloaded)
+                if (value && _albumListView != null && _albumListView.Count == 0)
                     ReloadList();
             }
         }
@@ -105,6 +106,9 @@ namespace AirMedia.Platform.UI.Library.AlbumList
             base.OnActivityCreated(savedInstanceState);
 
             RegisterRequestUpdateHandler(typeof(AndroidLoadLocalArtistAlbumsRequest), OnLoadRequestUpdate);
+
+            if (!_isContentReloaded)
+                ReloadList();
         }
 
         public override void OnDestroyView()
@@ -144,14 +148,26 @@ namespace AirMedia.Platform.UI.Library.AlbumList
             base.OnPause();
         }
 
-        private void OnAlbumItemClicked(object sender, AlbumGridItem albumGridItem)
+        private void OnAlbumItemClicked(object sender, AlbumItemClickEventArgs args)
         {
-            ShowMessage("item clicked: " + albumGridItem.AlbumName);
+            ShowMessage("item clicked: " + args.Item.AlbumName);
         }
 
-        private void OnAlbumItemMenuClicked(object sender, AlbumGridItem albumGridItem)
+        private void OnAlbumItemMenuClicked(object sender, AlbumItemClickEventArgs args)
         {
-            ShowMessage("item menu clicked: " + albumGridItem.AlbumName);
+            var menu = new QuickAction(Activity, QuickActionLayout.Vertical);
+            var icActionPlay = Resources.GetDrawable(Resource.Drawable.ic_action_play_light);
+            var icActionPlayAfter = Resources.GetDrawable(Resource.Drawable.ic_action_play_after_light);
+            var icActionQueue = Resources.GetDrawable(Resource.Drawable.ic_action_add_to_queue_light);
+            menu.AddActionItem(new ActionItem(0,
+                GetString(Resource.String.album_menu_action_play), icActionPlay));
+            menu.AddActionItem(new ActionItem(0,
+                GetString(Resource.String.album_menu_action_play_after), icActionPlayAfter));
+            menu.AddActionItem(new ActionItem(0,
+                GetString(Resource.String.album_menu_action_add_to_queue), icActionQueue));
+            menu.AddActionItem(new ActionItem(0,
+                GetString(Resource.String.album_menu_action_add_to_playlist)));
+            menu.Show(args.ClickedView);
         }
 
         public override string GetTitle()
@@ -182,14 +198,31 @@ namespace AirMedia.Platform.UI.Library.AlbumList
 
         private void OnLoadRequestFinished(object sender, ResultEventArgs args)
         {
-            SetInProgress(false);
-            if (args.Request.Status != RequestStatus.Ok)
+            try
             {
-                ShowMessage(Resource.String.error_cant_load_data);
-                AmwLog.Error(LogTag, "Error loading local album list");
+                if (args.Request.Status != RequestStatus.Ok)
+                {
+                    ShowMessage(Resource.String.error_cant_load_data);
+                    AmwLog.Error(LogTag, "Error loading local album list");
+                    SetInProgress(false);
+                    return;
+                }
+            }
+            finally
+            {
+                RequestManager.Instance.TryDisposeRequest(args.Request.RequestId);
             }
 
-            RequestManager.Instance.TryDisposeRequest(args.Request.RequestId);
+            if (UserVisibleHint)
+            {
+                if (_listAdapter.Count < 1)
+                {
+                    var data = ((LoadArtistAlbumsRequestResult)args.Result).Data;
+                    _listAdapter.SetItems(data);
+                }
+
+                SetInProgress(false);
+            }
         }
 
         private void OnLoadRequestUpdate(object sender, UpdateEventArgs args)
@@ -202,19 +235,31 @@ namespace AirMedia.Platform.UI.Library.AlbumList
                 case UpdateData.UpdateCodeCachedResultRetrieved:
                     var cachedResult = ((CachedUpdateData)args.UpdateData).CachedResult;
                     var cachedData = ((LoadArtistAlbumsRequestResult)cachedResult).Data;
-                    _listAdapter.SetItems(cachedData);
+
+                    if (UserVisibleHint)
+                    {
+                        _listAdapter.SetItems(cachedData);
+
+                        if (cachedData.Count > 0)
+                            SetInProgress(false);
+                    }
                     
-                    if (cachedData.Count > 0)
-                        SetInProgress(false);
                     break;
 
                 case UpdateData.UpdateCodeIntermediateResultObtained:
                     var wrappedResult = (IntermediateResultUpdateData) args.UpdateData;
                     var result = (LoadArtistAlbumsRequestResult) wrappedResult.RequestResult;
-                    _listAdapter.SetItems(result.Data);
+
                     _listAdapter.AddAlbumArts(result.AlbumArts);
-                    if (result.Data.Count > 0)
-                        SetInProgress(false);
+
+                    if (UserVisibleHint)
+                    {
+                        _listAdapter.SetItems(result.Data);
+
+                        if (result.Data.Count > 0)
+                            SetInProgress(false);
+                    }
+
                     break;
             }
         }

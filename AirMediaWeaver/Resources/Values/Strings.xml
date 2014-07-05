@@ -82,6 +82,12 @@
   <string name="filter_item_album">Альбомы</string>
   <string name="filter_item_genre">Жанры</string>
   
+  <!-- Context menus -->
+  <string name="album_menu_action_play">Воспроизвести</string>
+  <string name="album_menu_action_play_after">Воспроизвести после текущего</string>
+  <string name="album_menu_action_add_to_queue">Добавить в очередь</string>
+  <string name="album_menu_action_add_to_playlist">Добавить в плейлист</string>
+  
   <!-- Logger strings -->
   <string name="title_log_level">Уровень</string>
   <string name="title_log_expand_toggle">Развернуть</string>
