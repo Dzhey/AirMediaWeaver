@@ -6,7 +6,7 @@
   <color name="light_theme_back_dark_accent_color">#555555</color>
   <color name="light_theme_back_dark_color">#303030</color>
   <color name="light_theme_back_darkest_color">#2B2B2B</color>
-  <color name="light_theme_back_light_color">#EEEEEE</color>
+  <color name="light_theme_back_light_color">#ECF0F1</color>
   <color name="translucent_highlight">#33FFFFFF</color>
   <color name="image_stroke_light">#CCCCCC</color>
   <color name="holo_blue_light">#33b5e5</color>

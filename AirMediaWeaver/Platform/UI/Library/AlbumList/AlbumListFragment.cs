@@ -8,7 +8,6 @@ using AirMedia.Platform.Controller.Requests.Impl;
 using AirMedia.Platform.Controller.Requests.Model;
 using AirMedia.Platform.UI.Base;
 using AirMedia.Platform.UI.Library.AlbumList.Model;
-using AirMedia.Platform.UI.ViewExt.QuickAction;
 using AirMedia.Platform.UI.ViewUtils.QuickActionHelper;
 using Android.OS;
 using Android.Views;

@@ -159,7 +159,7 @@ namespace AirMedia.Platform.UI.Library.AlbumList
                                     ? parent.Context.GetString(Resource.String.title_unknown_artist)
                                     : item.ArtistName;
 
-            holder.TitleView.Text = artistName;
+            holder.TitleView.Text = artistName.ToUpper();
             holder.ItemsGrid.Adapter = holder.GridAdapter;
 
             holder.GridAdapter.SetItems(item.Albums);

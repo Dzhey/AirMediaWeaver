@@ -1,5 +1,6 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using AirMedia.Core.Controller.Encodings;
 using AirMedia.Core.Data.Model;
 using AirMedia.Core.Requests.Impl;
 using AirMedia.Core.Requests.Model;
@@ -55,7 +56,7 @@ namespace AirMedia.Platform.Controller.Requests.Impl
 
         protected override AlbumListEntry CreateItem(ArtistBaseModel artist, AlbumBaseModel[] albums)
         {
-            return new AlbumListEntry
+            var entry = new AlbumListEntry
                 {
                     ArtistName = artist.ArtistName,
                     Albums = albums.Select(item => new AlbumGridItem
@@ -64,6 +65,8 @@ namespace AirMedia.Platform.Controller.Requests.Impl
                             AlbumId = item.AlbumId
                         }).ToArray()
                 };
+
+            return entry;
         }
     }
 }

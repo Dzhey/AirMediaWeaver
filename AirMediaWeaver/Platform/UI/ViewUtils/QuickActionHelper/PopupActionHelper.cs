@@ -1,5 +1,4 @@
 using AirMedia.Platform.UI.ViewExt.QuickAction;
-using Android.Graphics;
 using Android.Views;
 
 namespace AirMedia.Platform.UI.ViewUtils.QuickActionHelper
