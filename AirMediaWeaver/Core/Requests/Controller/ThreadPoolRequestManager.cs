@@ -7,9 +7,9 @@ namespace AirMedia.Core.Requests.Controller
     {
         private ThreadPoolWorker _worker;
 
-        public ThreadPoolRequestManager(int threadPoolSize = ThreadPoolWorker.MaxDegreeOfParallelism)
+        public ThreadPoolRequestManager(ThreadPoolWorker worker)
         {
-            _worker = new ThreadPoolWorker(threadPoolSize);
+            _worker = worker;
         }
 
         protected override void SubmitRequestImpl(AbsRequest request, int requestId, bool isParallel, bool isDedicated)

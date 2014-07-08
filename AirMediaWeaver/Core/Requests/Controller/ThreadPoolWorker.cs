@@ -2,11 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AirMedia.Core.Requests.Abs;
-using AirMedia.Platform;
 
 namespace AirMedia.Core.Requests.Controller
 {
-    public class ThreadPoolWorker : IWorker, IDisposable
+    public abstract class ThreadPoolWorker : IWorker, IDisposable
     {
         public const int MaxDegreeOfParallelism = 4;
         private const string RequestActionIdDefault = "__default_action";
@@ -48,7 +47,7 @@ namespace AirMedia.Core.Requests.Controller
             _executingRequestIds[actionId].Add(request.RequestId);
 
             Task.Factory.StartNew(() => request.Execute())
-                .ContinueWith(task => App.MainHandler.Post(() => FinishRequest(request, false)));
+                .ContinueWith(task => InvokeOnMainThread(() => FinishRequest(request, false)));
         }
 
         /// <summary>
@@ -75,7 +74,7 @@ namespace AirMedia.Core.Requests.Controller
             _executingRequestIds[actionId].Add(request.RequestId);
 
             _parallelTaskFactory.StartNew(() => request.Execute())
-                .ContinueWith(task => App.MainHandler.Post(() => FinishRequest(request, true)));
+                .ContinueWith(task => InvokeOnMainThread(() => FinishRequest(request, true)));
         }
 
         public bool HasPendingRequests()
@@ -105,6 +104,8 @@ namespace AirMedia.Core.Requests.Controller
             }
             _queuedRequests[actionId].AddLast(request);
         }
+
+        protected abstract void InvokeOnMainThread(Action action);
 
         private void FinishRequest(AbsRequest request, bool isParallelRequest)
         {

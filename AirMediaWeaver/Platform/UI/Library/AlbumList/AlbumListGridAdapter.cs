@@ -40,6 +40,7 @@ namespace AirMedia.Platform.UI.Library.AlbumList
         private const int AlbumArtsLoaderBatchPeriodMillis = 100;
 
         private const string BatchLoadArtsRequestTag = "load_album_arts_batch_request";
+        private const int ArtsLoaderThreadPoolSize = 2;
 
         public event EventHandler<AlbumArtLoadedEventArgs> AlbumArtLoaded;
         public event EventHandler<AlbumItemClickEventArgs> ItemClicked;
@@ -87,7 +88,7 @@ namespace AirMedia.Platform.UI.Library.AlbumList
             _callbacks = callbacks;
             _items = new List<AlbumListEntry>();
             _requestedAlbumArts = new HashSet<long>();
-            _albumArtsLoader = new ThreadPoolRequestManager(2);
+            _albumArtsLoader = new ThreadPoolRequestManager(new AndroidThreadPoolWorker(ArtsLoaderThreadPoolSize));
             _requestListener = RequestResultListener.NewInstance(LogTag, _albumArtsLoader);
 
             var factory = BatchRequestFactory.Init(typeof (LoadAlbumArtRequest), typeof(LoadAlbumArtBatchRequest));

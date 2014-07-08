@@ -195,6 +195,7 @@
     <Compile Include="Core\Utils\SyncLruCache.cs" />
     <Compile Include="Core\Utils\ZipUtils.cs" />
     <Compile Include="Platform\Controller\AndroidRequestFactory.cs" />
+    <Compile Include="Platform\Controller\AndroidThreadPoolWorker.cs" />
     <Compile Include="Platform\Controller\Dao\AlbumsDao.cs" />
     <Compile Include="Platform\Controller\DownloadManager\AmwDownloadManager.cs" />
     <Compile Include="Platform\Controller\NetworkUtils.cs" />

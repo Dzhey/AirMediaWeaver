@@ -33,7 +33,7 @@ namespace AirMedia.Platform.Controller
             base.OnCreate();
 
             _singleThreadedWorker = new SingleThreadWorker();
-            _threadPoolWorker = new ThreadPoolWorker(MaxDegreeOfParallelism);
+            _threadPoolWorker = new AndroidThreadPoolWorker(MaxDegreeOfParallelism);
             _requestManager = App.WorkerRequestManager;
 
             _threadPoolWorker.ExecutionFinished += OnExecutionFinished;
