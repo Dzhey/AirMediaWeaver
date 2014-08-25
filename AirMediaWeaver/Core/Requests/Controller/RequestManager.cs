@@ -292,7 +292,7 @@ namespace AirMedia.Core.Requests.Controller
                     {
                         _resultEventHandlers.Remove(resultRef);
                     }
-                    else if (handler != null)
+                    else
                     {
                         handler.HandleRequestResult(sender, args);
                     }
@@ -311,7 +311,7 @@ namespace AirMedia.Core.Requests.Controller
                     {
                         _updateEventHandlers.Remove(updateRef);
                     }
-                    else if (handler != null)
+                    else
                     {
                         handler.HandleRequestUpdate(sender, args);
                     }

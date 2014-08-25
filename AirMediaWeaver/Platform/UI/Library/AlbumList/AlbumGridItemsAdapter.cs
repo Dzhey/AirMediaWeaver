@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using AirMedia.Core.Log;
 using AirMedia.Platform.UI.Library.AlbumList.Model;
 using Android.Graphics;
 using Android.Views;
@@ -102,6 +103,7 @@ namespace AirMedia.Platform.UI.Library.AlbumList
             }
         }
 
+        private static int _viewCount = 0;
         public override View GetView(int position, View convertView, ViewGroup parent)
         {
             var item = this[position];
@@ -127,6 +129,8 @@ namespace AirMedia.Platform.UI.Library.AlbumList
                 holder.ItemMenuPanel.Tag = holder;
 
                 convertView.Tag = holder;
+                _viewCount++;
+                AmwLog.Info(LogTag, "album item created: " + _viewCount);
             }
             else
             {

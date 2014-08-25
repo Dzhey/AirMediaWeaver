@@ -5,20 +5,20 @@ using AirMedia.Core.Requests.Controller;
 using AirMedia.Core.Requests.Factory;
 using AirMedia.Core.Requests.Impl;
 using AirMedia.Core.Requests.Model;
-using AirMedia.Core.Utils;
 using AirMedia.Platform.Controller;
 using AirMedia.Platform.Controller.Requests.Impl;
 using AirMedia.Platform.Logger;
 using AirMedia.Platform.UI.Library.AlbumList.Model;
+using AirMedia.Platform.Util;
 using Android.Graphics;
 using Android.Views;
 using Android.Widget;
+using EntryDisposedEventArgs = AirMedia.Platform.Util.LruReuseReuseBitmapCache<long>.EntryDisposedEventArgs;
 
 namespace AirMedia.Platform.UI.Library.AlbumList
 {
     public class AlbumListGridAdapter : BaseAdapter<AlbumListEntry>, 
-        AlbumGridItemsAdapter.ICallbacks, 
-        LruCache<long, Bitmap>.ICacheEntryHandler
+        AlbumGridItemsAdapter.ICallbacks
     {
         private class ViewHolder : Java.Lang.Object
         {
@@ -36,7 +36,7 @@ namespace AirMedia.Platform.UI.Library.AlbumList
 
         public static readonly string LogTag = typeof(AlbumListGridAdapter).Name;
 
-        public const int MaxBitmapCacheSizeBytes = 1024 * 1024 * 8;
+        public const int MaxBitmapCacheSizeBytes = 1024 * 1024 * 16;
         private const int AlbumArtsLoaderBatchPeriodMillis = 100;
 
         private const string BatchLoadArtsRequestTag = "load_album_arts_batch_request";
@@ -61,7 +61,6 @@ namespace AirMedia.Platform.UI.Library.AlbumList
             }
         }
 
-        private LruCache<long, Bitmap> _artCache;
         private readonly List<AlbumListEntry> _items;
         private readonly IRequestFactory _loadArtRequestFactory;
         private readonly RequestResultListener _requestListener;
@@ -69,9 +68,9 @@ namespace AirMedia.Platform.UI.Library.AlbumList
         private bool _isDisposed;
         private bool _isLowMemory;
         private bool _isAlbumArtsLoaderEnabled = true;
-        private bool _isAlbumArtsCacheReleased;
         private RequestManager _albumArtsLoader;
         private readonly ISet<long> _requestedAlbumArts;
+        private readonly LruReuseReuseBitmapCache<long> _artsCache;
 
         public override int Count
         {
@@ -100,7 +99,8 @@ namespace AirMedia.Platform.UI.Library.AlbumList
                                                           .SetActionTag(BatchLoadArtsRequestTag);
 
             _requestListener.RegisterResultHandler(typeof(BatchRequest), OnAlbumArtLoaded);
-            _artCache = new LruCache<long, Bitmap>(MaxBitmapCacheSizeBytes, this);
+            _artsCache = new LruReuseReuseBitmapCache<long>(MaxBitmapCacheSizeBytes);
+            _artsCache.EntryDisposed += OnAlbumArtDisposed;
         }
 
         public void SetItems(IEnumerable<AlbumListEntry> items)
@@ -119,7 +119,7 @@ namespace AirMedia.Platform.UI.Library.AlbumList
 
             foreach (var entry in albumArts)
             {
-                _artCache.Set(entry.Key, entry.Value);
+                _artsCache.Set(entry.Key, entry.Value, false);
             }
         }
 
@@ -128,6 +128,7 @@ namespace AirMedia.Platform.UI.Library.AlbumList
             return position;
         }
 
+        private int _viewCount = 0;
         public override View GetView(int position, View convertView, ViewGroup parent)
         {
             var item = this[position];
@@ -147,11 +148,15 @@ namespace AirMedia.Platform.UI.Library.AlbumList
                 holder.GridAdapter.ItemMenuClicked += OnGridItemMenuClicked;
                 holder.GridAdapter.ItemClicked += OnGridItemClicked;
 
+                holder.ItemsGrid.Adapter = holder.GridAdapter;
+
                 convertView.Tag = holder;
+                _viewCount++;
+                AmwLog.Info(LogTag, "grid created: " + _viewCount);
             }
             else
             {
-                holder = (ViewHolder) convertView.Tag;
+                holder = (ViewHolder)convertView.Tag;
             }
 
             holder.Item = item;
@@ -161,7 +166,6 @@ namespace AirMedia.Platform.UI.Library.AlbumList
                                     : item.ArtistName;
 
             holder.TitleView.Text = artistName.ToUpper();
-            holder.ItemsGrid.Adapter = holder.GridAdapter;
 
             holder.GridAdapter.SetItems(item.Albums);
 
@@ -223,7 +227,7 @@ namespace AirMedia.Platform.UI.Library.AlbumList
                         && string.IsNullOrEmpty(ex.Message) == false
                         && ex.Message.Contains("OutOfMemory"))
                     {
-                        _artCache.Clear();
+                        _artsCache.Clear();
                         _isLowMemory = true;
                         AmwLog.Warn(LogTag, "Out of Memory detected");
                         _callbacks.OnLowMemoryDetected();
@@ -251,18 +255,18 @@ namespace AirMedia.Platform.UI.Library.AlbumList
                 });
             }
 
-            _artCache.Set(albumId, albumArt, false);
+            _artsCache.Set(albumId, albumArt, false);
         }
 
         public Bitmap GetAlbumArt(long albumId)
         {
             Bitmap albumArt = null;
 
-            if (_isLowMemory == false && _artCache.TryGetValue(albumId, out albumArt) == false)
+            if (_isLowMemory == false && _artsCache.TryGetValue(albumId, out albumArt) == false)
             {
                 if (_isAlbumArtsLoaderEnabled && _requestedAlbumArts.Contains(albumId) == false)
                 {
-                    _loadArtRequestFactory.Submit(albumId);
+                    _loadArtRequestFactory.Submit(albumId, _artsCache);
                     _requestedAlbumArts.Add(albumId);
                 }
             }
@@ -270,29 +274,9 @@ namespace AirMedia.Platform.UI.Library.AlbumList
             return albumArt;
         }
 
-        public int GetSizeOfValue(long key, Bitmap value)
+        public void OnAlbumArtDisposed(object sender, EntryDisposedEventArgs args)
         {
-            if (value == null) return 0;
-
-            return value.ByteCount;
-        }
-
-        public void DisposeOfValue(long keyAlbumId, Bitmap albumArt)
-        {
-            _requestedAlbumArts.Remove(keyAlbumId);
-
-            if (_isAlbumArtsCacheReleased == false)
-            {
-                if (albumArt != null)
-                    albumArt.Dispose();
-                return;
-            }
-
-            if (albumArt != null)
-            {
-                albumArt.Recycle();
-                albumArt.Dispose();
-            }
+            _requestedAlbumArts.Remove(args.Key);
         }
 
         protected override void Dispose(bool disposing)
@@ -304,11 +288,9 @@ namespace AirMedia.Platform.UI.Library.AlbumList
             if (disposing)
             {
                 _requestListener.RemoveResultHandler(typeof(BatchRequest));
-                _isAlbumArtsCacheReleased = true;
-                _artCache.Clear();
+                _artsCache.Dispose();
                 _requestedAlbumArts.Clear();
                 _requestListener.Dispose();
-                _artCache = null;
                 _albumArtsLoader.Dispose();
                 _albumArtsLoader = null;
                 _callbacks = null;

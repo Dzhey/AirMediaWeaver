@@ -1,10 +1,13 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq;
+using Java.Lang;
 
 namespace AirMedia.Core.Utils
 {
-    public class LruCache<TKey, TValue>
+    public class LruCache<TKey, TValue> : IEnumerable<KeyValuePair<TKey, TValue>>
     {
         public interface ICacheEntryHandler
         {
@@ -102,6 +105,12 @@ namespace AirMedia.Core.Utils
             _entryHandler.DisposeOfValue(node.Key, node.Value);
         }
 
+        /// <summary>
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <param name="replaceValue"></param>
+        /// <returns>removed entry if any</returns>
         public void Set(TKey key, TValue value, bool replaceValue = true)
         {
             if (replaceValue == false)
@@ -161,6 +170,17 @@ namespace AirMedia.Core.Utils
             _head = entry;
 
             if (_tail == entry) _tail = previous;
+        }
+
+        public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
+        {
+            return _entries.Select(entry => 
+                new KeyValuePair<TKey, TValue>(entry.Value.Key, entry.Value.Value)).GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }

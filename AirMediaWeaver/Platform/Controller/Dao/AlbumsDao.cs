@@ -1,5 +1,3 @@
-using System;
-using AirMedia.Core.Log;
 using Android.Content;
 using Android.Graphics;
 using Android.OS;
@@ -12,19 +10,21 @@ namespace AirMedia.Platform.Controller.Dao
     {
         private static readonly string LogTag = typeof(AlbumsDao).Name;
 
-        public static Bitmap GetAlbumArt(long albumId)
+        public static string GetAlbumArtPath(long albumId)
         {
             var resolver = App.Instance.ContentResolver;
             var uri = ContentUris.WithAppendedId(MediaStore.Audio.Albums.ExternalContentUri, albumId);
+
             var cursor = resolver.Query(uri,
-                                        new[]
-                                            {
-                                                MediaStore.Audio.Albums.InterfaceConsts.Id,
-                                                MediaStore.Audio.Albums.InterfaceConsts.AlbumArt
-                                            }, null, null, null);
+                new[]
+                {
+                    MediaStore.Audio.Albums.InterfaceConsts.Id,
+                    MediaStore.Audio.Albums.InterfaceConsts.AlbumArt
+
+                }, null, null, null);
+
             using (cursor)
             {
-                ParcelFileDescriptor pfd = null;
                 try
                 {
                     if (cursor.MoveToFirst() == false)
@@ -32,22 +32,36 @@ namespace AirMedia.Platform.Controller.Dao
 
                     string albumArt = cursor.GetString(1);
 
-                    if (string.IsNullOrEmpty(albumArt))
-                        return null;
-
-                    var artUri = Uri.Parse(ContentResolver.SchemeFile + "://" + albumArt);
-                    pfd = resolver.OpenFileDescriptor(artUri, "r");
-
-                    return BitmapFactory.DecodeFileDescriptor(pfd.FileDescriptor);
+                    return albumArt;
                 }
                 finally
                 {
                     cursor.Close();
-                    if (pfd != null)
-                    {
-                        pfd.Close();
-                        pfd.Dispose();
-                    }
+                }
+            }
+        }
+
+        public static Bitmap GetAlbumArtBitmap(long albumId, BitmapFactory.Options options = null)
+        {
+            ParcelFileDescriptor pfd = null;
+            try
+            {
+                string albumArt = GetAlbumArtPath(albumId);
+
+                if (string.IsNullOrEmpty(albumArt))
+                    return null;
+
+                var artUri = Uri.Parse(ContentResolver.SchemeFile + "://" + albumArt);
+                pfd = App.Instance.ContentResolver.OpenFileDescriptor(artUri, "r");
+
+                return BitmapFactory.DecodeFileDescriptor(pfd.FileDescriptor, null, options);
+            }
+            finally
+            {
+                if (pfd != null)
+                {
+                    pfd.Close();
+                    pfd.Dispose();
                 }
             }
         }

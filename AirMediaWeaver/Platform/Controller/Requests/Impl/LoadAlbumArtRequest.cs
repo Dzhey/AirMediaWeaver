@@ -1,6 +1,8 @@
+using AirMedia.Core.Log;
 using AirMedia.Core.Requests.Abs;
 using AirMedia.Core.Requests.Model;
 using AirMedia.Platform.Controller.Dao;
+using AirMedia.Platform.Util;
 using Android.Graphics;
 
 namespace AirMedia.Platform.Controller.Requests.Impl
@@ -9,16 +11,37 @@ namespace AirMedia.Platform.Controller.Requests.Impl
     {
         public const string ActionTagDefault = "LoadAlbumArtRequest_tag";
 
+        private readonly IReuseBitmapCacheAccessor _reuseBitmapCacheAccessor;
+
         public long AlbumId { get; private set; }
 
-        public LoadAlbumArtRequest(long albumId)
+        public LoadAlbumArtRequest(long albumId, IReuseBitmapCacheAccessor reuseBitmapCacheAccessor = null)
         {
             AlbumId = albumId;
+            _reuseBitmapCacheAccessor = reuseBitmapCacheAccessor;
         }
 
         protected override LoadRequestResult<Bitmap> DoLoad(out RequestStatus status)
         {
-            var bitmap = AlbumsDao.GetAlbumArt(AlbumId);
+            status = RequestStatus.Ok;
+
+            var options = new BitmapFactory.Options {InJustDecodeBounds = true, InSampleSize = 1};
+            AlbumsDao.GetAlbumArtBitmap(AlbumId, options);
+
+            if (options.OutWidth < 1)
+            {
+                return new LoadRequestResult<Bitmap>(RequestResult.ResultCodeOk, null);
+            }
+
+            if (_reuseBitmapCacheAccessor != null)
+            {
+                _reuseBitmapCacheAccessor.AddInBitmapOptions(options);
+                if (options.InBitmap != null)
+                {
+                    AmwLog.Info(LogTag, "bitmap reused for album id: " + AlbumId);
+                }
+            }
+            Bitmap bitmap = AlbumsDao.GetAlbumArtBitmap(AlbumId);
 
             if (bitmap != null)
             {
@@ -30,12 +53,19 @@ namespace AirMedia.Platform.Controller.Requests.Impl
                     int dstHeight = bitmap.Height;
                     var tmp = bitmap;
                     bitmap = Bitmap.CreateBitmap(bitmap, x, 0, dstWidth, dstHeight);
-                    tmp.Recycle();
+
+                    if (_reuseBitmapCacheAccessor == null)
+                    {
+                        tmp.Recycle();
+                        tmp.Dispose();
+                    }
+                    else
+                    {
+                        _reuseBitmapCacheAccessor.AddReusableBitmap(tmp);
+                    }
                 }
             }
-
-            status = RequestStatus.Ok;
-
+            
             return new LoadRequestResult<Bitmap>(RequestResult.ResultCodeOk, bitmap);
         }
     }
