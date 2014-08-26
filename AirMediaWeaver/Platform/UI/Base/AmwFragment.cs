@@ -2,7 +2,8 @@ using System;
 using System.Collections.Generic;
 using AirMedia.Core.Requests.Abs;
 using AirMedia.Core.Requests.Model;
-using AirMedia.Platform.Controller;
+using AirMedia.Platform.Controller.Requests.Controller;
+using AirMedia.Platform.Controller.Requests.Interfaces;
 using AirMedia.Platform.Logger;
 using Android.OS;
 using Android.Util;
@@ -20,6 +21,7 @@ namespace AirMedia.Platform.UI.Base
 
         private RequestResultListener _requestResultListener;
         private IDictionary<string, SavedState> _childrenStates;
+        private List<IContextualRequestWorker> _registeredRequestWorkers;
 
         protected WorkerRequestManager WorkerRequestManager { get; private set; }
 
@@ -103,6 +105,11 @@ namespace AirMedia.Platform.UI.Base
 
         public override void OnDestroy()
         {
+            if (_registeredRequestWorkers != null)
+            {
+                _registeredRequestWorkers.Clear();
+            }
+
             _requestResultListener.Dispose();
             base.OnDestroy();
         }
@@ -146,6 +153,22 @@ namespace AirMedia.Platform.UI.Base
         public int SubmitParallelRequest(AbsRequest request)
         {
             return _requestResultListener.SubmitRequest(request, true);
+        }
+
+        public override void OnResume()
+        {
+            base.OnResume();
+
+            InitRequestUpdateHandlers();
+            InitRequestResultHandlers();
+        }
+
+        public override void OnPause()
+        {
+            ResetRequestUpdateHandlers();
+            ResetRequestResultHandlers();
+
+            base.OnPause();
         }
 
         protected virtual void OnRequestResult(AbsRequest request, ResultEventArgs args)
@@ -211,6 +234,23 @@ namespace AirMedia.Platform.UI.Base
             return null;
         }
 
+        protected void RegisterRequestWorker(IContextualRequestWorker worker)
+        {
+            if (_registeredRequestWorkers == null)
+            {
+                _registeredRequestWorkers = new List<IContextualRequestWorker>();
+            }
+
+            _registeredRequestWorkers.Add(worker);
+        }
+
+        protected void RemoveRequestWorker(IContextualRequestWorker worker)
+        {
+            if (_registeredRequestWorkers == null) return;
+
+            _registeredRequestWorkers.Remove(worker);
+        }
+
         /// <summary>
         /// Set initial state for specified fragment.
         /// State should be previously stored for specified key.
@@ -258,6 +298,46 @@ namespace AirMedia.Platform.UI.Base
         private void OnRequestUpdate(object sender, UpdateEventArgs args)
         {
             OnRequestUpdate((AbsRequest)sender, args);
+        }
+
+        private void InitRequestResultHandlers()
+        {
+            if (_registeredRequestWorkers == null) return;
+
+            foreach (var worker in _registeredRequestWorkers)
+            {
+                worker.InitResultHandler();
+            }
+        }
+
+        private void ResetRequestResultHandlers()
+        {
+            if (_registeredRequestWorkers == null) return;
+
+            foreach (var worker in _registeredRequestWorkers)
+            {
+                worker.ResetResultHandler();
+            }
+        }
+
+        private void InitRequestUpdateHandlers()
+        {
+            if (_registeredRequestWorkers == null) return;
+
+            foreach (var worker in _registeredRequestWorkers)
+            {
+                worker.InitUpdateHandler();
+            }
+        }
+
+        private void ResetRequestUpdateHandlers()
+        {
+            if (_registeredRequestWorkers == null) return;
+
+            foreach (var worker in _registeredRequestWorkers)
+            {
+                worker.ResetUpdateHandler();
+            }
         }
     }
 }

@@ -4,11 +4,13 @@ using AirMedia.Core.Requests.Controller;
 using AirMedia.Core.Requests.Factory;
 using AirMedia.Platform.Logger;
 
-namespace AirMedia.Platform.Controller
+namespace AirMedia.Platform.Controller.Requests.Controller
 {
     public class AndroidRequestFactory : IRequestFactory
     {
         public event EventHandler<RequestSubmittedEventArgs> RequestSubmitted;
+
+        public Type RequestType { get { return _requestFactory.RequestType; } }
 
         private RequestResultListener _listener;
         private RequestFactory _requestFactory;

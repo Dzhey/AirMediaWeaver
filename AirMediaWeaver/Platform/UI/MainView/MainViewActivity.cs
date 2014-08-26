@@ -1,6 +1,7 @@
 ﻿using System;
 using AirMedia.Core.Log;
 using AirMedia.Platform.UI.Base;
+using AirMedia.Platform.UI.Base.Interface;
 using AirMedia.Platform.UI.Library;
 using AirMedia.Platform.UI.Player;
 using AirMedia.Platform.UI.Playlists;

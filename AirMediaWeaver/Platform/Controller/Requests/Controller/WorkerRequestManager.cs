@@ -3,7 +3,7 @@ using AirMedia.Core.Requests.Controller;
 using Android.Content;
 using Android.OS;
 
-namespace AirMedia.Platform.Controller
+namespace AirMedia.Platform.Controller.Requests.Controller
 {
     public class WorkerRequestManager : RequestManager
     {

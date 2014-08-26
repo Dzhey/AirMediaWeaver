@@ -5,6 +5,7 @@
 *.suo
 *.user
 *.sln.docstates
+*Thumbs.db
 
 # Build results
 [Dd]ebug/
@@ -174,4 +175,4 @@ UpgradeLog*.htm
 FakesAssemblies/
 
 # Generated resource bindings
-*Resource.Designer.cs
+**Resource.Designer.cs

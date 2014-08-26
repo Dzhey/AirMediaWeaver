@@ -195,8 +195,8 @@
     <Compile Include="Core\Utils\Predicate.cs" />
     <Compile Include="Core\Utils\SyncLruCache.cs" />
     <Compile Include="Core\Utils\ZipUtils.cs" />
-    <Compile Include="Platform\Controller\AndroidRequestFactory.cs" />
-    <Compile Include="Platform\Controller\AndroidThreadPoolWorker.cs" />
+    <Compile Include="Platform\Controller\Requests\Controller\AndroidRequestFactory.cs" />
+    <Compile Include="Platform\Controller\Requests\Controller\AndroidThreadPoolWorker.cs" />
     <Compile Include="Platform\Controller\Dao\AlbumsDao.cs" />
     <Compile Include="Platform\Controller\DownloadManager\AmwDownloadManager.cs" />
     <Compile Include="Platform\Controller\NetworkUtils.cs" />
@@ -269,14 +269,24 @@
     <Compile Include="Platform\Player\MetadataResolver.cs" />
     <Compile Include="Platform\Controller\PlayerBackend\PlaybackStatus.cs" />
     <Compile Include="Platform\Player\PlayerControl.cs" />
+    <Compile Include="Platform\UI\Base\BaseContextualRequestWorker.cs" />
     <Compile Include="Platform\UI\Base\FragmentContentActivity.cs" />
-    <Compile Include="Platform\UI\Base\IMainViewFragmentCallbacks.cs" />
+    <Compile Include="Platform\Controller\Requests\Interfaces\IContextualRequestWorker.cs" />
+    <Compile Include="Platform\UI\Base\Interface\IMainViewFragmentCallbacks.cs" />
     <Compile Include="Platform\UI\Base\InputTextDialog.cs" />
+    <Compile Include="Platform\Controller\Requests\Interfaces\IContextualWorkerCallbacks.cs" />
     <Compile Include="Platform\UI\Base\MainViewFragment.cs" />
-    <Compile Include="Platform\UI\Library\AlbumList\AlbumArtLoadedEventArgs.cs" />
-    <Compile Include="Platform\UI\Library\AlbumList\AlbumGridItem.cs" />
+    <Compile Include="Platform\UI\Library\AlbumList\AlbumListAdapterCreator.cs" />
+    <Compile Include="Platform\UI\Library\AlbumList\AlbumTileListAdapter.cs" />
+    <Compile Include="Platform\UI\Library\AlbumList\Controller\AlbumsGridWorker.cs" />
+    <Compile Include="Platform\UI\Library\AlbumList\Controller\ContentWorkerCreator.cs" />
+    <Compile Include="Platform\UI\Library\AlbumList\Controller\IAlbumListContentWorker.cs" />
+    <Compile Include="Platform\UI\Library\AlbumList\Controller\IAlbumListContentWorkerCallbacks.cs" />
+    <Compile Include="Platform\UI\Library\AlbumList\IAlbumListAdapter.cs" />
+    <Compile Include="Platform\UI\Library\AlbumList\Model\AlbumArtLoadedEventArgs.cs" />
+    <Compile Include="Platform\UI\Library\AlbumList\Model\AlbumGridItem.cs" />
     <Compile Include="Platform\UI\Library\AlbumList\AlbumGridItemsAdapter.cs" />
-    <Compile Include="Platform\UI\Library\AlbumList\AlbumListEntry.cs" />
+    <Compile Include="Platform\UI\Library\AlbumList\Model\AlbumListEntry.cs" />
     <Compile Include="Platform\UI\Library\AlbumList\AlbumListGridAdapter.cs" />
     <Compile Include="Platform\UI\Library\AlbumList\Model\AlbumItemClickEventArgs.cs" />
     <Compile Include="Platform\UI\Library\LibraryTabsAdapter.cs" />
@@ -332,8 +342,8 @@
     <Compile Include="Core\Utils\StringUtils\LiteralFormat.cs" />
     <Compile Include="Core\Data\CoreUserPreferences.cs" />
     <Compile Include="Platform\App.cs" />
-    <Compile Include="Platform\Controller\WorkerRequestManager.cs" />
-    <Compile Include="Platform\Controller\WorkerService.cs" />
+    <Compile Include="Platform\Controller\Requests\Controller\WorkerRequestManager.cs" />
+    <Compile Include="Platform\Controller\Requests\Controller\WorkerService.cs" />
     <Compile Include="Platform\Data\UserPreferences.cs" />
     <Compile Include="Platform\Logger\AndroidAmwLog.cs" />
     <Compile Include="Platform\Logger\InAppLoggingActivity.cs" />
@@ -628,6 +638,8 @@
     <AndroidResource Include="Resources\Drawable\quickaction_action_item_selected.xml">
       <SubType>Designer</SubType>
     </AndroidResource>
+    <AndroidResource Include="Resources\Drawable-mdpi\ic_page_layout.png" />
+    <AndroidResource Include="Resources\Drawable-hdpi\ic_page_layout.png" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Platform\Json\" />

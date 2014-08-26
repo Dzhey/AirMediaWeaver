@@ -4,6 +4,7 @@ using AirMedia.Core.Requests.Controller;
 using AirMedia.Core.Requests.Impl;
 using AirMedia.Core.Requests.Model;
 using AirMedia.Platform.Controller;
+using AirMedia.Platform.Controller.Requests.Controller;
 using AirMedia.Platform.Controller.WebService;
 using AirMedia.Platform.Data;
 using AirMedia.Platform.Data.Sql;

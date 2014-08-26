@@ -1,7 +1,7 @@
 using System;
 using AirMedia.Core.Requests.Controller;
 
-namespace AirMedia.Platform.Controller
+namespace AirMedia.Platform.Controller.Requests.Controller
 {
     public class AndroidThreadPoolWorker : ThreadPoolWorker
     {

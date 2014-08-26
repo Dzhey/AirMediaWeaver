@@ -1,6 +1,6 @@
 
 
-namespace AirMedia.Platform.UI.Library.AlbumList
+namespace AirMedia.Platform.UI.Library.AlbumList.Model
 {
     public sealed class AlbumGridItem
     {

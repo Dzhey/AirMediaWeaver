@@ -1,6 +1,6 @@
 using AirMedia.Platform.UI.MainView;
 
-namespace AirMedia.Platform.UI.Base
+namespace AirMedia.Platform.UI.Base.Interface
 {
     public interface IMainViewFragmentCallbacks
     {

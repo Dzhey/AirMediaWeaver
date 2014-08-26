@@ -5,20 +5,23 @@ using AirMedia.Core.Requests.Controller;
 using AirMedia.Core.Requests.Factory;
 using AirMedia.Core.Requests.Impl;
 using AirMedia.Core.Requests.Model;
-using AirMedia.Platform.Controller;
+using AirMedia.Platform.Controller.Requests.Controller;
 using AirMedia.Platform.Controller.Requests.Impl;
+using AirMedia.Platform.Controller.Requests.Interfaces;
 using AirMedia.Platform.Logger;
+using AirMedia.Platform.UI.Library.AlbumList.Controller;
 using AirMedia.Platform.UI.Library.AlbumList.Model;
 using AirMedia.Platform.Util;
 using Android.Graphics;
 using Android.Views;
 using Android.Widget;
+using Java.Lang;
 using EntryDisposedEventArgs = AirMedia.Platform.Util.LruReuseReuseBitmapCache<long>.EntryDisposedEventArgs;
 
 namespace AirMedia.Platform.UI.Library.AlbumList
 {
-    public class AlbumListGridAdapter : BaseAdapter<AlbumListEntry>, 
-        AlbumGridItemsAdapter.ICallbacks
+    public class AlbumListGridAdapter : BaseAdapter<AlbumListEntry>,
+        AlbumGridItemsAdapter.ICallbacks, IAlbumListAdapter
     {
         private class ViewHolder : Java.Lang.Object
         {
@@ -26,12 +29,6 @@ namespace AirMedia.Platform.UI.Library.AlbumList
             public AlbumGridItemsAdapter GridAdapter { get; set; }
             public TextView TitleView { get; set; }
             public GridView ItemsGrid { get; set; }
-        }
-
-        public interface ICallbacks
-        {
-            void OnLowMemoryDetected();
-            AbsListView GetListView();
         }
 
         public static readonly string LogTag = typeof(AlbumListGridAdapter).Name;
@@ -45,6 +42,23 @@ namespace AirMedia.Platform.UI.Library.AlbumList
         public event EventHandler<AlbumArtLoadedEventArgs> AlbumArtLoaded;
         public event EventHandler<AlbumItemClickEventArgs> ItemClicked;
         public event EventHandler<AlbumItemClickEventArgs> ItemMenuClicked;
+
+        public bool IsResultHandlerDisabled { get; set; }
+
+        public IAlbumListAdapterCallbacks Callbacks
+        {
+            get
+            {
+                if (_callbacks == null)
+                {
+                    throw new IllegalStateException("album adapter callbacks is not defined");
+                }
+
+                return _callbacks;
+            }
+
+            set { _callbacks = value; }
+        }
 
         public bool IsAlbumArtsLoaderEnabled
         {
@@ -64,7 +78,7 @@ namespace AirMedia.Platform.UI.Library.AlbumList
         private readonly List<AlbumListEntry> _items;
         private readonly IRequestFactory _loadArtRequestFactory;
         private readonly RequestResultListener _requestListener;
-        private ICallbacks _callbacks;
+        private IAlbumListAdapterCallbacks _callbacks;
         private bool _isDisposed;
         private bool _isLowMemory;
         private bool _isAlbumArtsLoaderEnabled = true;
@@ -82,9 +96,8 @@ namespace AirMedia.Platform.UI.Library.AlbumList
             get { return _items[position]; }
         }
 
-        public AlbumListGridAdapter(ICallbacks callbacks)
+        public AlbumListGridAdapter()
         {
-            _callbacks = callbacks;
             _items = new List<AlbumListEntry>();
             _requestedAlbumArts = new HashSet<long>();
             _albumArtsLoader = new ThreadPoolRequestManager(new AndroidThreadPoolWorker(ArtsLoaderThreadPoolSize));
@@ -174,7 +187,7 @@ namespace AirMedia.Platform.UI.Library.AlbumList
 
         private void UpdateVisibleAlbumArts()
         {
-            var listView = _callbacks.GetListView();
+            var listView = Callbacks.GetListView();
 
             if (listView == null)
                 return;
@@ -230,7 +243,6 @@ namespace AirMedia.Platform.UI.Library.AlbumList
                         _artsCache.Clear();
                         _isLowMemory = true;
                         AmwLog.Warn(LogTag, "Out of Memory detected");
-                        _callbacks.OnLowMemoryDetected();
                         break;
                     }
                     continue;

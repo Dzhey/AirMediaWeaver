@@ -10,6 +10,19 @@ namespace AirMedia.Core.Requests.Factory
 {
     public class RequestFactory : IRequestFactory
     {
+        public Type RequestType
+        {
+            get
+            {
+                if (_requestType == null && _requestTypeName != null)
+                {
+                    return Type.GetType(_requestTypeName, true);
+                }
+
+                return _requestType;
+            }
+        }
+
         private bool _isDisposed;
         private bool _isParallel;
         private bool _isDedicated;

@@ -7,7 +7,7 @@ using Android.Content;
 using Android.OS;
 using Android.Util;
 
-namespace AirMedia.Platform.Controller
+namespace AirMedia.Platform.Controller.Requests.Controller
 {
     [Service(Exported = false, Label = "AirMediaService")]
     class WorkerService : Service

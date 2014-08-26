@@ -1,6 +1,7 @@
 
 using System;
 using AirMedia.Core.Log;
+using AirMedia.Platform.UI.Base.Interface;
 using AirMedia.Platform.UI.MainView;
 using Android.App;
 using Android.Content;

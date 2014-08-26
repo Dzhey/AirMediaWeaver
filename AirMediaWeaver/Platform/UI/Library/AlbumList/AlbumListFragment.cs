@@ -1,12 +1,7 @@
 using AirMedia.Core;
-using AirMedia.Core.Log;
-using AirMedia.Core.Requests.Controller;
-using AirMedia.Core.Requests.Factory;
 using AirMedia.Core.Requests.Model;
-using AirMedia.Platform.Controller;
-using AirMedia.Platform.Controller.Requests.Impl;
-using AirMedia.Platform.Controller.Requests.Model;
 using AirMedia.Platform.UI.Base;
+using AirMedia.Platform.UI.Library.AlbumList.Controller;
 using AirMedia.Platform.UI.Library.AlbumList.Model;
 using AirMedia.Platform.UI.ViewUtils.QuickActionHelper;
 using Android.OS;
@@ -16,21 +11,23 @@ using Java.Lang;
 
 namespace AirMedia.Platform.UI.Library.AlbumList
 {
-    public class AlbumListFragment : MainViewFragment, AlbumListGridAdapter.ICallbacks
+    public class AlbumListFragment : MainViewFragment, IAlbumListAdapterCallbacks, IAlbumListContentWorkerCallbacks
     {
+        private static readonly ContentWorkerCreator AlbumsContentWorkerCreator = new ContentWorkerCreator();
+
         /// <summary>
         /// 3 items per second thresold to temporarily disable album arts loader
         /// </summary>
         private const int AlbumArtsLoaderDisableThreshold = 3;
 
         private ListView _albumListView;
-        private AlbumListGridAdapter _listAdapter;
-        private IRequestFactory _loadRequestFactory;
+        private IAlbumListContentWorker _contentController;
         private bool _isContentReloaded;
         private View _contentPlaceholder;
         private int _lastScrollAlbumItemPosition;
         private long _previousScrollEventTime;
         private double _albumListScrollSpeed;
+        private IAlbumListAdapter _adapter;
 
         public override bool UserVisibleHint
         {
@@ -43,19 +40,20 @@ namespace AirMedia.Platform.UI.Library.AlbumList
                 base.UserVisibleHint = value;
 
                 if (value && _albumListView != null && _albumListView.Count == 0)
-                    ReloadList();
+                    ReloadContent();
             }
         }
 
-        public override void OnCreate(Bundle savedInstanceState)
+        public void ShowMessage(int stringResourceId)
         {
-            base.OnCreate(savedInstanceState);
+            ShowMessage(stringResourceId, ToastLength.Short);
+        }
 
-            var factory = RequestFactory.Init(typeof (AndroidLoadLocalArtistAlbumsRequest));
-            _loadRequestFactory = AndroidRequestFactory.Init(factory, ResultListener)
-                                                       .SetParallel(true)
-                                                       .SetDistinct(true)
-                                                       .SetActionTag(AndroidLoadLocalArtistAlbumsRequest.ActionTagDefault);
+        public void OnContentDataLoaded(bool hasContentData)
+        {
+            if (hasContentData == false) return;
+
+            SetInProgress(false);
         }
 
         public override View OnCreateView(LayoutInflater inflater, 
@@ -66,13 +64,21 @@ namespace AirMedia.Platform.UI.Library.AlbumList
 
            _albumListView = view.FindViewById<ListView>(Android.Resource.Id.List);
             var progresPanel = view.FindViewById<ViewGroup>(Resource.Id.progressPanel);
-            RegisterProgressPanel(progresPanel, Consts.DefaultProgressDelayMillis, 
+            RegisterProgressPanel(progresPanel, Consts.DefaultProgressDelayMillis,
                 Resource.String.note_audio_library_empty);
 
-            _listAdapter = new AlbumListGridAdapter(this);
-            _albumListView.Adapter = _listAdapter;
+            _contentController = AlbumsContentWorkerCreator.CreateContentWorker(
+                ContentWorkerCreator.AlbumListAppearanceGrid,
+                ContentWorkerCreator.AlbumListGroupingByArtist,
+                this);
+
+            _adapter = _contentController.Adapter;
+            _adapter.Callbacks = this;
+            _albumListView.Adapter = _adapter;
 
             _isContentReloaded = false;
+
+            RegisterRequestWorker(_contentController);
 
             return view;
         }
@@ -90,35 +96,30 @@ namespace AirMedia.Platform.UI.Library.AlbumList
             _previousScrollEventTime = currentTime;
 
             if (_albumListScrollSpeed >= AlbumArtsLoaderDisableThreshold)
-                _listAdapter.IsAlbumArtsLoaderEnabled = false;
+            {
+                _contentController.IsAlbumArtsLoaderEnabled = false;
+            }
             else
-                _listAdapter.IsAlbumArtsLoaderEnabled = true;
+            {
+                _contentController.IsAlbumArtsLoaderEnabled = true;
+            }
         }
 
         private void OnAlbumListScrollStateChanged(object sender, AbsListView.ScrollStateChangedEventArgs args)
         {
             if (args.ScrollState == ScrollState.Idle)
-                _listAdapter.IsAlbumArtsLoaderEnabled = true;
-        }
-
-        public override void OnActivityCreated(Bundle savedInstanceState)
-        {
-            base.OnActivityCreated(savedInstanceState);
-
-            RegisterRequestUpdateHandler(typeof(AndroidLoadLocalArtistAlbumsRequest), OnLoadRequestUpdate);
-
-            if (!_isContentReloaded)
-                ReloadList();
+            {
+                _contentController.IsAlbumArtsLoaderEnabled = true;
+            }
         }
 
         public override void OnDestroyView()
         {
-            RemoveRequestUpdateHandler(typeof(AndroidLoadLocalArtistAlbumsRequest));
-
-            if (_albumListView != null && _albumListView.Adapter != null)
+            if (_contentController != null)
             {
-                _albumListView.Adapter.Dispose();
-                _albumListView.Adapter = null;
+                _contentController.ResetResultHandler();
+                _contentController.Dispose();
+                _contentController = null;
             }
 
             base.OnDestroyView();
@@ -128,22 +129,23 @@ namespace AirMedia.Platform.UI.Library.AlbumList
         {
             base.OnResume();
 
-            RegisterRequestResultHandler(typeof(AndroidLoadLocalArtistAlbumsRequest), OnLoadRequestFinished);
             _albumListView.Scroll += OnAlbumListScrollEvent;
             _albumListView.ScrollStateChanged += OnAlbumListScrollStateChanged;
 
-            _listAdapter.ItemClicked += OnAlbumItemClicked;
-            _listAdapter.ItemMenuClicked += OnAlbumItemMenuClicked;
+            _adapter.ItemClicked += OnAlbumItemClicked;
+            _adapter.ItemMenuClicked += OnAlbumItemMenuClicked;
+
+            if (!_isContentReloaded)
+                ReloadContent();
         }
 
         public override void OnPause()
         {
-            _listAdapter.ItemMenuClicked -= OnAlbumItemMenuClicked;
-            _listAdapter.ItemClicked -= OnAlbumItemClicked;
+            _adapter.ItemMenuClicked -= OnAlbumItemMenuClicked;
+            _adapter.ItemClicked -= OnAlbumItemClicked;
 
             _albumListView.Scroll -= OnAlbumListScrollEvent;
             _albumListView.ScrollStateChanged -= OnAlbumListScrollStateChanged;
-            RemoveRequestResultHandler(typeof(AndroidLoadLocalArtistAlbumsRequest));
 
             base.OnPause();
         }
@@ -170,7 +172,7 @@ namespace AirMedia.Platform.UI.Library.AlbumList
 
         public override bool HasDisplayedContent()
         {
-            bool hasContent = _listAdapter.Count > 0;
+            bool hasContent = _adapter.Count > 0;
 
             if (hasContent && _contentPlaceholder.Visibility != ViewStates.Gone)
                 _contentPlaceholder.Visibility = ViewStates.Gone;
@@ -178,82 +180,14 @@ namespace AirMedia.Platform.UI.Library.AlbumList
             return hasContent;
         }
 
-        protected void ReloadList()
+        protected void ReloadContent()
         {
             SetInProgress(true);
-            _loadRequestFactory.Submit();
+            _contentController.PerformRequest();
             _isContentReloaded = true;
         }
 
-        private void OnLoadRequestFinished(object sender, ResultEventArgs args)
-        {
-            try
-            {
-                if (args.Request.Status != RequestStatus.Ok)
-                {
-                    ShowMessage(Resource.String.error_cant_load_data);
-                    AmwLog.Error(LogTag, "Error loading local album list");
-                    SetInProgress(false);
-                    return;
-                }
-            }
-            finally
-            {
-                RequestManager.Instance.TryDisposeRequest(args.Request.RequestId);
-            }
-
-            if (UserVisibleHint)
-            {
-                if (_listAdapter.Count < 1)
-                {
-                    var data = ((LoadArtistAlbumsRequestResult)args.Result).Data;
-                    _listAdapter.SetItems(data);
-                }
-
-                SetInProgress(false);
-            }
-        }
-
-        private void OnLoadRequestUpdate(object sender, UpdateEventArgs args)
-        {
-            if (args.Request.Status != RequestStatus.Ok
-                  && args.Request.Status != RequestStatus.InProgress) return;
-
-            switch (args.UpdateData.UpdateCode)
-            {
-                case UpdateData.UpdateCodeCachedResultRetrieved:
-                    var cachedResult = ((CachedUpdateData)args.UpdateData).CachedResult;
-                    var cachedData = ((LoadArtistAlbumsRequestResult)cachedResult).Data;
-
-                    if (UserVisibleHint)
-                    {
-                        _listAdapter.SetItems(cachedData);
-
-                        if (cachedData.Count > 0)
-                            SetInProgress(false);
-                    }
-                    
-                    break;
-
-                case UpdateData.UpdateCodeIntermediateResultObtained:
-                    var wrappedResult = (IntermediateResultUpdateData) args.UpdateData;
-                    var result = (LoadArtistAlbumsRequestResult) wrappedResult.RequestResult;
-
-                    _listAdapter.AddAlbumArts(result.AlbumArts);
-
-                    if (UserVisibleHint)
-                    {
-                        _listAdapter.SetItems(result.Data);
-
-                        if (result.Data.Count > 0)
-                            SetInProgress(false);
-                    }
-
-                    break;
-            }
-        }
-
-        public void OnLowMemoryDetected()
+        public override void OnLowMemory()
         {
             ShowMessage(Resource.String.warning_out_of_memory);
         }
@@ -261,6 +195,19 @@ namespace AirMedia.Platform.UI.Library.AlbumList
         public AbsListView GetListView()
         {
             return _albumListView;
+        }
+
+        public void OnWorkerRequestError(int errorCode, string errorMessage)
+        {
+        }
+
+        public void OnWorkerRequestFinished(ResultEventArgs args)
+        {
+            SetInProgress(false);
+        }
+
+        public void OnWorkerRequestUpdate(UpdateEventArgs args)
+        {
         }
     }
 }

@@ -1,6 +1,7 @@
 
 
 using System;
+using AirMedia.Platform.UI.Base.Interface;
 using AirMedia.Platform.UI.Player;
 using AirMedia.Platform.UI.ViewUtils;
 using Android.App;

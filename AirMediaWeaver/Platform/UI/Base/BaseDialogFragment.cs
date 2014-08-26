@@ -2,6 +2,7 @@ using System;
 using AirMedia.Core.Requests.Abs;
 using AirMedia.Core.Requests.Model;
 using AirMedia.Platform.Controller;
+using AirMedia.Platform.Controller.Requests.Controller;
 using AirMedia.Platform.Logger;
 using Android.Content;
 using Android.OS;

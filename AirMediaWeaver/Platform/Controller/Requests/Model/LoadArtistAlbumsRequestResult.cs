@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using AirMedia.Core.Requests.Model;
-using AirMedia.Platform.UI.Library.AlbumList;
+using AirMedia.Platform.UI.Library.AlbumList.Model;
 using Android.Graphics;
 
 namespace AirMedia.Platform.Controller.Requests.Model
