@@ -3,11 +3,10 @@ using AirMedia.Core.Controller.Encodings;
 using AirMedia.Core.Data;
 using AirMedia.Core.Data.Model;
 using AirMedia.Core.Log;
-using AirMedia.Core.Requests.Abs;
 using AirMedia.Core.Requests.Interfaces;
 using AirMedia.Core.Requests.Model;
 
-namespace AirMedia.Core.Requests.Impl
+namespace AirMedia.Core.Requests.Abs
 {
     public abstract class AbsLoadLocalArtistAlbumsRequest<TItem> : BaseLoadCachedRequest<List<TItem>>
     {

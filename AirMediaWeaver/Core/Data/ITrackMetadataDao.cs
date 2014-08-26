@@ -19,6 +19,7 @@ namespace AirMedia.Core.Data
         IRemoteTrackMetadata[] QueryRemoteTracksForGenreNameLike(string genreName);
         ArtistBaseModel[] QueryForLocalArtists();
         AlbumBaseModel[] QueryForArtistAlbums(long artistId);
+        AlbumBaseModel[] QueryForLocalAlbums();
 
         /// <summary>
         /// </summary>

@@ -258,6 +258,10 @@ namespace AirMedia.Core.Requests.Abs
                 {
                     _futureResult.Dispose();
                 }
+                if (_requestResult != null)
+                {
+                    _requestResult.Dispose();
+                }
                 _requestResult = null;
                 _futureResult = null;
                 ResultEvent = null;

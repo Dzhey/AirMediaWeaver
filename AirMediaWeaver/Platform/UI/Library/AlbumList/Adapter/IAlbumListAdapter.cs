@@ -1,10 +1,9 @@
 using System;
-using System.Collections.Generic;
+using AirMedia.Platform.UI.Library.AlbumList.Controller;
 using AirMedia.Platform.UI.Library.AlbumList.Model;
-using Android.Graphics;
 using Android.Widget;
 
-namespace AirMedia.Platform.UI.Library.AlbumList
+namespace AirMedia.Platform.UI.Library.AlbumList.Adapter
 {
     public interface IAlbumListAdapterCallbacks
     {
@@ -13,12 +12,9 @@ namespace AirMedia.Platform.UI.Library.AlbumList
 
     public interface IAlbumListAdapter : IListAdapter
     {
+        IAlbumsCoverProvider AlbumsCoverProvider { get; set; }
         IAlbumListAdapterCallbacks Callbacks { get; set; }
-        event EventHandler<AlbumArtLoadedEventArgs> AlbumArtLoaded;
         event EventHandler<AlbumItemClickEventArgs> ItemClicked;
         event EventHandler<AlbumItemClickEventArgs> ItemMenuClicked;
-        bool IsAlbumArtsLoaderEnabled { get; set; }
-        void AddAlbumArts(IEnumerable<KeyValuePair<long, Bitmap>> albumArts);
-        void SetItems(IEnumerable<AlbumListEntry> data);
     }
 }

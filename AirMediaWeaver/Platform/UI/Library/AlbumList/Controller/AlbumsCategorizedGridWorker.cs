@@ -7,28 +7,51 @@ using AirMedia.Platform.Controller.Requests.Impl;
 using AirMedia.Platform.Controller.Requests.Model;
 using AirMedia.Platform.Logger;
 using AirMedia.Platform.UI.Base;
+using AirMedia.Platform.UI.Library.AlbumList.Adapter;
+using AirMedia.Platform.UI.Library.AlbumList.Model;
+using Android.Views;
+using Android.Widget;
 
 namespace AirMedia.Platform.UI.Library.AlbumList.Controller
 {
-    public class AlbumsGridWorker : BaseContextualRequestWorker, IAlbumListContentWorker
+    public class AlbumsCategorizedGridWorker : BaseContextualRequestWorker, IAlbumListContentWorker
     {
-        public static readonly string LogTag = typeof(AlbumsGridWorker).Name;
-
-        public IAlbumListAdapter Adapter { get { return _adapter; } }
+        public static readonly string LogTag = typeof(AlbumsCategorizedGridWorker).Name;
 
         public bool IsAlbumArtsLoaderEnabled
         {
-            get { return Adapter.IsAlbumArtsLoaderEnabled; }
-            set { Adapter.IsAlbumArtsLoaderEnabled = value; }
+            get
+            {
+                if (_coverProvider == null) return false;
+
+                return _coverProvider.IsAlbumArtsLoaderEnabled;
+            }
+            set
+            {
+                if (_coverProvider == null) return;
+
+                _coverProvider.IsAlbumArtsLoaderEnabled = value;
+            }
+        }
+        
+        public AbsListView InflateContainerView(LayoutInflater inflater, ViewGroup root, bool attachToRoot)
+        {
+            var container = (ViewGroup)inflater.Inflate(Resource.Layout.View_AlbumsGridList, root, attachToRoot);
+
+            return container.FindViewById<AbsListView>(Resource.Id.albumsGrid);
         }
 
-        private readonly IAlbumListAdapter _adapter;
+        public IAlbumListAdapter Adapter { get { return _adapter; } }
+
+        private readonly IConcreteAlbumListAdapter<AlbumCategorizedGridEntry> _adapter;
         private bool _isDisposed;
         private readonly IAlbumListContentWorkerCallbacks _callbacks;
+        private readonly IAlbumsCoverProvider _coverProvider;
 
-        public AlbumsGridWorker(IAlbumListContentWorkerCallbacks callbacks) : base(callbacks)
+        public AlbumsCategorizedGridWorker(IAlbumListContentWorkerCallbacks callbacks) : base(callbacks)
         {
-            _adapter = new AlbumListGridAdapter();
+            _coverProvider = new AlbumsCoverProvider();
+            _adapter = new AlbumGridListAdapter(_coverProvider);
             _callbacks = callbacks;
         }
 
@@ -91,7 +114,7 @@ namespace AirMedia.Platform.UI.Library.AlbumList.Controller
                     var wrappedResult = (IntermediateResultUpdateData)args.UpdateData;
                     var result = (LoadArtistAlbumsRequestResult)wrappedResult.RequestResult;
 
-                    _adapter.AddAlbumArts(result.AlbumArts);
+                    _coverProvider.AddAlbumArts(result.AlbumArts);
 
                     if (_callbacks.UserVisibleHint)
                     {
@@ -114,6 +137,10 @@ namespace AirMedia.Platform.UI.Library.AlbumList.Controller
             if (disposing)
             {
                 Adapter.Dispose();
+                if (_coverProvider != null)
+                {
+                    _coverProvider.Dispose();
+                }
             }
 
             base.Dispose(disposing);

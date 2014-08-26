@@ -1,15 +1,16 @@
 using System;
 using System.Collections.Generic;
 using AirMedia.Core.Log;
+using AirMedia.Platform.UI.Library.AlbumList.Controller;
 using AirMedia.Platform.UI.Library.AlbumList.Model;
 using Android.Graphics;
 using Android.Views;
 using Android.Views.Animations;
 using Android.Widget;
 
-namespace AirMedia.Platform.UI.Library.AlbumList
+namespace AirMedia.Platform.UI.Library.AlbumList.Adapter
 {
-    public class AlbumGridItemsAdapter : BaseAdapter<AlbumGridItem>
+    public class AlbumGridItemsAdapter : BaseAdapter<AlbumGridItem>, IConcreteAlbumListAdapter<AlbumGridItem>
     {
         public class ViewHolder : Java.Lang.Object
         {
@@ -20,19 +21,30 @@ namespace AirMedia.Platform.UI.Library.AlbumList
             public View ClickableView { get; set; }
         }
 
-        public interface ICallbacks
-        {
-            event EventHandler<AlbumArtLoadedEventArgs> AlbumArtLoaded;
-            Bitmap GetAlbumArt(long albumId);
-        }
-
         public static readonly string LogTag = typeof (AlbumGridItemsAdapter).Name;
 
         public event EventHandler<AlbumItemClickEventArgs> ItemMenuClicked;
         public event EventHandler<AlbumItemClickEventArgs> ItemClicked;
 
+        private AbsListView ListView
+        {
+            get
+            {
+                if (_listView != null)
+                    return _listView;
+
+                if (Callbacks != null)
+                    _listView = Callbacks.GetListView();
+
+                return _listView;
+            }
+
+            set { _listView = value; }
+        }
+
+        public IAlbumsCoverProvider AlbumsCoverProvider { get; set; }
+        public IAlbumListAdapterCallbacks Callbacks { get; set; }
         private readonly List<AlbumGridItem> _items;
-        private ICallbacks _callbacks;
         private AbsListView _listView;
 
         public override int Count
@@ -45,12 +57,25 @@ namespace AirMedia.Platform.UI.Library.AlbumList
             get { return _items[position]; }
         }
 
-        public AlbumGridItemsAdapter(AbsListView listView, ICallbacks callbacks)
+        public AlbumGridItemsAdapter(IAlbumsCoverProvider albumsCoverProvider)
+            : this(null, albumsCoverProvider)
         {
-            _items = new List<AlbumGridItem>();
-            _callbacks = callbacks;
+        }
+
+        public AlbumGridItemsAdapter(AbsListView listView, IAlbumsCoverProvider albumsCoverProvider)
+        {
+            if (albumsCoverProvider == null)
+            {
+                AmwLog.Warn(LogTag, "albums cover provider is not specified; can't load covers");
+            }
+
             _listView = listView;
-            _callbacks.AlbumArtLoaded += OnAlbumArtLoaded;
+            _items = new List<AlbumGridItem>();
+            AlbumsCoverProvider = albumsCoverProvider;
+            if (AlbumsCoverProvider != null)
+            {
+                AlbumsCoverProvider.AlbumCoverLoaded += OnAlbumCoverLoaded;
+            }
         }
 
         public void SetItems(IEnumerable<AlbumGridItem> items)
@@ -75,7 +100,7 @@ namespace AirMedia.Platform.UI.Library.AlbumList
             return holder.Item;
         }
 
-        public void OnAlbumArtLoaded(object sender, AlbumArtLoadedEventArgs args)
+        public void OnAlbumCoverLoaded(object sender, AlbumArtLoadedEventArgs args)
         {
             if (args.AlbumArt == null) return;
 
@@ -91,15 +116,22 @@ namespace AirMedia.Platform.UI.Library.AlbumList
 
         public void UpdateVisibleAlbumArts()
         {
-            for (int i = _listView.FirstVisiblePosition, pos = 0; i <= _listView.LastVisiblePosition; i++, pos++)
+            for (int i = ListView.FirstVisiblePosition, pos = 0; i <= ListView.LastVisiblePosition; i++, pos++)
             {
-                var holder = _listView.GetChildAt(pos).Tag as ViewHolder;
+                var holder = ListView.GetChildAt(pos).Tag as ViewHolder;
 
                 if (holder == null)
                     continue;
 
-                var albumArt = _callbacks.GetAlbumArt(holder.Item.AlbumId);
-                holder.AlbumImage.SetImageBitmap(albumArt);
+                if (AlbumsCoverProvider != null)
+                {
+                    var albumArt = AlbumsCoverProvider.RequestAlbumCover(holder.Item.AlbumId);
+                    holder.AlbumImage.SetImageBitmap(albumArt);
+                }
+                else
+                {
+                    holder.AlbumImage.SetImageResource(Resource.Drawable.album_cover_placeholder);
+                }
             }
         }
 
@@ -147,7 +179,11 @@ namespace AirMedia.Platform.UI.Library.AlbumList
                 holder.TitleView.SetText(Resource.String.title_unknown_artist);
             }
 
-            Bitmap albumArt = _callbacks.GetAlbumArt(item.AlbumId);
+            Bitmap albumArt = null;
+            if (AlbumsCoverProvider != null)
+            {
+                albumArt = AlbumsCoverProvider.RequestAlbumCover(item.AlbumId);
+            }
             if (albumArt == null)
             {
                 holder.AlbumImage.SetImageResource(Resource.Drawable.album_cover_placeholder);
@@ -186,18 +222,20 @@ namespace AirMedia.Platform.UI.Library.AlbumList
 
             if (disposing)
             {
-                _callbacks.AlbumArtLoaded -= OnAlbumArtLoaded;
-                _listView = null;
-                _callbacks = null;
+                if (AlbumsCoverProvider != null)
+                {
+                    AlbumsCoverProvider.AlbumCoverLoaded -= OnAlbumCoverLoaded;
+                }
+                ListView = null;
                 _items.Clear();
             }
         }
 
         protected ViewHolder FindViewHolderForAlbumId(long albumId)
         {
-            for (int i = _listView.FirstVisiblePosition, pos = 0; i <= _listView.LastVisiblePosition; i++, pos++)
+            for (int i = ListView.FirstVisiblePosition, pos = 0; i <= ListView.LastVisiblePosition; i++, pos++)
             {
-                var holder = _listView.GetChildAt(pos).Tag as ViewHolder;
+                var holder = ListView.GetChildAt(pos).Tag as ViewHolder;
 
                 if (holder == null || holder.Item.AlbumId != albumId)
                     continue;

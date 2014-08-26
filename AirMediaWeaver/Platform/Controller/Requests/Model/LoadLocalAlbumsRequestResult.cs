@@ -5,9 +5,10 @@ using Android.Graphics;
 
 namespace AirMedia.Platform.Controller.Requests.Model
 {
-    public class LoadArtistAlbumsRequestResult : CachedLoadRequestResult<List<AlbumCategorizedGridEntry>>
+    public class LoadLocalAlbumsRequestResult : CachedLoadRequestResult<List<AlbumGridItem>>
     {
-        public LoadArtistAlbumsRequestResult(int resultCode, List<AlbumCategorizedGridEntry> resultData) : base(resultCode, resultData)
+        public LoadLocalAlbumsRequestResult(int resultCode, List<AlbumGridItem> resultData)
+            : base(resultCode, resultData)
         {
         }
 
@@ -17,16 +18,16 @@ namespace AirMedia.Platform.Controller.Requests.Model
         [Newtonsoft.Json.JsonIgnore] 
         private bool _isDisposed;
 
-        public LoadArtistAlbumsRequestResult()
+        public LoadLocalAlbumsRequestResult()
         {
         }
 
-        public LoadArtistAlbumsRequestResult(int resultCode)
+        public LoadLocalAlbumsRequestResult(int resultCode)
         {
             ResultCode = resultCode;
         }
 
-        protected override void ApplyDeserializedParams(CachedLoadRequestResult<List<AlbumCategorizedGridEntry>> previousResult)
+        protected override void ApplyDeserializedParams(CachedLoadRequestResult<List<AlbumGridItem>> previousResult)
         {
             base.ApplyDeserializedParams(previousResult);
 

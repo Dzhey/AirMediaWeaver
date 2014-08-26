@@ -1,16 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using AirMedia.Core.Data.Model;
-using AirMedia.Core.Requests.Impl;
+using AirMedia.Core.Requests.Abs;
 using AirMedia.Core.Requests.Model;
 using AirMedia.Platform.Controller.Requests.Model;
-using AirMedia.Platform.UI.Library.AlbumList;
 using AirMedia.Platform.UI.Library.AlbumList.Model;
 using Android.Graphics;
 
 namespace AirMedia.Platform.Controller.Requests.Impl
 {
-    public class AndroidLoadLocalArtistAlbumsRequest : AbsLoadLocalArtistAlbumsRequest<AlbumListEntry>
+    public class AndroidLoadLocalArtistAlbumsRequest : AbsLoadLocalArtistAlbumsRequest<AlbumCategorizedGridEntry>
     {
         public const int AlbumArtsCount = 8;
         public const string ActionTagDefault = "AndroidLoadLocalArtistAlbumsRequest_tag";
@@ -20,7 +19,7 @@ namespace AirMedia.Platform.Controller.Requests.Impl
         {
         }
 
-        protected override CachedLoadRequestResult<List<AlbumListEntry>> DoLoad(out RequestStatus status)
+        protected override CachedLoadRequestResult<List<AlbumCategorizedGridEntry>> DoLoad(out RequestStatus status)
         {
             var baseResult = base.DoLoad(out status);
 
@@ -54,9 +53,9 @@ namespace AirMedia.Platform.Controller.Requests.Impl
                 };
         }
 
-        protected override AlbumListEntry CreateItem(ArtistBaseModel artist, AlbumBaseModel[] albums)
+        protected override AlbumCategorizedGridEntry CreateItem(ArtistBaseModel artist, AlbumBaseModel[] albums)
         {
-            var entry = new AlbumListEntry
+            var entry = new AlbumCategorizedGridEntry
                 {
                     ArtistName = artist.ArtistName,
                     Albums = albums.Select(item => new AlbumGridItem

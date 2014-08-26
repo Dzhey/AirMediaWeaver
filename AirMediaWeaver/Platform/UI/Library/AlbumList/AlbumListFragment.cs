@@ -1,6 +1,7 @@
 using AirMedia.Core;
 using AirMedia.Core.Requests.Model;
 using AirMedia.Platform.UI.Base;
+using AirMedia.Platform.UI.Library.AlbumList.Adapter;
 using AirMedia.Platform.UI.Library.AlbumList.Controller;
 using AirMedia.Platform.UI.Library.AlbumList.Model;
 using AirMedia.Platform.UI.ViewUtils.QuickActionHelper;
@@ -20,7 +21,7 @@ namespace AirMedia.Platform.UI.Library.AlbumList
         /// </summary>
         private const int AlbumArtsLoaderDisableThreshold = 3;
 
-        private ListView _albumListView;
+        private AbsListView _albumListView;
         private IAlbumListContentWorker _contentController;
         private bool _isContentReloaded;
         private View _contentPlaceholder;
@@ -39,7 +40,7 @@ namespace AirMedia.Platform.UI.Library.AlbumList
             {
                 base.UserVisibleHint = value;
 
-                if (value && _albumListView != null && _albumListView.Count == 0)
+                if (value && !_isContentReloaded)
                     ReloadContent();
             }
         }
@@ -59,18 +60,19 @@ namespace AirMedia.Platform.UI.Library.AlbumList
         public override View OnCreateView(LayoutInflater inflater, 
             ViewGroup container, Bundle savedInstanceState)
         {
+            _contentController = AlbumsContentWorkerCreator.CreateContentWorker(
+                ContentWorkerCreator.AlbumListAppearanceGrid,
+                ContentWorkerCreator.AlbumListGroupingNone,
+                this);
+
            var view = inflater.Inflate(Resource.Layout.Fragment_AlbumList, container, false);
            _contentPlaceholder = view.FindViewById(Resource.Id.contentPlaceholder);
+           var contentContainer = view.FindViewById<ViewGroup>(Resource.Id.contentViewContainer);
 
-           _albumListView = view.FindViewById<ListView>(Android.Resource.Id.List);
+           _albumListView = _contentController.InflateContainerView(inflater, contentContainer, true);
             var progresPanel = view.FindViewById<ViewGroup>(Resource.Id.progressPanel);
             RegisterProgressPanel(progresPanel, Consts.DefaultProgressDelayMillis,
                 Resource.String.note_audio_library_empty);
-
-            _contentController = AlbumsContentWorkerCreator.CreateContentWorker(
-                ContentWorkerCreator.AlbumListAppearanceGrid,
-                ContentWorkerCreator.AlbumListGroupingByArtist,
-                this);
 
             _adapter = _contentController.Adapter;
             _adapter.Callbacks = this;
@@ -134,9 +136,6 @@ namespace AirMedia.Platform.UI.Library.AlbumList
 
             _adapter.ItemClicked += OnAlbumItemClicked;
             _adapter.ItemMenuClicked += OnAlbumItemMenuClicked;
-
-            if (!_isContentReloaded)
-                ReloadContent();
         }
 
         public override void OnPause()

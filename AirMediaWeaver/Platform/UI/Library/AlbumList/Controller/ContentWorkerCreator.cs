@@ -27,7 +27,13 @@ namespace AirMedia.Platform.UI.Library.AlbumList.Controller
             {
                 AlbumListAppearance = AlbumListAppearanceGrid, 
                 AlbumListGrouping = AlbumListGroupingByArtist,
-                CreatorFunc = CreateArtistsGridWorker
+                CreatorFunc = CreateArtistsAlbumsGridWorker
+            });
+            Entries.Add(new WorkerEntry
+            {
+                AlbumListAppearance = AlbumListAppearanceGrid,
+                AlbumListGrouping = AlbumListGroupingNone,
+                CreatorFunc = CreateAlbumsGridWorker
             });
         }
 
@@ -58,7 +64,14 @@ namespace AirMedia.Platform.UI.Library.AlbumList.Controller
             return null;
         }
 
-        private static IAlbumListContentWorker CreateArtistsGridWorker(IAlbumListContentWorkerCallbacks callbacks)
+        private static IAlbumListContentWorker CreateArtistsAlbumsGridWorker(
+            IAlbumListContentWorkerCallbacks callbacks)
+        {
+            return new AlbumsCategorizedGridWorker(callbacks);
+        }
+
+        private static IAlbumListContentWorker CreateAlbumsGridWorker(
+            IAlbumListContentWorkerCallbacks callbacks)
         {
             return new AlbumsGridWorker(callbacks);
         }

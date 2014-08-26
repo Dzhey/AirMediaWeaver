@@ -131,6 +131,35 @@ namespace AirMedia.Core.Data
             return items;
         }
 
+        public AlbumBaseModel[] QueryForLocalAlbums()
+        {
+            const string orderBy = MediaStore.Audio.Albums.InterfaceConsts.Album + " ASC";
+            var resolver = App.Instance.ContentResolver;
+            var uri = MediaStore.Audio.Albums.ExternalContentUri;
+            var cursor = resolver.Query(uri, AlbumsBaseQueryProjection, null, null, orderBy);
+            var items = new AlbumBaseModel[cursor.Count];
+            using (cursor)
+            {
+                try
+                {
+                    while (cursor.MoveToNext())
+                    {
+                        items[cursor.Position] = new AlbumBaseModel
+                        {
+                            AlbumId = cursor.GetLong(0),
+                            AlbumName = cursor.GetString(1)
+                        };
+                    }
+                }
+                finally
+                {
+                    cursor.Close();
+                }
+            }
+
+            return items;
+        }
+
         public IRemoteTrackMetadata[] QueryRemoteTracksForAlbumNameLike(string albumName)
         {
             return QueryRemoteTracksForColumnLike(RemoteTrackPublicationRecord.ColumnAlbum, albumName);

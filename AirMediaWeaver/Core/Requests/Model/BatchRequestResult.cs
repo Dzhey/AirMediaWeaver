@@ -28,10 +28,12 @@ namespace AirMedia.Core.Requests.Model
 
             if (disposing)
             {
-                foreach (var result in Results)
+                if (Results != null)
                 {
-                    result.Key.Dispose();
-                    result.Value.Dispose();
+                    foreach (var result in Results)
+                    {
+                        result.Value.Dispose();
+                    }
                 }
 
                 Results = null;

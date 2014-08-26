@@ -12,15 +12,11 @@
         android:src="@drawable/notes_gray"
         android:alpha="0.3" />
   
-    <ListView
-        android:id="@android:id/list"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentTop="true"
-        android:listSelector="@android:color/transparent"
-        android:divider="@null"
-        android:dividerHeight="0dp"
-        android:fastScrollEnabled="true" />
+    <FrameLayout 
+      android:id="@+id/contentViewContainer"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent" />
+        
     <include
         android:id="@+id/progressPanel"
         layout="@layout/View_Progress_Panel"

@@ -33,12 +33,7 @@ namespace AirMedia.Core.Requests.Model
 
             if (disposing)
             {
-                var disposable = Data as IDisposable;
-                if (disposable != null)
-                {
-                    disposable.Dispose();
-                    Data = default(TData);
-                }
+                Data = default(TData);
             }
 
             base.Dispose(disposing);
