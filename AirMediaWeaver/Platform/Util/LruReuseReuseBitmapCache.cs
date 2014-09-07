@@ -1,9 +1,6 @@
 using System;
-using System.Collections.Generic;
-using AirMedia.Core.Log;
 using AirMedia.Core.Utils;
 using Android.Graphics;
-using Android.OS;
 
 namespace AirMedia.Platform.Util
 {
@@ -22,19 +19,19 @@ namespace AirMedia.Platform.Util
         public static readonly string LogTag = typeof (LruReuseReuseBitmapCache<TKey>).Name;
 
         public const int MaxBitmapCacheSizeBytesDefault = 8*1024*1024;
-        public const int MaxReuseBitmapCacheSizeDefault = 6*1024*1024;
+        public const int MaxReuseBitmapCacheSizeDefault = 4*1024*1024;
 
         public event EventHandler<EntryDisposedEventArgs> EntryDisposed;
 
         private readonly LruCache<TKey, Bitmap> _cache;
         private bool _isDisposed;
-        private readonly WeakBitmapPool _reuseBitmapsPool;
+        private readonly AndroidBitmapPool _reuseBitmapsPool;
 
 
         public LruReuseReuseBitmapCache(int maxBitmapCacheSize = MaxBitmapCacheSizeBytesDefault)
         {
             _cache = new LruCache<TKey, Bitmap>(maxBitmapCacheSize, this);
-            _reuseBitmapsPool = new WeakBitmapPool(MaxReuseBitmapCacheSizeDefault);
+            _reuseBitmapsPool = new AndroidBitmapPool(MaxReuseBitmapCacheSizeDefault);
         }
 
         public bool TryGetValue(TKey key, out Bitmap value)
@@ -53,7 +50,7 @@ namespace AirMedia.Platform.Util
             Bitmap existingValue;
             if (replaceValue == false && _cache.TryGetValue(key, out existingValue))
             {
-                _reuseBitmapsPool.Put(value);
+                _reuseBitmapsPool.Push(value);
                 return;
             }
             
@@ -63,49 +60,32 @@ namespace AirMedia.Platform.Util
         public void Clear()
         {
             _cache.Clear();
+            _reuseBitmapsPool.Clear();
         }
 
-        public void AddInBitmapOptions(BitmapFactory.Options options)
+        public bool AddInBitmapOptions(BitmapFactory.Options options)
         {
-            var putBackList = new List<Bitmap>();
-            Bitmap bmp;
-            while (_reuseBitmapsPool.TryGetBitmap(out bmp))
-            {
-                if (CanUseForInBitmap(bmp, options))
-                {
-                    options.InMutable = true;
-                    options.InBitmap = bmp;
-
-                    break;
-                }
-                
-                putBackList.Add(bmp);
-            }
-
-            // Put unused bitmaps back to pool
-            foreach (var bitmap in putBackList)
-            {
-                _reuseBitmapsPool.Put(bitmap);
-            }
+            return _reuseBitmapsPool.AddInBitmapOptions(options);
         }
 
         public void AddReusableBitmap(Bitmap bitmap)
         {
-            _reuseBitmapsPool.Put(bitmap);
+            if (bitmap != null)
+                _reuseBitmapsPool.Push(bitmap);
         }
 
         public int GetSizeOfValue(TKey key, Bitmap value)
         {
             if (value == null || value.Handle == IntPtr.Zero) return 0;
 
-            return GetBytesPerPixel(value.GetConfig()) * value.Width * value.Height;
+            return BitmapUtils.GetBytesPerPixel(value.GetConfig()) * value.Width * value.Height;
         }
 
         public void DisposeOfValue(TKey key, Bitmap value)
         {
             if (value != null)
             {
-                _reuseBitmapsPool.Put(value);
+                _reuseBitmapsPool.Push(value);
             }
 
             if (EntryDisposed != null)
@@ -131,54 +111,6 @@ namespace AirMedia.Platform.Util
             }
 
             _isDisposed = true;
-        }
-
-        private bool CanUseForInBitmap(Bitmap candidate, BitmapFactory.Options targetOptions)
-        {
-            if (candidate.Handle == IntPtr.Zero)
-            {
-                AmwLog.Warn(LogTag, "tried to use unbound bitmap");
-
-                return false;
-            }
-
-            if (Build.VERSION.SdkInt >= BuildVersionCodes.Kitkat)
-            {
-                int width = targetOptions.OutWidth / targetOptions.InSampleSize;
-                int height = targetOptions.OutHeight / targetOptions.InSampleSize;
-                int byteCount = width * height * GetBytesPerPixel(candidate.GetConfig());
-
-                return byteCount <= candidate.AllocationByteCount;
-            }
-
-            return candidate.Width == targetOptions.OutWidth
-                    && candidate.Height == targetOptions.OutHeight
-                    && targetOptions.InSampleSize == 1;
-        }
-
-        private static int GetBytesPerPixel(Bitmap.Config config)
-        {
-            if (config == Bitmap.Config.Argb8888)
-            {
-                return 4;
-            }
-
-            if (config == Bitmap.Config.Rgb565)
-            {
-                return 2;
-            }
-
-            if (config == Bitmap.Config.Argb4444)
-            {
-                return 2;
-            }
-
-            if (config == Bitmap.Config.Alpha8)
-            {
-                return 1;
-            }
-
-            return 1;
         }
     }
 }

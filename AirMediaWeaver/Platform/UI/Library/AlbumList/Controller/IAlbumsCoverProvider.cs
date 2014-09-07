@@ -14,5 +14,6 @@ namespace AirMedia.Platform.UI.Library.AlbumList.Controller
 
         Bitmap RequestAlbumCover(long albumId);
         void AddAlbumArts(IEnumerable<KeyValuePair<long, Bitmap>> albumArts);
+        void ResetCache();
     }
 }

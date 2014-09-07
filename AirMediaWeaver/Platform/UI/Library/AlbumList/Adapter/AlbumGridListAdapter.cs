@@ -30,8 +30,13 @@ namespace AirMedia.Platform.UI.Library.AlbumList.Adapter
             get { return _albumsCoverProvider; }
             set
             {
-                _albumsCoverProvider = value;
                 if (_albumsCoverProvider != null)
+                {
+                    _albumsCoverProvider.AlbumArtsLoaderEnabled -= OnAlbumArtsLoaderEnabled;
+                }
+
+                _albumsCoverProvider = value;
+                if (value != null)
                 {
                     _albumsCoverProvider.AlbumArtsLoaderEnabled += OnAlbumArtsLoaderEnabled;
                 }

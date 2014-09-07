@@ -279,7 +279,6 @@
     <Compile Include="Platform\UI\Base\InputTextDialog.cs" />
     <Compile Include="Platform\Controller\Requests\Interfaces\IContextualWorkerCallbacks.cs" />
     <Compile Include="Platform\UI\Base\MainViewFragment.cs" />
-    <Compile Include="Platform\UI\Library\AlbumList\Adapter\AlbumTileListAdapter.cs" />
     <Compile Include="Platform\UI\Library\AlbumList\Adapter\IConcreteAlbumListAdapter.cs" />
     <Compile Include="Platform\UI\Library\AlbumList\Controller\AlbumsGridWorker .cs" />
     <Compile Include="Platform\UI\Library\AlbumList\Controller\AlbumsCoverProvider.cs" />
@@ -402,7 +401,7 @@
     <AndroidResource Include="Resources\Drawable\accent_selection_transition.xml">
       <SubType>Designer</SubType>
     </AndroidResource>
-    <Compile Include="Platform\Util\WeakBitmapPool.cs" />
+    <Compile Include="Platform\Util\AndroidBitmapPool.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -651,8 +650,9 @@
     <AndroidResource Include="Resources\Drawable\quickaction_action_item_selected.xml">
       <SubType>Designer</SubType>
     </AndroidResource>
-    <AndroidResource Include="Resources\Drawable-mdpi\ic_page_layout.png" />
     <AndroidResource Include="Resources\Drawable-hdpi\ic_page_layout.png" />
+    <AndroidResource Include="Resources\Menu\menu_album_list.xml" />
+    <AndroidResource Include="Resources\Drawable-hdpi\ic_action_page_layout.png" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Platform\Json\" />

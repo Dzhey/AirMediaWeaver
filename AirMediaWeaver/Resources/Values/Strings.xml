@@ -89,6 +89,9 @@
   <string name="album_menu_action_add_to_playlist">В плейлист</string>
   <string name="album_menu_action_send">Отправить&#8230;</string>
   
+  <!--- Action menus -->
+  <string name="menu_action_change_album_list_layout">Переключить отображение</string>
+  
   <!-- Logger strings -->
   <string name="title_log_level">Уровень</string>
   <string name="title_log_expand_toggle">Развернуть</string>

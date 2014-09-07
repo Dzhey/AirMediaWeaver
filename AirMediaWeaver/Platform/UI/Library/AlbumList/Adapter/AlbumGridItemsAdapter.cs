@@ -42,10 +42,30 @@ namespace AirMedia.Platform.UI.Library.AlbumList.Adapter
             set { _listView = value; }
         }
 
-        public IAlbumsCoverProvider AlbumsCoverProvider { get; set; }
+        public IAlbumsCoverProvider AlbumsCoverProvider
+        {
+            get { return _albumsCoverProvider; }
+            set
+            {
+                if (_albumsCoverProvider != null)
+                {
+                    _albumsCoverProvider.AlbumCoverLoaded -= OnAlbumCoverLoaded;
+                    _albumsCoverProvider.AlbumArtsLoaderEnabled -= OnAlbumArtsLoaderEnabled;
+                }
+
+                _albumsCoverProvider = value;
+
+                if (value != null)
+                {
+                    _albumsCoverProvider.AlbumCoverLoaded += OnAlbumCoverLoaded;
+                    _albumsCoverProvider.AlbumArtsLoaderEnabled += OnAlbumArtsLoaderEnabled;
+                }
+            }
+        }
         public IAlbumListAdapterCallbacks Callbacks { get; set; }
         private readonly List<AlbumGridItem> _items;
         private AbsListView _listView;
+        private IAlbumsCoverProvider _albumsCoverProvider;
 
         public override int Count
         {
@@ -72,10 +92,6 @@ namespace AirMedia.Platform.UI.Library.AlbumList.Adapter
             _listView = listView;
             _items = new List<AlbumGridItem>();
             AlbumsCoverProvider = albumsCoverProvider;
-            if (AlbumsCoverProvider != null)
-            {
-                AlbumsCoverProvider.AlbumCoverLoaded += OnAlbumCoverLoaded;
-            }
         }
 
         public void SetItems(IEnumerable<AlbumGridItem> items)
@@ -83,6 +99,13 @@ namespace AirMedia.Platform.UI.Library.AlbumList.Adapter
             _items.Clear();
             _items.AddRange(items);
             NotifyDataSetChanged();
+        }
+
+        public void Reset()
+        {
+            _items.Clear();
+            NotifyDataSetChanged();
+            AlbumsCoverProvider.ResetCache();
         }
 
         public override long GetItemId(int position)
@@ -98,6 +121,12 @@ namespace AirMedia.Platform.UI.Library.AlbumList.Adapter
                 return null;
 
             return holder.Item;
+        }
+
+        private void OnAlbumArtsLoaderEnabled(object sender, AlbumArtsLoaderEnabledEventArgs args)
+        {
+            if (args.IsAlbumArtsEnabled)
+                UpdateVisibleAlbumArts();
         }
 
         public void OnAlbumCoverLoaded(object sender, AlbumArtLoadedEventArgs args)
@@ -225,6 +254,7 @@ namespace AirMedia.Platform.UI.Library.AlbumList.Adapter
                 if (AlbumsCoverProvider != null)
                 {
                     AlbumsCoverProvider.AlbumCoverLoaded -= OnAlbumCoverLoaded;
+                    AlbumsCoverProvider.AlbumArtsLoaderEnabled -= OnAlbumArtsLoaderEnabled;
                 }
                 ListView = null;
                 _items.Clear();

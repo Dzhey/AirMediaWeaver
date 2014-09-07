@@ -14,11 +14,11 @@ using Android.Graphics;
 
 namespace AirMedia.Platform.UI.Library.AlbumList.Controller
 {
-    public class AlbumsCoverProvider : IAlbumsCoverProvider, IDisposable
+    public class AlbumsCoverProvider : IAlbumsCoverProvider
     {
         public static readonly string LogTag = typeof (AlbumsCoverProvider).Name;
 
-        public const int MaxBitmapCacheSizeBytes = 1024 * 1024 * 16;
+        public const int MaxBitmapCacheSizeBytes = 1024 * 1024 * 4;
 
         private const string BatchLoadArtsRequestTag = "load_album_arts_batch_request";
         private const int ArtsLoaderThreadPoolSize = 2;
@@ -50,7 +50,7 @@ namespace AirMedia.Platform.UI.Library.AlbumList.Controller
         private readonly LruReuseReuseBitmapCache<long> _artsCache;
         private bool _isDisposed;
         private bool _isLowMemory;
-        private bool _isAlbumArtsLoaderEnabled;
+        private bool _isAlbumArtsLoaderEnabled = true;
 
         public AlbumsCoverProvider()
         {
@@ -96,9 +96,16 @@ namespace AirMedia.Platform.UI.Library.AlbumList.Controller
             return albumArt;
         }
 
+        public void ResetCache()
+        {
+            _artsCache.Clear();
+            _requestedAlbumArts.Clear();
+        }
+
         public void OnAlbumArtDisposed(object sender, LruReuseReuseBitmapCache<long>.EntryDisposedEventArgs args)
         {
             _requestedAlbumArts.Remove(args.Key);
+            AmwLog.Verbose(LogTag, "album art removed from cache: " + args.Key);
         }
 
         private void OnAlbumArtLoaded(object sender, ResultEventArgs args)
@@ -142,6 +149,9 @@ namespace AirMedia.Platform.UI.Library.AlbumList.Controller
 
         private void OnAlbumArtLoaded(long albumId, Bitmap albumArt)
         {
+            _artsCache.Set(albumId, albumArt, false);
+            AmwLog.Verbose(LogTag, "album art loaded: " + albumId);
+
             if (AlbumCoverLoaded != null)
             {
                 AlbumCoverLoaded(this, new AlbumArtLoadedEventArgs
@@ -150,8 +160,6 @@ namespace AirMedia.Platform.UI.Library.AlbumList.Controller
                     AlbumArt = albumArt
                 });
             }
-
-            _artsCache.Set(albumId, albumArt, false);
         }
 
         public void Dispose()

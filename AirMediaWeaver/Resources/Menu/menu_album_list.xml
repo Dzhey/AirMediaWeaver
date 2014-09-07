@@ -1,0 +1,6 @@
+﻿<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+  <item android:id="@+id/ActionTogglePageLayout"
+        android:icon="@drawable/ic_action_page_layout"
+        android:showAsAction="ifRoom"
+        android:title="@string/menu_action_change_album_list_layout"/>
+</menu>

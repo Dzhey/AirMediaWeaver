@@ -38,7 +38,7 @@ namespace AirMedia.Platform.UI.Library.AlbumList.Controller
         {
             var container = (ViewGroup)inflater.Inflate(Resource.Layout.View_AlbumsGridList, root, attachToRoot);
 
-            return container.FindViewById<AbsListView>(Resource.Id.albumsGrid);
+            return container.FindViewById<AbsListView>(Android.Resource.Id.List);
         }
 
         public IAlbumListAdapter Adapter { get { return _adapter; } }

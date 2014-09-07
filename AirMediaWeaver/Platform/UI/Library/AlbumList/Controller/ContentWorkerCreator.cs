@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using AirMedia.Platform.Controller.Requests.Interfaces;
 using WorkerCreatorFunc = System.Func<AirMedia.Platform.UI.Library.AlbumList.Controller.IAlbumListContentWorkerCallbacks, AirMedia.Platform.UI.Library.AlbumList.Controller.IAlbumListContentWorker>;
 
 namespace AirMedia.Platform.UI.Library.AlbumList.Controller

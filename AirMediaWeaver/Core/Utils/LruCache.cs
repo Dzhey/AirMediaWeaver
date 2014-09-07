@@ -2,8 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq;
-using Java.Lang;
 
 namespace AirMedia.Core.Utils
 {
@@ -54,14 +52,9 @@ namespace AirMedia.Core.Utils
         public void Clear()
         {
             var clearingItems = _entries.Values.ToArray();
-            _entries.Clear();
-            _currentSize = 0;
-            _head = null;
-            _tail = null;
-
             foreach (var entry in clearingItems)
             {
-                _entryHandler.DisposeOfValue(entry.Key, entry.Value);
+                DisposeNode(entry, false);
             }
         }
 
@@ -76,7 +69,7 @@ namespace AirMedia.Core.Utils
             }
         }
 
-        private void DisposeNode(Node node)
+        private void DisposeNode(Node node, bool invokeDisposeCallback = true)
         {
             _entries.Remove(node.Key);
 
@@ -102,7 +95,15 @@ namespace AirMedia.Core.Utils
 
             _currentSize -= node.SizeOfValue;
 
-            _entryHandler.DisposeOfValue(node.Key, node.Value);
+            if (invokeDisposeCallback)
+            {
+                _entryHandler.DisposeOfValue(node.Key, node.Value);
+            }
+
+            node.Previous = null;
+            node.Next = null;
+            node.Key = default(TKey);
+            node.Value = default(TValue);
         }
 
         /// <summary>

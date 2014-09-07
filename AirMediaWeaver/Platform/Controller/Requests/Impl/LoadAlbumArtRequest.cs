@@ -40,6 +40,10 @@ namespace AirMedia.Platform.Controller.Requests.Impl
                 {
                     AmwLog.Info(LogTag, "bitmap reused for album id: " + AlbumId);
                 }
+                else
+                {
+                    AmwLog.Warn(LogTag, "bitmap is not reused for album id" + AlbumId);
+                }
             }
             Bitmap bitmap = AlbumsDao.GetAlbumArtBitmap(AlbumId);
 

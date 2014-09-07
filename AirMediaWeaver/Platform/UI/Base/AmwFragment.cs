@@ -43,6 +43,9 @@ namespace AirMedia.Platform.UI.Base
             get { return _requestResultListener; }
         }
 
+        public bool IsStarted { get; private set; }
+        public bool IsResumed { get; private set; }
+
         public bool HasPendingRequests
         {
             get { return _requestResultListener.HasPendingRequests; }
@@ -74,10 +77,14 @@ namespace AirMedia.Platform.UI.Base
 
             _requestResultListener.ResultEventHandler += OnRequestResult;
             _requestResultListener.UpdateEventHandler += OnRequestUpdate;
+
+            IsStarted = true;
         }
 
         public override void OnStop()
         {
+            IsStarted = false;
+
             _requestResultListener.ResultEventHandler -= OnRequestResult;
             _requestResultListener.UpdateEventHandler -= OnRequestUpdate;
 
@@ -103,10 +110,15 @@ namespace AirMedia.Platform.UI.Base
             }
         }
 
+
         public override void OnDestroy()
         {
             if (_registeredRequestWorkers != null)
             {
+                foreach (var worker in _registeredRequestWorkers)
+                {
+                    worker.Dispose();
+                }
                 _registeredRequestWorkers.Clear();
             }
 
@@ -161,10 +173,14 @@ namespace AirMedia.Platform.UI.Base
 
             InitRequestUpdateHandlers();
             InitRequestResultHandlers();
+
+            IsResumed = true;
         }
 
         public override void OnPause()
         {
+            IsResumed = false;
+
             ResetRequestUpdateHandlers();
             ResetRequestResultHandlers();
 
@@ -236,19 +252,33 @@ namespace AirMedia.Platform.UI.Base
 
         protected void RegisterRequestWorker(IContextualRequestWorker worker)
         {
+            if (worker == null)
+                throw new ArgumentException("request worker should not be null");
+
             if (_registeredRequestWorkers == null)
             {
                 _registeredRequestWorkers = new List<IContextualRequestWorker>();
             }
 
             _registeredRequestWorkers.Add(worker);
+            if (IsStarted)
+            {
+                worker.InitUpdateHandler();
+                worker.InitResultHandler();
+            }
         }
 
         protected void RemoveRequestWorker(IContextualRequestWorker worker)
         {
-            if (_registeredRequestWorkers == null) return;
+            if (_registeredRequestWorkers == null || worker == null) return;
 
-            _registeredRequestWorkers.Remove(worker);
+            if (_registeredRequestWorkers.Remove(worker))
+            {
+                worker.ResetUpdateHandler();
+                worker.ResetResultHandler();
+            }
+
+            worker.Dispose();
         }
 
         /// <summary>

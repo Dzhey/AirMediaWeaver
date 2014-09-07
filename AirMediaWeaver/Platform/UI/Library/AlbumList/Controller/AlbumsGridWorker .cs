@@ -8,7 +8,6 @@ using AirMedia.Platform.Controller.Requests.Model;
 using AirMedia.Platform.Logger;
 using AirMedia.Platform.UI.Base;
 using AirMedia.Platform.UI.Library.AlbumList.Adapter;
-using AirMedia.Platform.UI.Library.AlbumList.Model;
 using Android.Views;
 using Android.Widget;
 
@@ -16,7 +15,7 @@ namespace AirMedia.Platform.UI.Library.AlbumList.Controller
 {
     public class AlbumsGridWorker : BaseContextualRequestWorker, IAlbumListContentWorker
     {
-        public static readonly string LogTag = typeof(AlbumsGridWorker).Name;
+        public new static readonly string LogTag = typeof(AlbumsGridWorker).Name;
 
         public bool IsAlbumArtsLoaderEnabled
         {
@@ -38,12 +37,12 @@ namespace AirMedia.Platform.UI.Library.AlbumList.Controller
         {
             var container = (ViewGroup) inflater.Inflate(Resource.Layout.View_AlbumsGrid, root, attachToRoot);
 
-            return container.FindViewById<AbsListView>(Resource.Id.albumsGrid);
+            return container.FindViewById<AbsListView>(Android.Resource.Id.List);
         }
 
         public IAlbumListAdapter Adapter { get { return _adapter; } }
 
-        private readonly IConcreteAlbumListAdapter<AlbumGridItem> _adapter;
+        private readonly AlbumGridItemsAdapter _adapter;
         private bool _isDisposed;
         private readonly IAlbumListContentWorkerCallbacks _callbacks;
         private readonly IAlbumsCoverProvider _coverProvider;
@@ -133,11 +132,11 @@ namespace AirMedia.Platform.UI.Library.AlbumList.Controller
 
         protected override void Dispose(bool disposing)
         {
-            if (_isDisposed == false) return;
+            if (_isDisposed) return;
 
             if (disposing)
             {
-                Adapter.Dispose();
+                _adapter.Reset();
                 if (_coverProvider != null)
                 {
                     _coverProvider.Dispose();

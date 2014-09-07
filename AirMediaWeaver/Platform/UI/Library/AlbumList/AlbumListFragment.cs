@@ -25,6 +25,7 @@ namespace AirMedia.Platform.UI.Library.AlbumList
         private IAlbumListContentWorker _contentController;
         private bool _isContentReloaded;
         private View _contentPlaceholder;
+        private ViewGroup _contentContainer;
         private int _lastScrollAlbumItemPosition;
         private long _previousScrollEventTime;
         private double _albumListScrollSpeed;
@@ -57,32 +58,111 @@ namespace AirMedia.Platform.UI.Library.AlbumList
             SetInProgress(false);
         }
 
-        public override View OnCreateView(LayoutInflater inflater, 
-            ViewGroup container, Bundle savedInstanceState)
+        public override void OnCreate(Bundle savedInstanceState)
         {
+            base.OnCreate(savedInstanceState);
+
+            SetHasOptionsMenu(true);
+        }
+
+        public override void OnCreateOptionsMenu(IMenu menu, MenuInflater inflater)
+        {
+            inflater.Inflate(Resource.Menu.menu_album_list, menu);
+        }
+
+        private void InitContentView(LayoutInflater inflater, View fragmentView)
+        {
+            if (_contentController != null)
+            {
+                RemoveRequestWorker(_contentController);
+                _contentController = null;
+            }
+
             _contentController = AlbumsContentWorkerCreator.CreateContentWorker(
                 ContentWorkerCreator.AlbumListAppearanceGrid,
-                ContentWorkerCreator.AlbumListGroupingNone,
+                App.Preferences.AlbumListGrouping,
                 this);
 
-           var view = inflater.Inflate(Resource.Layout.Fragment_AlbumList, container, false);
-           _contentPlaceholder = view.FindViewById(Resource.Id.contentPlaceholder);
-           var contentContainer = view.FindViewById<ViewGroup>(Resource.Id.contentViewContainer);
+            _contentContainer.RemoveAllViews();
+            if (_adapter != null)
+            {
+                _adapter.ItemClicked -= OnAlbumItemClicked;
+                _adapter.ItemMenuClicked -= OnAlbumItemMenuClicked;
+                _adapter.Callbacks = null;
+            }
+            if (_albumListView != null)
+            {
+                _albumListView.Adapter = null;
+            }
 
-           _albumListView = _contentController.InflateContainerView(inflater, contentContainer, true);
-            var progresPanel = view.FindViewById<ViewGroup>(Resource.Id.progressPanel);
-            RegisterProgressPanel(progresPanel, Consts.DefaultProgressDelayMillis,
+            _albumListView = _contentController.InflateContainerView(inflater, _contentContainer, true);
+            var progressPanel = fragmentView.FindViewById<ViewGroup>(Resource.Id.progressPanel);
+            RegisterProgressPanel(progressPanel, Consts.DefaultProgressDelayMillis,
                 Resource.String.note_audio_library_empty);
 
             _adapter = _contentController.Adapter;
             _adapter.Callbacks = this;
             _albumListView.Adapter = _adapter;
 
-            _isContentReloaded = false;
+            if (IsResumed)
+            {
+                _adapter.ItemClicked += OnAlbumItemClicked;
+                _adapter.ItemMenuClicked += OnAlbumItemMenuClicked;
+            }
 
             RegisterRequestWorker(_contentController);
+            _isContentReloaded = false;
+        }
+
+        public override View OnCreateView(LayoutInflater inflater, 
+            ViewGroup container, Bundle savedInstanceState)
+        {
+            var view = inflater.Inflate(Resource.Layout.Fragment_AlbumList, container, false);
+            _contentPlaceholder = view.FindViewById(Resource.Id.contentPlaceholder);
+            _contentContainer = view.FindViewById<ViewGroup>(Resource.Id.contentViewContainer);
+
+            InitContentView(inflater, view);
 
             return view;
+        }
+
+        public override void OnDestroyView()
+        {
+            _isContentReloaded = false;
+            RemoveRequestWorker(_contentController);
+
+            base.OnDestroyView();
+        }
+
+        public override bool OnOptionsItemSelected(IMenuItem item)
+        {
+            switch (item.ItemId)
+            {
+                case Resource.Id.ActionTogglePageLayout:
+                    ToggleAlbumListGrouping();
+                    return true;
+            }
+
+            return base.OnOptionsItemSelected(item);
+        }
+
+        private void ToggleAlbumListGrouping()
+        {
+            if (_adapter == null) return;
+
+            switch (App.Preferences.AlbumListGrouping)
+            {
+                case ContentWorkerCreator.AlbumListGroupingByArtist:
+                    App.Preferences.AlbumListGrouping = ContentWorkerCreator.AlbumListGroupingNone;
+                    break;
+
+                case ContentWorkerCreator.AlbumListGroupingNone:
+                    App.Preferences.AlbumListGrouping = ContentWorkerCreator.AlbumListGroupingByArtist;
+                    break;
+            }
+
+            InitContentView(LayoutInflater.From(Activity), View);
+            ReloadContent();
         }
 
         private void OnAlbumListScrollEvent(object sender, AbsListView.ScrollEventArgs args)
@@ -113,18 +193,6 @@ namespace AirMedia.Platform.UI.Library.AlbumList
             {
                 _contentController.IsAlbumArtsLoaderEnabled = true;
             }
-        }
-
-        public override void OnDestroyView()
-        {
-            if (_contentController != null)
-            {
-                _contentController.ResetResultHandler();
-                _contentController.Dispose();
-                _contentController = null;
-            }
-
-            base.OnDestroyView();
         }
 
         public override void OnResume()

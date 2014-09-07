@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <GridView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/albumsGrid"
+    android:id="@android:id/list"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:columnWidth="@dimen/album_grid_item_width_plain"

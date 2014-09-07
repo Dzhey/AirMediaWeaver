@@ -2,6 +2,7 @@ using System;
 using AirMedia.Core.Data;
 using AirMedia.Core.Log;
 using AirMedia.Platform.UI.Base;
+using AirMedia.Platform.UI.Library.AlbumList.Controller;
 using Android.Content;
 
 namespace AirMedia.Platform.Data
@@ -19,6 +20,7 @@ namespace AirMedia.Platform.Data
         private const string PreferenceIsLogPanelSettingsRevealed = "is_log_panel_settings_revealed";
         private const string PreferencIsLogListExpanded = "is_log_list_expanded";
         private const string PreferenceIsLogPanelEnabled = "is_log_panel_enabled";
+        private const string PreferenceAlbumListGrouping = "album_list_grouping";
 
         private new static readonly string LogTag = typeof (UserPreferences).Name;
 
@@ -153,6 +155,13 @@ namespace AirMedia.Platform.Data
 
                 _prefs.Edit().PutString(PreferenceLastMainView, value.FullName).Commit();
             }
+        }
+
+        public int AlbumListGrouping
+        {
+            get { return _prefs.GetInt(PreferenceAlbumListGrouping, ContentWorkerCreator.AlbumListGroupingByArtist); }
+
+            set { _prefs.Edit().PutInt(PreferenceAlbumListGrouping, value).Commit(); }
         }
     }
 }
